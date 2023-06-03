@@ -8,7 +8,7 @@ It's meant to solve two issues with using polars API extensions:
 
 - It's difficult to ensure that the extensions have been registered in all places in a code where you polars is used.
 
-- Extensions breaks static typing.
+- Extensions breaks static typing. (Not implemented yet)
 
 The idea is to describe a single way to expose and collect API extensions - especially for third party packages - 
 and then used this discoverbility to also generate type stubs with the added typing from the extensions.
@@ -17,6 +17,36 @@ Users can either call `register_namespaces` themselves or import polars through 
 Lint rules can then be used to enforce that nothing is imported from polars outside of these locations.
 
 This is still a bit annoying no matter what, unless polars does the import natively.
+
+## Package example
+
+See `tests/pkgs/example_package` for how an package could expose namespaces.
+
+It's done using entry points, here specified in the `pyproject.toml`.
+
+## Usage example
+
+`example-package` exposes a `LazyFrame` namespace called `external`. After installing it, users
+can either do
+
+```python
+from polugins.main import register_namespaces
+import polars as pl
+
+register_namespaces(entrypoints=True)
+
+pl.LazyFrame().external.some_method(x=1)
+```
+
+or
+
+```python
+import polugins.polars as pl
+
+pl.LazyFrame().external.some_method(x=1)
+```
+
+Which automagically registers namespaces from entry points.
 
 ## Implementation
 
