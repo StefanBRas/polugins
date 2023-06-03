@@ -6,7 +6,7 @@ Not production ready - barely even alpha ready. Only uploading it now for discus
 
 It's meant to solve two issues with using polars API extensions:
 
-- It's difficult to ensure that the extensions have been registered in all places in a code where you polars is used.
+- It's difficult to ensure that extensions everywhere in a code base.
 
 - Extensions breaks static typing. (Not implemented yet)
 
