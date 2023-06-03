@@ -1,7 +1,7 @@
 from typing import Callable, Dict, Optional, Type
+from polugins._types import Namespace
 import polars as pl
 import sys
-from enum import Enum, auto
 
 
 # TODO: Stolen from pluggy, remember license and stuff
@@ -12,47 +12,37 @@ else:
     import importlib_metadata  # ignore
 
 
+def get_entrypoints():
+    entry_points = {
+        Namespace.EXPR: [],
+        Namespace.SERIES: [],
+        Namespace.LAZYFRAME: [],
+        Namespace.DATAFRAME: [],
+    }
+    for dist in list(importlib_metadata.distributions()):
+        for ep in dist.entry_points:
+            if ep.group.startswith("polugins"):
+                print("here now")
+                entry_points[Namespace.from_entrypoint_group(ep.group)].append(ep)
+    return entry_points
+
 def load_setuptools_entrypoints():
     """
     TODO: Stolen from pluggy, remember license and stuff
     """
+    all_entry_points = get_entrypoints()
     namespaces = {
         Namespace.EXPR: {},
         Namespace.SERIES: {},
         Namespace.LAZYFRAME: {},
         Namespace.DATAFRAME: {},
     }
-    for dist in list(importlib_metadata.distributions()):
-        for ep in dist.entry_points:
+    for namespace_type, entry_points in all_entry_points.items():
+        for ep in entry_points:
             if ep.group.startswith("polugins"):
                 namespace = ep.load()
-                namespaces[Namespace.from_entrypoint_group(ep.group)][ep.name] = namespace
+                namespaces[namespace_type][ep.name] = namespace
     return namespaces
-
-
-class Namespace(Enum):
-    EXPR = "expr"
-    SERIES = "series"
-    LAZYFRAME = "lazyframe"
-    DATAFRAME = "dataframe"
-
-    def to_reg_function(self) -> Callable:
-        if self == Namespace.EXPR:
-            return pl.api.register_expr_namespace
-        if self == Namespace.SERIES:
-            return pl.api.register_series_namespace
-        if self == Namespace.LAZYFRAME:
-            return pl.api.register_lazyframe_namespace
-        if self == Namespace.DATAFRAME:
-            return pl.api.register_dataframe_namespace
-        raise TypeError  # will never happen
-
-    @classmethod
-    def from_entrypoint_group(cls, group: str):
-        namespace_type = group.split(".")[1]
-        return cls(namespace_type)
-
-
 
 def register_namespaces(
     lazyframe_namespaces: Dict[str, Type] = {},

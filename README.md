@@ -41,7 +41,7 @@ pl.LazyFrame().external.some_method(x=1)
 or
 
 ```python
-import polugins.polars as pl
+from polugins import pl
 
 pl.LazyFrame().external.some_method(x=1)
 ```
