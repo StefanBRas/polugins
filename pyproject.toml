@@ -10,7 +10,9 @@ packages = [{include = "polugins", from = "src"}]
 python = "^3.8"
 polars = "^0.18.0"
 importlib-metadata = "^6.6.0"
-example-package = {path = "tests/pkgs/example_package"}
+
+# Used for testing
+# example-package = {path = "tests/pkgs/example_package"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -20,7 +22,6 @@ pytest = "^7.3.1"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.plugins."polugins.lazyframe"]
-"internal" = "polugins.namespace:EntryPointNameSpace"
-# TODO remember to remove this lol. If not, every one installing it will
-# get this namespace attached to their frame
+# Used for testing
+#[tool.poetry.plugins."polugins.lazyframe"]
+#"internal" = "polugins.namespace:EntryPointNameSpace"
