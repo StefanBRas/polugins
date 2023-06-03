@@ -6,9 +6,9 @@ Not production ready - barely even alpha ready. Only uploading it now for discus
 
 It's meant to solve two issues with using polars API extensions:
 
-- It's difficult to ensure that extensions everywhere in a code base.
+- You need to import the namespace to trigger the registration, even if you dont need anything from the namespace module.
 
-- Extensions breaks static typing. 
+- Extensions breaks static typing.
 
 The idea is to describe a single way to expose and collect API extensions - especially for third party packages - 
 and then used this discoverbility to also generate type stubs with the added typing from the extensions.
@@ -20,7 +20,7 @@ This is still a bit annoying no matter what, unless polars does the import nativ
 
 ## Package example
 
-See `tests/pkgs/example_package` for how an package could expose namespaces.
+See `tests/pkgs/example_package` for how a package could expose namespaces.
 
 It's done using entry points, here specified in the `pyproject.toml`.
 
