@@ -10,9 +10,8 @@ packages = [{include = "polugins", from = "src"}]
 python = "^3.8"
 polars = "^0.18.0"
 importlib-metadata = "^6.6.0"
-
-example-package = {path = "tests/pkgs/example_package"}
 mypy = "^1.3.0"
+# example-package = {path = "tests/pkgs/example_package"}
 
 
 [tool.poetry.group.dev.dependencies]
@@ -22,5 +21,5 @@ pytest = "^7.3.1"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.plugins."polugins.lazyframe"]
-"internal" = "polugins.namespace:EntryPointNameSpace"
+# [tool.poetry.plugins."polugins.lazyframe"]
+# "internal" = "polugins.namespace:EntryPointNameSpace"

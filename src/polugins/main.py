@@ -22,7 +22,6 @@ def get_entrypoints():
     for dist in list(importlib_metadata.distributions()):
         for ep in dist.entry_points:
             if ep.group.startswith("polugins"):
-                print("here now")
                 entry_points[Namespace.from_entrypoint_group(ep.group)].append(ep)
     return entry_points
 

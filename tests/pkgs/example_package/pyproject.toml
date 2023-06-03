@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "example_package", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.7"
 polars = "^0.18.0"
 
 

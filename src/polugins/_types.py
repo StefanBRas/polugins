@@ -1,9 +1,11 @@
 from enum import Enum
+from pathlib import Path
 from typing import Callable
 import polars as pl
 
-
 class Namespace(Enum):
+    """ TODO: rename this. Horrible naming. """
+
     EXPR = "expr"
     SERIES = "series"
     LAZYFRAME = "lazyframe"
@@ -19,6 +21,19 @@ class Namespace(Enum):
         if self == Namespace.DATAFRAME:
             return pl.api.register_dataframe_namespace
         raise TypeError  # will never happen
+
+    @property
+    def import_path(self) -> Path:
+        if self == Namespace.EXPR:
+            return Path("polars", "expr", "expr")
+        if self == Namespace.SERIES:
+            return Path("polars", "series", "series")
+        if self == Namespace.LAZYFRAME:
+            return Path("polars", "lazyframe", "frame")
+        if self == Namespace.DATAFRAME:
+            return Path("polars", "dataframe", "frame")
+        raise TypeError  # will never happen
+
 
     @classmethod
     def from_entrypoint_group(cls, group: str):
