@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "polugins"
-version = "0.1.1"
-description = ""
-authors = ["StefanBRas <gitcommits@bruhn.io>"]
+version = "0.1.0"
+description = "Plugin system for Polars."
+authors = ["StefanBRas <opensource@bruhn.io>"]
 readme = "README.md"
 packages = [{include = "polugins", from = "src"}]
 
