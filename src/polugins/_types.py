@@ -3,34 +3,32 @@ from pathlib import Path
 from typing import Callable
 import polars as pl
 
-class Namespace(Enum):
-    """ TODO: rename this. Horrible naming. """
-
+class ExtensionClass(Enum):
     EXPR = "expr"
     SERIES = "series"
     LAZYFRAME = "lazyframe"
     DATAFRAME = "dataframe"
 
     def to_reg_function(self) -> Callable:
-        if self == Namespace.EXPR:
+        if self == ExtensionClass.EXPR:
             return pl.api.register_expr_namespace
-        if self == Namespace.SERIES:
+        if self == ExtensionClass.SERIES:
             return pl.api.register_series_namespace
-        if self == Namespace.LAZYFRAME:
+        if self == ExtensionClass.LAZYFRAME:
             return pl.api.register_lazyframe_namespace
-        if self == Namespace.DATAFRAME:
+        if self == ExtensionClass.DATAFRAME:
             return pl.api.register_dataframe_namespace
         raise TypeError  # will never happen
 
     @property
     def import_path(self) -> Path:
-        if self == Namespace.EXPR:
+        if self == ExtensionClass.EXPR:
             return Path("polars", "expr", "expr")
-        if self == Namespace.SERIES:
+        if self == ExtensionClass.SERIES:
             return Path("polars", "series", "series")
-        if self == Namespace.LAZYFRAME:
+        if self == ExtensionClass.LAZYFRAME:
             return Path("polars", "lazyframe", "frame")
-        if self == Namespace.DATAFRAME:
+        if self == ExtensionClass.DATAFRAME:
             return Path("polars", "dataframe", "frame")
         raise TypeError  # will never happen
 

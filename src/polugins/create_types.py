@@ -3,13 +3,13 @@ from mypy.stubgen import Options as StubOptions, generate_stubs
 import sys
 
 from polugins.main import get_entrypoints 
-from polugins._types import Namespace
+from polugins._types import ExtensionClass
 import ast
 
 
 
 def generate_polars_stub(output_dir = "typings"):
-    modules = [".".join(enum.import_path.parts) for enum in Namespace]
+    modules = [".".join(enum.import_path.parts) for enum in ExtensionClass]
     options = StubOptions(
             # 'module_file' contains the base class 
             #  onto which dynamic methods are registered
