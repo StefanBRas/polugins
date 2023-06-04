@@ -1,6 +1,6 @@
 from polars import *
 
-from polugins.main import register_namespaces
+from polugins.main import register_namespaces as _register_namespaces
 
-register_namespaces(entrypoints=True)
+_register_namespaces(entrypoints=True)
 

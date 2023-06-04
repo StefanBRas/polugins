@@ -1,7 +1,11 @@
 from enum import Enum
+import importlib
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Type, Union
+from typing_extensions import Self, TypeVar
 import polars as pl
+
+NS = TypeVar("NS")
 
 class ExtensionClass(Enum):
     EXPR = "expr"
@@ -20,16 +24,20 @@ class ExtensionClass(Enum):
             return pl.api.register_dataframe_namespace
         raise TypeError  # will never happen
 
-    def register(self, name: str, namespace) -> Callable:
+    def register(self, name: str, namespace: Union[str, Type[NS]]) -> Type[NS]:
+        if type(namespace) == str:
+            module, object = namespace.split(":")
+            namespace_module = importlib.import_module(module)
+            namespace = getattr(namespace_module, object)
         if self == ExtensionClass.EXPR:
-            return pl.api.register_expr_namespace(name)(namespace)
+            return pl.api.register_expr_namespace(name)(namespace) # type: ignore
         if self == ExtensionClass.SERIES:
-            return pl.api.register_series_namespace(name)(namespace)
+            return pl.api.register_series_namespace(name)(namespace) # type: ignore
         if self == ExtensionClass.LAZYFRAME:
-            return pl.api.register_lazyframe_namespace(name)(namespace)
+            return pl.api.register_lazyframe_namespace(name)(namespace) # type: ignore
         if self == ExtensionClass.DATAFRAME:
-            return pl.api.register_dataframe_namespace(name)(namespace)
-        raise TypeError  # will never happen
+            return pl.api.register_dataframe_namespace(name)(namespace) # type: ignore
+        raise TypeError  # will never happen, poor mans pattern matching.
 
     @property
     def import_path(self) -> Path:
@@ -45,7 +53,7 @@ class ExtensionClass(Enum):
 
 
     @classmethod
-    def from_entrypoint_group(cls, group: str):
+    def from_entrypoint_group(cls, group: str) -> Self:
         namespace_type = group.split(".")[1]
         return cls(namespace_type)
 

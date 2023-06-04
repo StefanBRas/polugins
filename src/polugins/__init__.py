@@ -1,0 +1,1 @@
+from polugins.main import register_namespaces as register_namespaces

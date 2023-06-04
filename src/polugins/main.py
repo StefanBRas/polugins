@@ -1,4 +1,5 @@
-from typing import Callable, Dict, Optional, Type
+import importlib
+from typing import Callable, Dict, Optional, Type, Union
 from polugins._types import ExtensionClass
 import polars as pl
 import sys
@@ -43,21 +44,23 @@ def load_setuptools_entrypoints():
                 namespaces[namespace_type][ep.name] = namespace
     return namespaces
 
+NamespaceDict = Dict[str, Union[Type, str]]
+
 def register_namespaces(
-    lazyframe_namespaces: Dict[str, Type] = {},
-    dataframe_namespaces: Dict[str, Type] = {},
-    expression_namespaces: Dict[str, Type] = {},
-    series_namespaces: Dict[str, Type] = {},
+    lazyframe_namespaces: NamespaceDict = {},
+    dataframe_namespaces: NamespaceDict = {},
+    expression_namespaces: NamespaceDict = {},
+    series_namespaces: NamespaceDict = {},
     entrypoints: bool = True,
 ):
     for name, namespace in lazyframe_namespaces.items():
-        pl.api.register_lazyframe_namespace(name)(namespace)
+        ExtensionClass.LAZYFRAME.register(name, namespace)
     for name, namespace in dataframe_namespaces.items():
-        pl.api.register_dataframe_namespace(name)(namespace)
+        ExtensionClass.DATAFRAME.register(name, namespace)
     for name, namespace in expression_namespaces.items():
-        pl.api.register_expr_namespace(name)(namespace)
+        ExtensionClass.EXPR.register(name, namespace)
     for name, namespace in series_namespaces.items():
-        pl.api.register_series_namespace(name)(namespace)
+        ExtensionClass.SERIES.register(name, namespace)
     if entrypoints:
         ep_namespaces = load_setuptools_entrypoints()
         for extension_class, namespaces in ep_namespaces.items():
