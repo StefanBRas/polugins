@@ -20,6 +20,17 @@ class ExtensionClass(Enum):
             return pl.api.register_dataframe_namespace
         raise TypeError  # will never happen
 
+    def register(self, name: str, namespace) -> Callable:
+        if self == ExtensionClass.EXPR:
+            return pl.api.register_expr_namespace(name)(namespace)
+        if self == ExtensionClass.SERIES:
+            return pl.api.register_series_namespace(name)(namespace)
+        if self == ExtensionClass.LAZYFRAME:
+            return pl.api.register_lazyframe_namespace(name)(namespace)
+        if self == ExtensionClass.DATAFRAME:
+            return pl.api.register_dataframe_namespace(name)(namespace)
+        raise TypeError  # will never happen
+
     @property
     def import_path(self) -> Path:
         if self == ExtensionClass.EXPR:

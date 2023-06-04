@@ -60,7 +60,6 @@ def register_namespaces(
         pl.api.register_series_namespace(name)(namespace)
     if entrypoints:
         ep_namespaces = load_setuptools_entrypoints()
-        for namespace_type, namespaces in ep_namespaces.items():
-            reg_func = namespace_type.to_reg_function()
+        for extension_class, namespaces in ep_namespaces.items():
             for name, namespace in namespaces.items():
-                reg_func(name)(namespace)
+                extension_class.register(name, namespace)

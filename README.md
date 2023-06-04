@@ -20,9 +20,21 @@ This is still a bit annoying no matter what, unless polars does the import nativ
 
 ## Package example
 
-See `tests/pkgs/example_package` for how a package could expose namespaces.
+Packages can expose namespace through entry points called `polugins.<class>`, forexample `polugins.lazyframe`.
 
-It's done using entry points, here specified in the `pyproject.toml`.
+If building with poetry you should add this to your `pyproject.toml`:
+
+```toml
+[tool.poetry.plugins."polugins.<class>"]
+"<accessor_name>" = "<path.to.module:NameSpace>"
+
+# Concrete example:
+
+[tool.poetry.plugins."polugins.lazyframe"]
+"external" = "example_package:PackageNamespace"
+```
+
+See `tests/pkgs/example_package` for a example.
 
 ## Usage example
 
