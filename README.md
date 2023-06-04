@@ -38,19 +38,41 @@ See `tests/pkgs/example_package` for a example.
 
 ## Usage example
 
-`example-package` exposes a `LazyFrame` namespace called `external`. After installing it, users
-can either do
+Namespaces can be registered in three ways:
+
+- By module path
+- As imported module
+- From entry points
+
+Say that you have a package `my_package` with two `LazyFrame` namespaces - `MyNamespace` and `AlsoMyNamespace` and you use an
+external package `example-package` that exposes a `LazyFrame` namespace called `external`.
+After installing it, namespaces can be registered like so:
 
 ```python
-from polugins.main import register_namespaces
+from polugins import register_namespaces
 import polars as pl
+from my_package import MyNamespace
 
-register_namespaces(entrypoints=True)
+register_namespaces(
+    lazyframe_namespaces={
+        'my_namespace': MyNamespace,
+        'also_my_namespace': "my_package:AlsoMyNamespace" # Note the `:` to separate module path from object
+    },
+    entrypoints=True # Loads from example-package
+  )
 
-pl.LazyFrame().external.some_method(x=1)
+# All namespaces are now registered
+(
+  pl.LazyFrame()
+  .external.some_method()
+  .my_namespace.some_method()
+  .also_my_namespace.some_method()
+)
 ```
 
-or
+You need to make sure that you have called `register_namespaces` before trying to use any of those namespaces.
+
+As an alternative, polars is re-exported through `polugins` such that entrypoint namespaces are automagically registered:
 
 ```python
 from polugins import pl
@@ -58,11 +80,16 @@ from polugins import pl
 pl.LazyFrame().external.some_method(x=1)
 ```
 
-Which automagically registers namespaces from entry points.
+Note that this only registers entrypoint namespaces (for now).
 
 ### Generate types
 
 Run `polugins.create_types.py` to create type stubs. Will create the directory `.typings`.
+
+Only works for entrypoint namespaces. You can add your own namespaces to the types if you want.
+It's fairly straight forward, just import the namespace on top of the `pyi` and then add an annotation
+to the class with the namespace.
+
 Will be a CLI tool at some point.
 
 ## Implementation
