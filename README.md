@@ -18,24 +18,6 @@ Lint rules can then be used to enforce that nothing is imported from polars outs
 
 This is still a bit annoying no matter what, unless polars does the import natively.
 
-## Package example
-
-Packages can expose namespace through entry points called `polugins.<class>`, forexample `polugins.lazyframe`.
-
-If building with poetry you should add this to your `pyproject.toml`:
-
-```toml
-[tool.poetry.plugins."polugins.<class>"]
-"<accessor_name>" = "<path.to.module:NameSpace>"
-
-# Concrete example:
-
-[tool.poetry.plugins."polugins.lazyframe"]
-"external" = "example_package:PackageNamespace"
-```
-
-See `tests/pkgs/example_package` for a example.
-
 ## Usage example
 
 Namespaces can be registered in three ways:
@@ -58,7 +40,8 @@ register_namespaces(
         'my_namespace': MyNamespace,
         'also_my_namespace': "my_package:AlsoMyNamespace" # Note the `:` to separate module path from object
     },
-    entrypoints=True # Loads from example-package
+    load_entrypoints=True # Loads from example-package
+    load_config=True # Loads from pyproject.toml and polugins.toml
   )
 
 # All namespaces are now registered
@@ -84,13 +67,26 @@ Note that this only registers entrypoint namespaces (for now).
 
 ### Generate types
 
-Run `polugins.create_types.py` to create type stubs. Will create the directory `.typings`.
+Run `polugins stubs` to create type stubs at "./typings".
 
-Only works for entrypoint namespaces. You can add your own namespaces to the types if you want.
-It's fairly straight forward, just import the namespace on top of the `pyi` and then add an annotation
-to the class with the namespace.
+## Third party Package example
 
-Will be a CLI tool at some point.
+Packages can expose namespace through entry points called `polugins.<class>`, forexample `polugins.lazyframe`.
+
+If building with poetry you should add this to your `pyproject.toml`:
+
+```toml
+[tool.poetry.plugins."polugins.<class>"]
+"<accessor_name>" = "<path.to.module:NameSpace>"
+
+# Concrete example:
+
+[tool.poetry.plugins."polugins.lazyframe"]
+"external" = "example_package:PackageNamespace"
+```
+
+See `tests/pkgs/example_package` for a example.
+
 
 ## Implementation
 
