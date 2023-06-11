@@ -6,6 +6,7 @@ Here for now to test a package importing from itself
 
 import polars as pl
 
+
 class CustomNamespace:
     def __init__(self, ldf: pl.LazyFrame):
         self._ldf = ldf
@@ -13,6 +14,7 @@ class CustomNamespace:
     def custom_method(self, x: int) -> pl.LazyFrame:
         """my docstring"""
         return self._ldf
+
 
 class CustomNamespaceByPath:
     def __init__(self, ldf: pl.LazyFrame):
@@ -31,6 +33,7 @@ class EntryPointNameSpace:
         """my docstring"""
         return self._ldf
 
+
 class PyProjectNameSpace:
     def __init__(self, ldf: pl.LazyFrame):
         self._ldf = ldf
@@ -40,4 +43,10 @@ class PyProjectNameSpace:
         return self._ldf
 
 
+class ConfigNameSpace:
+    def __init__(self, ldf: pl.LazyFrame):
+        self._ldf = ldf
 
+    def custom_method(self, x: int) -> pl.LazyFrame:
+        """my docstring"""
+        return self._ldf
