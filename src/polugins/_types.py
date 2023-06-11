@@ -7,6 +7,7 @@ import polars as pl
 
 NS = TypeVar("NS")
 
+
 class ExtensionClass(Enum):
     EXPR = "expr"
     SERIES = "series"
@@ -30,13 +31,13 @@ class ExtensionClass(Enum):
             namespace_module = importlib.import_module(module)
             namespace = getattr(namespace_module, object)
         if self == ExtensionClass.EXPR:
-            return pl.api.register_expr_namespace(name)(namespace) # type: ignore
+            return pl.api.register_expr_namespace(name)(namespace)  # type: ignore
         if self == ExtensionClass.SERIES:
-            return pl.api.register_series_namespace(name)(namespace) # type: ignore
+            return pl.api.register_series_namespace(name)(namespace)  # type: ignore
         if self == ExtensionClass.LAZYFRAME:
-            return pl.api.register_lazyframe_namespace(name)(namespace) # type: ignore
+            return pl.api.register_lazyframe_namespace(name)(namespace)  # type: ignore
         if self == ExtensionClass.DATAFRAME:
-            return pl.api.register_dataframe_namespace(name)(namespace) # type: ignore
+            return pl.api.register_dataframe_namespace(name)(namespace)  # type: ignore
         raise TypeError  # will never happen, poor mans pattern matching.
 
     @property
@@ -51,9 +52,7 @@ class ExtensionClass(Enum):
             return Path("polars", "dataframe", "frame")
         raise TypeError  # will never happen
 
-
     @classmethod
     def from_entrypoint_group(cls, group: str) -> Self:
         namespace_type = group.split(".")[1]
         return cls(namespace_type)
-

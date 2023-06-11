@@ -1,19 +1,20 @@
 from pathlib import Path
-import importlib
+import importlib_resources
+import sys
 
 from polugins.main import get_entrypoints
 import ast
 
 
-
-def main(version: str):
+def create_stubs(version: str):
     output_dir = Path("typings")
 
     entry_points = get_entrypoints()
+    # TODO: get from configs too
 
     for extension_class, entrypoints in entry_points.items():
         if entrypoints:
-            files = importlib.resources.files("polugins")
+            files = importlib_resources.files("polugins")
             stub_path = files / "_stubs" / version / extension_class.import_path
             stub_ast = ast.parse(stub_path.read_text(), type_comments=True)
             new_class_nodes = []
@@ -41,6 +42,19 @@ def main(version: str):
             output_path.with_suffix(".pyi").write_text(ast.unparse(stub_ast))
 
 
+def cli():
+    if len(sys.argv) == 1:
+        from polugins._version import __version__
+
+        print(f"Polugins version: {__version__}")
+    elif sys.argv[1] == "stubs":
+        print("generating stubs at ./typings/")
+        import polars as pl
+
+        create_stubs(pl.__version__)
+    else:
+        print("Use `polugins stubs` to generate type stubs.")
+
+
 if __name__ == "__main__":
-    import polars as pl
-    main(pl.__version__)
+    cli()
