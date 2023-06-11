@@ -10,6 +10,7 @@ def create_stubs(version: str):
     output_dir = Path("typings")
 
     entry_points = get_entrypoints()
+    # TODO: get from configs too
 
     for extension_class, entrypoints in entry_points.items():
         if entrypoints:

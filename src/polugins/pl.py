@@ -2,4 +2,4 @@ from polars import *
 
 from polugins.main import register_namespaces as _register_namespaces
 
-_register_namespaces(entrypoints=True)
+_register_namespaces(load_entrypoints=True, load_config=True)
