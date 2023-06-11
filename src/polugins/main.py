@@ -47,11 +47,14 @@ def load_setuptools_entrypoints():
 NamespaceDict = Dict[str, Union[Type, str]]
 
 def register_namespaces(
+    *,
     lazyframe_namespaces: NamespaceDict = {},
     dataframe_namespaces: NamespaceDict = {},
     expression_namespaces: NamespaceDict = {},
     series_namespaces: NamespaceDict = {},
-    entrypoints: bool = True,
+    load_entrypoints: bool = True,
+    load_config: bool = True,
+
 ):
     for name, namespace in lazyframe_namespaces.items():
         ExtensionClass.LAZYFRAME.register(name, namespace)
@@ -61,7 +64,7 @@ def register_namespaces(
         ExtensionClass.EXPR.register(name, namespace)
     for name, namespace in series_namespaces.items():
         ExtensionClass.SERIES.register(name, namespace)
-    if entrypoints:
+    if load_entrypoints:
         ep_namespaces = load_setuptools_entrypoints()
         for extension_class, namespaces in ep_namespaces.items():
             for name, namespace in namespaces.items():

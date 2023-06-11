@@ -23,3 +23,6 @@ build-backend = "poetry.core.masonry.api"
 
 # [tool.poetry.plugins."polugins.lazyframe"]
 # "internal" = "polugins.namespace:EntryPointNameSpace"
+
+[tool.polugins.lazyframe]
+"pyproject" = "polugins.namespace:PyprojectNameSpace"

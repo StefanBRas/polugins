@@ -31,5 +31,13 @@ class EntryPointNameSpace:
         """my docstring"""
         return self._ldf
 
+class PyProjectNameSpace:
+    def __init__(self, ldf: pl.LazyFrame):
+        self._ldf = ldf
+
+    def custom_method(self, x: int) -> pl.LazyFrame:
+        """my docstring"""
+        return self._ldf
+
 
 
