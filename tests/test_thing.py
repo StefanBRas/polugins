@@ -1,5 +1,6 @@
 from polars import LazyFrame
 from polugins.main import register_namespaces
+import pytest
 
 def test_custom():
     ldf = LazyFrame()
@@ -19,3 +20,11 @@ def test_external():
     ldf.external.some_method(x=1)
     ldf.pyproject.custom_method(x=1)
     ldf.config.custom_method(x=1)
+
+def test_fresh_accessors():
+    """ Test that conftest.fresh_accessors correctly deletes added accessors"""
+    ldf = LazyFrame()
+    with pytest.raises(AttributeError):
+        ldf.config # type: ignore
+    with pytest.raises(AttributeError):
+        ldf.custom # type: ignore
