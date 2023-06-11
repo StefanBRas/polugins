@@ -1,10 +1,7 @@
 from pathlib import Path
-from mypy.stubgen import Options as StubOptions, generate_stubs
-import sys
 import importlib
 
 from polugins.main import get_entrypoints
-from polugins._types import ExtensionClass
 import ast
 
 
@@ -45,4 +42,5 @@ def main(version: str):
 
 
 if __name__ == "__main__":
-    main("0.18.0")
+    import polars as pl
+    main(pl.__version__)
