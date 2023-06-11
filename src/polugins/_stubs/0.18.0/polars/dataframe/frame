@@ -1,4 +1,6 @@
+from typing_extensions import ParamSpec, Generic
 import deltalake
+
 from datetime import timedelta
 from io import BytesIO, IOBase
 from pathlib import Path
@@ -23,14 +25,14 @@ from polars.utils.decorators import deprecated_alias as deprecated_alias
 from polars.utils.meta import get_index_type as get_index_type
 from polars.utils.various import _prepare_row_count_args as _prepare_row_count_args, _process_null_values as _process_null_values, find_stacklevel as find_stacklevel, handle_projection_columns as handle_projection_columns, is_bool_sequence as is_bool_sequence, is_int_sequence as is_int_sequence, is_str_sequence as is_str_sequence, normalise_filepath as normalise_filepath, parse_version as parse_version, range_to_slice as range_to_slice, scale_bytes as scale_bytes
 from pyarrow.interchange.dataframe import _PyArrowDataFrame as _PyArrowDataFrame
-from typing import Any, BinaryIO, Callable, Collection, Concatenate, Generic, Iterable, Iterator, Literal, Mapping, NoReturn, ParamSpec, Sequence, TypeAlias, TypeVar, overload
+from typing import Any, BinaryIO, Callable, Collection, Concatenate, Iterable, Iterator, Literal, Mapping, NoReturn, Sequence, TypeAlias, TypeVar, overload
 from typing_extensions import Self
 from xlsxwriter import Workbook as Workbook
 
 MultiRowSelector: TypeAlias
 MultiColSelector: TypeAlias
 T = TypeVar('T')
-P = ParamSpec("P")
+P = ParamSpec('P')
 
 class DataFrame(Generic[P]):
     _accessors: set[str]
