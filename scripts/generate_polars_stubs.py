@@ -1,15 +1,9 @@
 from pathlib import Path
 from mypy.stubgen import Options as StubOptions, generate_stubs
 import sys
-import os
-import hashlib
 import subprocess
-import sys
-from dataclasses import dataclass
 
-from polugins.main import get_entrypoints
 from polugins._types import ExtensionClass
-import ast
 
 
 def generate_polars_stub(output_dir: Path):
@@ -57,17 +51,6 @@ def get_versions():
     versions = [version.strip() for version in versions]
     return versions
 
-
-common_transformation = {
-    ExtensionClass.DATAFRAME: {  # imports: paramspec, generic
-        "class DataFrame:": "class DataFrame(Generic[P]):",
-        "P: Incomplete": "ParamSpec('P')",
-        "_df: Incomplete": "_df: PyDataFrame",
-        "from _typeshed import Incomplete": "from typing_extensions import ParamSpec",
-    }
-}
-
-
 def clean_types(path: Path):
     extensions_class = ExtensionClass(path.parts[5])
     stub_content = path.read_text()
@@ -99,7 +82,15 @@ def clean_types(path: Path):
                     )
                 )
         case ExtensionClass.SERIES:
-            pass
+            if (incomplete_str := "ArrayLike: Incomplete") in stub_content:
+                stub_content = stub_content.replace(
+                    incomplete_str,
+                    'ArrayLike = Union[Sequence[Any], "Series", "pa.Array", "pa.ChunkedArray", "np.ndarray", "pd.Series", "pd.DatetimeIndex"]',
+                )
+            if "class SeriesIter:" in stub_content:
+                stub_content = stub_content.replace(
+                    "len: Incomplete", "len: int"
+                ).replace("s: Incomplete", "s: Series")
     stub_content = stub_content.replace("from _typeshed import Incomplete", "")
 
     path.with_suffix("").write_text(stub_content)
@@ -110,13 +101,15 @@ def is_incomplete(path: Path):
 
 
 def main():
-    # TODO: only generate missing type stubs
-    #versions = get_versions()
-    #for version in versions:
-    #    output_dir = Path("src", "polugins", "_stubs", version)
-    #    output_dir.mkdir(parents=True, exist_ok=True)
-    #    install_polars(version)
-    #    generate_polars_stub(output_dir)
+    versions = get_versions()
+    for version in versions:
+        # 0.16.13 -> 0.16.14 changes location of imports
+        if version == "0.16.13":
+            break
+        output_dir = Path("src", "polugins", "_stubs", version)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        install_polars(version)
+        generate_polars_stub(output_dir)
     for version_dir in Path("src", "polugins", "_stubs").glob("*"):
         for extension_class in ExtensionClass:
             stub_path = version_dir / extension_class.import_path.with_suffix(".pyi")

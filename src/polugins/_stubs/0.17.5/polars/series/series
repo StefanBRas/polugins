@@ -26,7 +26,7 @@ from polars.utils.various import _is_generator as _is_generator, is_int_sequence
 from typing import Any, Callable, Collection, NoReturn, Sequence, overload
 from typing_extensions import Self
 
-ArrayLike: Incomplete
+ArrayLike = Union[Sequence[Any], "Series", "pa.Array", "pa.ChunkedArray", "np.ndarray", "pd.Series", "pd.DatetimeIndex"]
 
 class Series:
     _s: PySeries
@@ -307,9 +307,9 @@ class Series:
     def struct(self) -> StructNameSpace: ...
 
 class SeriesIter:
-    len: Incomplete
+    len: int
     i: int
-    s: Incomplete
+    s: Series
     def __init__(self, length: int, s: Series) -> None: ...
     def __iter__(self) -> SeriesIter: ...
     def __next__(self) -> Any: ...
