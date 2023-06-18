@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, Type, Union
 from polugins._types import ExtensionClass
 import sys
+import os
 
 try:
     # TODO: Maybe make toml loading an extra
@@ -78,6 +79,25 @@ def load_config_namespaces():
             _load_from_toml(toml)
     return all_namespaces
 
+def load_env_namespaces():
+    all_namespaces = {
+        ExtensionClass.EXPR: {},
+        ExtensionClass.SERIES: {},
+        ExtensionClass.LAZYFRAME: {},
+        ExtensionClass.DATAFRAME: {},
+    }
+    for env_var_name,env_var_value in os.environ.items():
+        if env_var_name.casefold().startswith("polugins".casefold()):
+            print("here now")
+            _, extension_class, name = env_var_name.split("_")
+            extension_class = ExtensionClass(extension_class)
+            module_path, namespace_object_name = env_var_value.split(":")
+            namespace_module = importlib.import_module(module_path)
+            namespace = getattr(namespace_module, namespace_object_name)
+            all_namespaces[extension_class][name] = namespace
+
+    return all_namespaces
+
 
 NamespaceDict = Dict[str, Union[Type, str]]
 
@@ -90,6 +110,7 @@ def register_namespaces(
     series_namespaces: NamespaceDict = {},
     load_entrypoints: bool = True,
     load_config: bool = True,
+    load_env: bool = True,
 ):
     for name, namespace in lazyframe_namespaces.items():
         ExtensionClass.LAZYFRAME.register(name, namespace)
@@ -106,6 +127,11 @@ def register_namespaces(
                 extension_class.register(name, namespace)
     if load_config:
         config_namespaces = load_config_namespaces()
+        for extension_class, namespaces in config_namespaces.items():
+            for name, namespace in namespaces.items():
+                extension_class.register(name, namespace)
+    if load_env:
+        config_namespaces = load_env_namespaces()
         for extension_class, namespaces in config_namespaces.items():
             for name, namespace in namespaces.items():
                 extension_class.register(name, namespace)
