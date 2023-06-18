@@ -20,11 +20,13 @@ This is still a bit annoying no matter what, unless polars does the import nativ
 
 ## Usage example
 
-Namespaces can be registered in three ways:
+Namespaces can be registered in five ways:
 
 - By module path
 - As imported module
 - From entry points
+- From a configuration (pyproject.toml or polugins.toml)
+- From environment variables
 
 Say that you have a package `my_package` with two `LazyFrame` namespaces - `MyNamespace` and `AlsoMyNamespace` and you use an
 external package `example-package` that exposes a `LazyFrame` namespace called `external`.
@@ -42,6 +44,7 @@ register_namespaces(
     },
     load_entrypoints=True # Loads from example-package
     load_config=True # Loads from pyproject.toml and polugins.toml
+    load_env=True # Loads from environment variables
   )
 
 # All namespaces are now registered
@@ -55,7 +58,7 @@ register_namespaces(
 
 You need to make sure that you have called `register_namespaces` before trying to use any of those namespaces.
 
-As an alternative, polars is re-exported through `polugins` such that entrypoint namespaces are automagically registered:
+As an alternative, polars is re-exported through `polugins` such that entrypoint, configuration and environment variable namespaces are automagically registered:
 
 ```python
 from polugins import pl
@@ -63,7 +66,6 @@ from polugins import pl
 pl.LazyFrame().external.some_method(x=1)
 ```
 
-Note that this only registers entrypoint namespaces (for now).
 
 ### Generate types
 
