@@ -33,8 +33,6 @@ jobs:
     - name: Create Stubs
       run: |
         poetry run python scripts/generate_polars_stubs.py
-    - run: | 
-        git add src/polugins/_stubs
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
 
