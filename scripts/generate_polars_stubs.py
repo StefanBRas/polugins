@@ -100,21 +100,24 @@ def is_incomplete(path: Path):
     assert "Incomplete" in path.read_text()
 
 
-def main():
+def main(force: bool = False):
     versions = get_versions()
     for version in versions:
         # 0.16.13 -> 0.16.14 changes location of imports
         if version == "0.16.13":
             break
         output_dir = Path("src", "polugins", "_stubs", version)
+        if output_dir.exists() and not force:
+            continue
         output_dir.mkdir(parents=True, exist_ok=True)
         install_polars(version)
         generate_polars_stub(output_dir)
-    for version_dir in Path("src", "polugins", "_stubs").glob("*"):
         for extension_class in ExtensionClass:
-            stub_path = version_dir / extension_class.import_path.with_suffix(".pyi")
+            stub_path = output_dir / extension_class.import_path.with_suffix(".pyi")
             clean_types(stub_path)
+            stub_path.unlink()
 
 
 if __name__ == "__main__":
     main()
+
