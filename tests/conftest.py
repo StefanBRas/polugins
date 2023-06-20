@@ -21,5 +21,3 @@ def _fresh_accessors():
         for name in all_added:
             cls._accessors.remove(name)
             delattr(cls, name)
-
-

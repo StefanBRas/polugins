@@ -51,6 +51,7 @@ class ConfigNameSpace:
         """my docstring"""
         return self._ldf
 
+
 class EnvNameSpace:
     def __init__(self, ldf: pl.LazyFrame):
         self._ldf = ldf

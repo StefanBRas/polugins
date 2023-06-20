@@ -31,7 +31,8 @@ def _get_entrypoint_namespaces():
             if ep.group.startswith("polugins"):
                 extension_class = ExtensionClass.from_entrypoint_group(ep.group)
                 namespaces[extension_class][ep.name] = ep.value
-    return namespaces 
+    return namespaces
+
 
 def _get_config_namespaces():
     all_namespaces = {
@@ -57,6 +58,7 @@ def _get_config_namespaces():
             _get_from_toml(toml)
     return all_namespaces
 
+
 def _get_env_namespaces():
     all_namespaces = {
         ExtensionClass.EXPR: {},
@@ -64,7 +66,7 @@ def _get_env_namespaces():
         ExtensionClass.LAZYFRAME: {},
         ExtensionClass.DATAFRAME: {},
     }
-    for env_var_name,env_var_value in os.environ.items():
+    for env_var_name, env_var_value in os.environ.items():
         if env_var_name.casefold().startswith("polugins".casefold()):
             _, extension_class, name = env_var_name.split("_")
             extension_class = ExtensionClass(extension_class)
@@ -74,11 +76,12 @@ def _get_env_namespaces():
 
 NamespaceDict = Dict[str, Union[Type, str]]
 
+
 def _get_namespaces(
     load_entrypoints: bool = True,
     load_config: bool = True,
     load_env: bool = True,
-    ):
+):
     all_namespaces = {
         ExtensionClass.EXPR: {},
         ExtensionClass.SERIES: {},

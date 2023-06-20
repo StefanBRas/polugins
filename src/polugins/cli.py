@@ -2,7 +2,7 @@ from pathlib import Path
 import importlib_resources
 import sys
 
-from polugins.main import  _get_namespaces
+from polugins.main import _get_namespaces
 import ast
 
 
@@ -44,12 +44,14 @@ def create_stubs(version: str):
 def cli():
     if len(sys.argv) == 1:
         from polugins._version import __version__
+
         print(f"Polugins version: {__version__}")
     elif sys.argv[1] == "stubs":
         if len(sys.argv) >= 3:
             version = sys.argv[2]
         else:
             import polars as pl
+
             version = pl.__version__
         print("generating stubs at ./typings/")
 
