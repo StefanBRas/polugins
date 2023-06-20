@@ -4,8 +4,8 @@
 name: Create stubs
 
 on:
-  #schedule:
-  #  - cron: '16 5 * * *' # Once a day
+  schedule:
+    - cron: '16 5 * * *' # Once a day
   workflow_dispatch:
 
 permissions:
