@@ -33,8 +33,9 @@ def install(session: nox.Session, *, groups: Iterable[str], root: bool = True) -
         "--{}={}".format("only" if not root else "with", ",".join(groups)),
         external=True,
     )
-    if root:
-        session.install(".")
+    breakpoint()
+    #if root:
+    #    session.install(".")
 
 @nox.session(python=python_versions)
 def test(session: nox.Session) -> None:
@@ -42,22 +43,15 @@ def test(session: nox.Session) -> None:
     install(session, groups=['testing'], root=True)
 
     try:
-        session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
+        session.run("coverage","erase")
+        session.run("pytest","--cov=src/polugins",  *session.posargs)
     finally:
         if session.interactive:
-            print("here now")
             session.notify("coverage", posargs=[])
 
 
 @nox.session(python=python_versions[0])
 def coverage(session: nox.Session) -> None:
-    """Produce the coverage report."""
-    args = session.posargs or ["report"]
-
-    install(session, groups=["coverage"], root=False)
-
-    if not session.posargs and any(Path().glob(".coverage.*")):
-        session.run("coverage", "combine")
-
-    session.run("coverage", *args)
+    """Run the test suite."""
+    ...
 

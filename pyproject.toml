@@ -31,6 +31,7 @@ pytest = "^7.3.1"
 example-package = {path = "tests/pkgs/example_package"}
 coverage = "^7.2.7"
 pytest-env = "^0.8.2"
+pytest-cov = "^4.1.0"
 
 [tool.poetry.group.coverage]
 optional = true
