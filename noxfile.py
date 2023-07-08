@@ -25,26 +25,26 @@ def install(session: nox.Session, *, groups: Iterable[str], root: bool = True) -
         groups: The dependency groups to install.
         root: Install the root package.
     """
-    session.run_always(
+    session.run(
         "poetry",
         "install",
-        "--no-root",
+        # "--no-root",
         "--sync",
         "--{}={}".format("only" if not root else "with", ",".join(groups)),
         external=True,
     )
-    breakpoint()
-    #if root:
-    #    session.install(".")
+    if root:
+        session.install(".")
 
 @nox.session(python=python_versions)
 def test(session: nox.Session) -> None:
     """Run the test suite."""
     install(session, groups=['testing'], root=True)
-
     try:
-        session.run("coverage","erase")
-        session.run("pytest","--cov=src/polugins",  *session.posargs)
+        session.run("pytest", "--cov=polugins", *session.posargs)
+        coverage_file = Path(".coverage")
+        coverage_file.rename(coverage_file.with_suffix("." + session.python))
+
     finally:
         if session.interactive:
             session.notify("coverage", posargs=[])
@@ -53,5 +53,8 @@ def test(session: nox.Session) -> None:
 @nox.session(python=python_versions[0])
 def coverage(session: nox.Session) -> None:
     """Run the test suite."""
+    session.install("coverage")
+    session.run("coverage", "combine")
+    session.run("coverage", "report")
     ...
 
