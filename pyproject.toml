@@ -23,6 +23,12 @@ example-package = {path = "tests/pkgs/example_package"}
 black = "^23.3.0"
 nox = "^2023.4.22"
 
+[tool.poetry.group.nox]
+optional = true
+
+[tool.poetry.group.nox.dependencies]
+nox = "^2023.4.22"
+
 [tool.poetry.group.testing]
 optional = true
 
