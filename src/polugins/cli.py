@@ -2,18 +2,17 @@ from pathlib import Path
 import importlib_resources
 import sys
 
-from polugins.main import get_entrypoints
+from polugins.main import _get_namespaces
 import ast
 
 
 def create_stubs(version: str):
     output_dir = Path("typings")
 
-    entry_points = get_entrypoints()
-    # TODO: get from configs too
+    all_namespaces = _get_namespaces()
 
-    for extension_class, entrypoints in entry_points.items():
-        if entrypoints:
+    for extension_class, namespaces in all_namespaces.items():
+        if namespaces:
             files = importlib_resources.files("polugins")
             stub_path = files / "_stubs" / version / extension_class.import_path
             stub_ast = ast.parse(stub_path.read_text(), type_comments=True)
@@ -24,10 +23,10 @@ def create_stubs(version: str):
                     isinstance(node, ast.ClassDef)
                     and node.name.casefold() == extension_class.value.casefold()
                 ):
-                    for ep in entrypoints:
-                        annotation_name = ep.value.replace(":", ".")
+                    for name, namespace in namespaces.items():
+                        annotation_name = namespace.replace(":", ".")
                         new_node = ast.AnnAssign(
-                            target=ast.Name(id=ep.name),
+                            target=ast.Name(id=name),
                             annotation=ast.Name(id=annotation_name),
                             simple=1,
                         )  # no idea what `simple` does, but it breaks without it
@@ -48,10 +47,15 @@ def cli():
 
         print(f"Polugins version: {__version__}")
     elif sys.argv[1] == "stubs":
-        print("generating stubs at ./typings/")
-        import polars as pl
+        if len(sys.argv) >= 3:
+            version = sys.argv[2]
+        else:
+            import polars as pl
 
-        create_stubs(pl.__version__)
+            version = pl.__version__
+        print("generating stubs at ./typings/")
+
+        create_stubs(version)
     else:
         print("Use `polugins stubs` to generate type stubs.")
 

@@ -30,6 +30,7 @@ optional = true
 pytest = "^7.3.1"
 example-package = {path = "tests/pkgs/example_package"}
 coverage = "^7.2.7"
+pytest-env = "^0.8.2"
 
 [tool.poetry.group.coverage]
 optional = true
@@ -46,4 +47,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 polugins = 'polugins.cli:cli'
+
+[tool.pytest.ini_options]
+env = [
+ "polugins_lazyframe_env=polugins._testing.namespaces:EnvNameSpace"
+]
+
 

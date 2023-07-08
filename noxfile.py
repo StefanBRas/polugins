@@ -1,12 +1,8 @@
 """Nox sessions.
 From https://github.com/cjolowicz/cookiecutter-hypermodern-python-instance
 """
-import shutil
-import sys
 from pathlib import Path
-from textwrap import dedent
 from typing import Iterable
-from typing import Iterator
 
 import nox
 
