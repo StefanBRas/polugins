@@ -11,12 +11,7 @@ try:
 except ModuleNotFoundError:
     import tomli as tomllib
 
-# TODO: Stolen from pluggy, remember license and stuff
-if sys.version_info >= (3, 8):
-    from importlib import metadata as importlib_metadata
-else:
-    # TODO: remember that this is only needed for python < 3.8
-    import importlib_metadata  # ignore
+from importlib import metadata as importlib_metadata
 
 
 def _get_entrypoint_namespaces():

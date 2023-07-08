@@ -368,8 +368,8 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8"
-content-hash = "4b7fe8c18ff0d7d151319f45573da24d7d72149dc7aa2153407124ceea786b9c"
+python-versions = "^3.9" # 3.8 cannot be used because we use ast.unparse
+content-hash = "c7ac9eb20389a7cad482db700530739cd90239b0cf217bfb1e4fb29fb175536b"
 
 [metadata.files]
 argcomplete = [

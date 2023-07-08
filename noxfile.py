@@ -6,7 +6,7 @@ from typing import Iterable
 
 import nox
 
-python_versions = ["3.11", "3.10", "3.9", "3.8"]
+python_versions = ["3.11", "3.10", "3.9"]
 
 
 def install(session: nox.Session, *, groups: Iterable[str], root: bool = True) -> None:

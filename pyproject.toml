@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "polugins", from = "src"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9" # 3.8 cannot be used because we use ast.unparse
 polars = ">0.16.13"
 importlib-metadata = "^6.6.0"
 importlib-resources = "^5.12.0"
