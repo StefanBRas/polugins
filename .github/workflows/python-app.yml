@@ -19,15 +19,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Set up Python versions
+      uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
+        python-version: |
+            3.9
+            3.10
+            3.11
     - name: Run image
       uses: abatilo/actions-poetry@v2
-    - name: Install dependencies
+    - name: Install nox 
       run: |
-        poetry install
+        poetry install --only=nox
     - name: Test with pytest
       run: |
-        poetry run pytest
+        poetry run nox -s test
