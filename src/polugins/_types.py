@@ -28,9 +28,9 @@ class ExtensionClass(Enum):
 
     def register(self, name: str, namespace: Union[str, Type[NS]]) -> Type[NS]:
         if type(namespace) == str:
-            module, object = namespace.split(":")
+            module, namespace_class = namespace.split(":")
             namespace_module = importlib.import_module(module)
-            namespace = getattr(namespace_module, object)
+            namespace = getattr(namespace_module, namespace_class)
         if self == ExtensionClass.EXPR:
             return pl.api.register_expr_namespace(name)(namespace)  # type: ignore
         if self == ExtensionClass.SERIES:
