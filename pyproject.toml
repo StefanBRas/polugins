@@ -75,6 +75,8 @@ select = [
 "RUF",
 "SIM", # simplify
 "A", # name shadowing builtin
+"C4", # comprehensions
+"EM" # Err msg, asign to var first.
 ]
 ignore = []
 src = ["src"]
