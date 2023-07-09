@@ -1,9 +1,10 @@
-from enum import Enum
 import importlib
+from enum import Enum
 from pathlib import Path
 from typing import Callable, Type, Union
-from typing_extensions import Self, TypeVar
+
 import polars as pl
+from typing_extensions import Self, TypeVar
 
 NS = TypeVar("NS")
 

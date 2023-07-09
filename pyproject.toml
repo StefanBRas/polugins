@@ -12,6 +12,7 @@ polars = ">0.16.13"
 importlib-metadata = "^6.6.0"
 importlib-resources = "^5.12.0"
 typing-extensions = "^4.6.3"
+ruff = "0.0.277"
 
 [tool.poetry.group.dev]
 optional = true
@@ -22,6 +23,7 @@ mypy = "^1.3.0"
 example-package = {path = "tests/pkgs/example_package"}
 black = "^23.3.0"
 nox = "^2023.4.22"
+ruff = "^0.0.277"
 
 [tool.poetry.group.nox]
 optional = true
@@ -60,4 +62,15 @@ env = [
  "polugins_lazyframe_env=polugins._testing.namespaces:EnvNameSpace"
 ]
 
+
+[tool.ruff]
+include = ["*.py"]
+line-length = 100
+
+select = ["E", "F", "I"]
+ignore = []
+src = ["src"]
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
 

@@ -1,9 +1,10 @@
-from pathlib import Path
-import importlib_resources
+import ast
 import sys
+from pathlib import Path
+
+import importlib_resources
 
 from polugins.main import _get_namespaces
-import ast
 
 
 def create_stubs(version: str):

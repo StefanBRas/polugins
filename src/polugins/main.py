@@ -1,9 +1,8 @@
-import importlib
+import os
 from pathlib import Path
 from typing import Dict, Type, Union
+
 from polugins._types import ExtensionClass
-import sys
-import os
 
 try:
     # TODO: Maybe make toml loading an extra

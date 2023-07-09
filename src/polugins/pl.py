@@ -1,4 +1,4 @@
-from polars import *
+from polars import *  # noqa: F403
 
 from polugins.main import register_namespaces as _register_namespaces
 
