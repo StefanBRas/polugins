@@ -67,7 +67,14 @@ env = [
 include = ["*.py"]
 line-length = 100
 
-select = ["E", "F", "I"]
+select = [
+"E",
+"F",
+"I",
+"PTH", # use pathlib
+"RUF",
+"SIM", # simplify
+]
 ignore = []
 src = ["src"]
 # Allow autofix for all enabled rules (when `--fix`) is provided.
