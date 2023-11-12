@@ -1,0 +1,18 @@
+version: '3'
+includes:
+  polugins: 
+    taskfile: ./polugins/Taskfile.yml
+    dir: ./polugins
+  polugins_type_gen: 
+    taskfile: ./polugins_type_gen/Taskfile.yml
+    dir: ./polugins_type_gen
+
+tasks:
+  test:
+    deps:
+      - task: polugins:test
+      - task: polugins_type_gen:test
+
+  assets:
+    cmds:
+      - esbuild --bundle --minify css/index.css > public/bundle.css

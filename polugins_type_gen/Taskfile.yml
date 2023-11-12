@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+
+  test:
+    deps: ['nox']
+    cmds:
+      - poetry run nox -r -s test 
+  nox:
+    sources: ["pyproject.toml", "poetry.lock"]
+    cmds:
+      - poetry install --only=nox

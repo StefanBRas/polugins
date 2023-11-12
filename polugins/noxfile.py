@@ -6,7 +6,7 @@ from typing import Iterable
 
 import nox
 
-python_versions = ["3.11", "3.10", "3.9"]
+python_versions = ["3.12", "3.11", "3.10", "3.9"]
 
 
 def install(session: nox.Session, *, groups: Iterable[str], root: bool = True) -> None:
@@ -39,7 +39,7 @@ def install(session: nox.Session, *, groups: Iterable[str], root: bool = True) -
 @nox.session(python=python_versions)
 def test(session: nox.Session) -> None:
     """Run the test suite."""
-    install(session, groups=['testing'], root=True)
+    install(session, groups=['dev'], root=True)
     try:
         session.run("pytest", "--cov=polugins", *session.posargs)
         coverage_file = Path(".coverage")
@@ -52,9 +52,7 @@ def test(session: nox.Session) -> None:
 
 @nox.session(python=python_versions[0])
 def coverage(session: nox.Session) -> None:
-    """Run the test suite."""
     session.install("coverage")
     session.run("coverage", "combine")
     session.run("coverage", "report")
-    ...
 

@@ -1,6 +1,7 @@
-from polars import LazyFrame
-from polugins.main import register_namespaces
 import pytest
+from polars import LazyFrame
+
+from polugins.main import register_namespaces
 
 
 def test_custom():

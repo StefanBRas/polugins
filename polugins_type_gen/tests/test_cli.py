@@ -1,9 +1,8 @@
 from pathlib import Path
-from polugins.cli import create_stubs
+from polugins_type_gen.cli import create_stubs
 from polugins._types import ExtensionClass
 import shutil
 import pytest
-from polars import __version__ as pl_version
 
 
 typings_dir = Path("typings")
@@ -19,7 +18,7 @@ def typings_directory():
 
 
 def test_cli(typings_directory):
-    create_stubs(pl_version)
+    create_stubs("0.19.13")
     lazyframe_stubs_path = (
         typings_dir / ExtensionClass.LAZYFRAME.import_path
     ).with_suffix(".pyi")

@@ -106,7 +106,7 @@ def main(force: bool = False):
         # 0.16.13 -> 0.16.14 changes location of imports
         if version == "0.16.13":
             break
-        output_dir = Path("src", "polugins", "_stubs", version)
+        output_dir = Path("src", "polugins_type_gen", "_stubs", version)
         if output_dir.exists() and not force:
             continue
         output_dir.mkdir(parents=True, exist_ok=True)
