@@ -3,7 +3,7 @@ name = "polugins"
 version = "0.2.0"
 description = "Plugin system for Polars."
 authors = ["StefanBRas <opensource@bruhn.io>"]
-readme = "README.md"
+readme = "../README.md"
 packages = [{include = "polugins", from = "src"}]
 
 [tool.poetry.dependencies]

@@ -67,7 +67,7 @@ pl.LazyFrame().external.some_method(x=1)
 
 ## Generate types
 
-Run `polugins_type_gen stubs` to create type stubs at "./typings".
+Install `polugins_type_gen` and then run `polugins stubs` to create type stubs at "./typings".
 
 ## Third party Package example
 
