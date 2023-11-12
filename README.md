@@ -2,6 +2,23 @@
 
 Minimal "plugin" system for polars.
 
+```python
+from polugins import register_namespaces
+import polars as pl
+
+register_namespaces(
+    load_entrypoints=True # Loads external plugins
+    load_config=True # Loads from pyproject.toml and polugins.toml
+  )
+
+# All namespaces are now registered
+(
+  pl.LazyFrame()
+  .external.some_method()
+  .my_namespace.some_method()
+)
+```
+
 It's meant to solve two issues with using polars API extensions:
 
 - You need to import the namespace to trigger the registration, even if you do not need anything from the namespace module.
