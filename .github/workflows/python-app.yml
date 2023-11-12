@@ -32,12 +32,8 @@ jobs:
             3.11
             3.12
 
-    - name: Run image
+    - name: Install poetry
       uses: abatilo/actions-poetry@v2
-
-    - name: Install nox 
-      run: |
-        poetry install --only=nox
     - name: Run tests 
       run: |
         task test
