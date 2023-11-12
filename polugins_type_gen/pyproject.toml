@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "polugins_type_gen"
-version = "0.2.0"
+version = "0.2.1"
 description = "Type stub generator Polugins."
 authors = ["StefanBRas <opensource@bruhn.io>"]
 readme = "README.md"
@@ -8,7 +8,7 @@ packages = [{include = "polugins_type_gen", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.9" # 3.8 cannot be used because we use ast.unparse
-polugins = {path = "../polugins"}
+polugins = ">=0.2"
 
 [tool.poetry.group.dev]
 optional = true
@@ -37,7 +37,7 @@ build-backend = "poetry.core.masonry.api"
 "pyproject" = "polugins._testing.namespaces:PyProjectNameSpace"
 
 [tool.poetry.scripts]
-polugins = 'polugins.cli:cli'
+polugins = 'polugins_type_gen.cli:cli'
 
 [tool.pytest.ini_options]
 env = [
