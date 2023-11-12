@@ -1,8 +1,9 @@
-from pathlib import Path
-from mypy.stubgen import Options as StubOptions, generate_stubs
-import sys
 import subprocess
+import sys
+from pathlib import Path
 
+from mypy.stubgen import Options as StubOptions
+from mypy.stubgen import generate_stubs
 from polugins._types import ExtensionClass
 
 
@@ -32,9 +33,7 @@ def generate_polars_stub(output_dir: Path):
 
 
 def install_polars(version: str):
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", f"polars=={version}"]
-    )
+    subprocess.check_call([sys.executable, "-m", "pip", "install", f"polars=={version}"])
 
 
 def get_versions():
@@ -50,6 +49,7 @@ def get_versions():
             break
     versions = [version.strip() for version in versions]
     return versions
+
 
 def clean_types(path: Path):
     extensions_class = ExtensionClass(path.parts[5])
@@ -82,15 +82,16 @@ def clean_types(path: Path):
                     )
                 )
         case ExtensionClass.SERIES:
+            array_like = (
+                'ArrayLike = Union[Sequence[Any], "Series", '
+                '"pa.Array", "pa.ChunkedArray", "np.ndarray", "pd.Series", "pd.DatetimeIndex"]'
+            )
             if (incomplete_str := "ArrayLike: Incomplete") in stub_content:
-                stub_content = stub_content.replace(
-                    incomplete_str,
-                    'ArrayLike = Union[Sequence[Any], "Series", "pa.Array", "pa.ChunkedArray", "np.ndarray", "pd.Series", "pd.DatetimeIndex"]',
-                )
+                stub_content = stub_content.replace(incomplete_str, array_like)
             if "class SeriesIter:" in stub_content:
-                stub_content = stub_content.replace(
-                    "len: Incomplete", "len: int"
-                ).replace("s: Incomplete", "s: Series")
+                stub_content = stub_content.replace("len: Incomplete", "len: int").replace(
+                    "s: Incomplete", "s: Series"
+                )
     stub_content = stub_content.replace("from _typeshed import Incomplete", "")
 
     path.with_suffix("").write_text(stub_content)
@@ -120,4 +121,3 @@ def main(force: bool = False):
 
 if __name__ == "__main__":
     main()
-

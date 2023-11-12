@@ -5,6 +5,15 @@ tasks:
     deps: ['nox']
     cmds:
       - poetry run nox -r -s test 
+
+  format:
+    cmds:
+      - poetry run ruff format .
+      - poetry run ruff check . --fix
+
+  lint:
+    cmds:
+      - poetry run ruff check .
   nox:
     sources: ["pyproject.toml", "poetry.lock"]
     cmds:

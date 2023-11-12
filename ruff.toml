@@ -1,0 +1,18 @@
+include = ["*.py"]
+line-length = 100
+
+select = [
+"E",
+"F",
+"I",
+"PTH", # use pathlib
+"RUF",
+"SIM", # simplify
+"A", # name shadowing builtin
+"C4", # comprehensions
+"EM" # Err msg, asign to var first.
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+

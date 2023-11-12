@@ -32,10 +32,12 @@ def test_external():
 
 def test_pl_reexport():
     from polugins import pl
+
     ldf = pl.LazyFrame()
     ldf.external.some_method(x=1)
     ldf.pyproject.custom_method(x=1)
     ldf.config.custom_method(x=1)
+
 
 def test_fresh_accessors():
     """Test that conftest.fresh_accessors correctly deletes added accessors"""

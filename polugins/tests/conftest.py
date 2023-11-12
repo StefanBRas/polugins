@@ -1,7 +1,4 @@
 import pytest
-from contextlib import contextmanager
-from typing import TYPE_CHECKING
-
 from polars.dataframe import DataFrame
 from polars.expr import Expr
 from polars.lazyframe import LazyFrame

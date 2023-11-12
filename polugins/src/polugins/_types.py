@@ -27,7 +27,7 @@ class ExtensionClass(Enum):
         raise TypeError  # will never happen
 
     def register(self, name: str, namespace: Union[str, Type[NS]]) -> Type[NS]:
-        if type(namespace) == str:
+        if isinstance(namespace, str):
             module, namespace_class = namespace.split(":")
             namespace_module = importlib.import_module(module)
             namespace = getattr(namespace_module, namespace_class)

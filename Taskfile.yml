@@ -13,6 +13,12 @@ tasks:
       - task: polugins:test
       - task: polugins_type_gen:test
 
-  assets:
+  format:
     cmds:
-      - esbuild --bundle --minify css/index.css > public/bundle.css
+      - ruff format .
+      - ruff check . --fix
+
+  lint:
+    cmds:
+      - ruff format . --diff
+      - ruff check .

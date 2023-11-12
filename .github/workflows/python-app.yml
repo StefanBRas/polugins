@@ -32,8 +32,17 @@ jobs:
             3.11
             3.12
 
+    - name: Install Ruff 
+      run: |
+        pipx install ruff==0.1.5
+
+    - name: Lint Test 
+      run: |
+        task lint
+
     - name: Install poetry
       uses: abatilo/actions-poetry@v2
+
     - name: Run tests 
       run: |
         task test

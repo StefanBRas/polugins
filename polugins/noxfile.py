@@ -36,10 +36,11 @@ def install(session: nox.Session, *, groups: Iterable[str], root: bool = True) -
     if root:
         session.install(".")
 
+
 @nox.session(python=python_versions)
 def test(session: nox.Session) -> None:
     """Run the test suite."""
-    install(session, groups=['dev'], root=True)
+    install(session, groups=["dev"], root=True)
     try:
         session.run("pytest", "--cov=polugins", *session.posargs)
         coverage_file = Path(".coverage")
@@ -55,4 +56,3 @@ def coverage(session: nox.Session) -> None:
     session.install("coverage")
     session.run("coverage", "combine")
     session.run("coverage", "report")
-
