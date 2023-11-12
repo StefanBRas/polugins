@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 
 import importlib_resources
-
 from polugins.main import _get_namespaces
 
 
@@ -14,7 +13,7 @@ def create_stubs(version: str):
 
     for extension_class, namespaces in all_namespaces.items():
         if namespaces:
-            files = importlib_resources.files("polugins")
+            files = importlib_resources.files("polugins_type_gen")
             stub_path = files / "_stubs" / version / extension_class.import_path
             stub_ast = ast.parse(stub_path.read_text(), type_comments=True)
             new_class_nodes = []
@@ -44,7 +43,7 @@ def create_stubs(version: str):
 
 def cli():
     if len(sys.argv) == 1:
-        from polugins._version import __version__
+        from polugins_type_gen._version import __version__
 
         print(f"Polugins version: {__version__}")
     elif sys.argv[1] == "stubs":

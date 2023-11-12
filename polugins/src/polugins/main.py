@@ -5,7 +5,6 @@ from typing import Dict, Type, Union
 from polugins._types import ExtensionClass
 
 try:
-    # TODO: Maybe make toml loading an extra
     import tomllib
 except ModuleNotFoundError:
     import tomli as tomllib
