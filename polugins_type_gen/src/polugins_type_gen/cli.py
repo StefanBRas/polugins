@@ -1,8 +1,8 @@
 import ast
+import importlib.resources as importlib_resources
 import sys
 from pathlib import Path
 
-import importlib_resources
 from polugins.main import _get_namespaces
 
 
@@ -47,12 +47,22 @@ def cli():
 
         print(f"Polugins version: {__version__}")
     elif sys.argv[1] == "stubs":
+        version = None
         if len(sys.argv) >= 3:
             version = sys.argv[2]
         else:
-            import polars as pl
+            print("No version given; trying to infer")
+            try:
+                import polars as pl
 
-            version = pl.__version__
+                version = pl.__version__
+                print(f"Found polars version {version} in current python environment.")
+                print("Using this verison for type stubs.")
+            except Exception:
+                pass
+        if version is None:
+            msg = "No version was given or could be infered"
+            raise ValueError(msg)
         print("generating stubs at ./typings/")
 
         create_stubs(version)

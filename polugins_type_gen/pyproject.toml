@@ -8,10 +8,6 @@ packages = [{include = "polugins_type_gen", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.9" # 3.8 cannot be used because we use ast.unparse
-polars = ">0.16.13"
-importlib-metadata = "^6.6.0"
-importlib-resources = "^5.12.0"
-typing-extensions = "^4.6.3"
 polugins = {path = "../polugins"}
 
 [tool.poetry.group.dev]
