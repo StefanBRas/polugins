@@ -7,4 +7,4 @@ class PackageNamespace:
 
     def some_method(self, x: int) -> pl.LazyFrame:
         """my docstring"""
-        return self._ldf
+        return self._ldf.std(x)
