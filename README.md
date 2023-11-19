@@ -10,7 +10,6 @@ Without Polugins:
 
 ![Without polugins](screenshots/without.png)
 
-
 It's meant to solve two issues with using polars API extensions:
 
 - You need to import the namespace to trigger the registration, even if you do not need anything from the namespace module.
