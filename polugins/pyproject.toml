@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "polugins"
-version = "0.3.0"
+version = "0.4.0"
 description = "Plugin system for Polars."
 authors = ["StefanBRas <opensource@bruhn.io>"]
 readme = "README.md"
