@@ -1,4 +1,3 @@
-# example_package/__init__.py
 import polars as pl
 
 
