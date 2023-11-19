@@ -10,6 +10,7 @@ packages = [{include = "polugins", from = "src"}]
 python = ">=3.8"
 polars = ">0.16.13"
 typing-extensions = ">=4.4.0"
+tomli = ">=0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 example-package = {path = "tests/pkgs/example_package"}
