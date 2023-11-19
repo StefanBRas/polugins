@@ -3,10 +3,12 @@
 Minimal "plugin" system for polars.
 
 With Polugins:
-[With polugins](screenshots/with.png)
+
+![With polugins](screenshots/with.png)
 
 Without Polugins:
-[Without polugins](screenshots/without.png)
+
+![Without polugins](screenshots/without.png)
 
 
 It's meant to solve two issues with using polars API extensions:
