@@ -10,6 +10,7 @@ from polugins._types import ExtensionClass
 def generate_polars_stub(output_dir: Path):
     modules = [".".join(enum.import_path.parts) for enum in ExtensionClass]
     options = StubOptions(
+        inspect=True,
         # 'module_file' contains the base class
         #  onto which dynamic methods are registered
         files=[],
@@ -28,6 +29,7 @@ def generate_polars_stub(output_dir: Path):
         modules=modules,
         verbose=True,  # TODO: change this, but nice for debugging now
         quiet=False,
+        include_docstrings=True,
     )
     generate_stubs(options)
 
