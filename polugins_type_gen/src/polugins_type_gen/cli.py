@@ -5,16 +5,17 @@ from pathlib import Path
 
 from polugins.main import _get_namespaces
 
+
 def has_version(version: str) -> bool:
     files = importlib_resources.files("polugins_type_gen")
     return (files / "_stubs" / version).is_dir()
 
 
-
 def create_stubs(version: str):
     output_dir = Path("typings")
     if not has_version(version):
-        msg = (f"Type stubs for version {version} does not exist."
+        msg = (
+            f"Type stubs for version {version} does not exist."
             " This is usually because the version has been yanked."
             " Feel free to create an issue if you want to generate types for this version"
         )
