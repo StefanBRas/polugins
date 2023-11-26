@@ -29,7 +29,7 @@ def generate_polars_stub(output_dir: Path):
         modules=modules,
         verbose=True,  # TODO: change this, but nice for debugging now
         quiet=False,
-        include_docstrings=True
+        include_docstrings=True,
     )
     generate_stubs(options)
 
