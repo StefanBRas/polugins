@@ -14,7 +14,7 @@ tomli = ">=0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 example-package = {path = "tests/pkgs/example_package"}
-ruff = "^0.1.5"
+ruff = "0.1.6"
 nox = "^2023.4.22"
 pytest = "^7.3.1"
 pytest-env = "^0.8.2"
