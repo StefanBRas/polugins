@@ -16,8 +16,8 @@ def create_stubs(version: str):
     if not has_version(version):
         msg = (
             f"Type stubs for version {version} does not exist."
-            " This is usually because the version has been yanked."
-            " Feel free to create an issue if you want to generate types for this version"
+            " This is usually because the version has been yanked or because it's new."
+            " Feel free to create an issue if you want types for this version."
         )
         raise ValueError(msg)
 
