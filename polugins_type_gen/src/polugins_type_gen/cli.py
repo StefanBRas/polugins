@@ -6,6 +6,14 @@ from pathlib import Path
 from polugins.main import _get_namespaces
 
 
+class MissingVersionException(Exception):
+    pass
+
+
+class NoNamespaceRegisteredException(Exception):
+    pass
+
+
 def has_version(version: str) -> bool:
     files = importlib_resources.files("polugins_type_gen")
     return (files / "_stubs" / version).is_dir()
@@ -19,9 +27,17 @@ def create_stubs(version: str):
             " This is usually because the version has been yanked or because it's new."
             " Feel free to create an issue if you want types for this version."
         )
-        raise ValueError(msg)
+        raise MissingVersionException(msg)
 
     all_namespaces = _get_namespaces()
+
+    if all(namespace == {} for namespace in all_namespaces.values()):
+        msg = (
+            "No namespaces found. No types will be generated as this is usually an error."
+            " Note that only namespaces registered through config, env vars or endpoints"
+            " can have types genered for them."
+        )
+        raise NoNamespaceRegisteredException(msg)
 
     for extension_class, namespaces in all_namespaces.items():
         if namespaces:
