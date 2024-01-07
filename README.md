@@ -55,7 +55,6 @@ After installing `polugins`, namespaces can be registered like so:
 ```python
 from polugins import register_namespaces
 import polars as pl
-from my_package import MyNamespace
 
 register_namespaces(
     load_entrypoints=True # Loads from example-package
