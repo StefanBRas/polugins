@@ -22,21 +22,35 @@ and then use this discoverability to also generate type stubs with the added typ
 Users can either call `register_namespaces` themselves or import polars through `polugins.polars` instead.
 Lint rules can then be used to enforce that nothing is imported from polars outside of these locations.
 
-Types are generated with the package `polugins_type_gen`.
+Types are generated with the package `polugins_type_gen`. This creates static type stubs with the extensions added to them.
 
-## Usage example
+## Quick Start 
 
-Namespaces can be registered in five ways:
+Say that you have a package `my_package` with a module like so:
+```python
+# namespaces.py
+import polars as pl
 
-- By module path
-- As imported module
-- From entry points
-- From a configuration (pyproject.toml or polugins.toml)
-- From environment variables
+class MyNamespace:
+    def __init__(self, ldf: pl.LazyFrame):
+        self._ldf = ldf
 
-Say that you have a package `my_package` with two `LazyFrame` namespaces - `MyNamespace` and `AlsoMyNamespace` and you use an
-external package `example-package` that exposes a `LazyFrame` namespace called `external`.
-After installing it, namespaces can be registered like so:
+    def some_method(self, x: int) -> pl.LazyFrame:
+        return self._ldf.std(x)
+```
+
+You also use an external package `example-package` that exposes a `LazyFrame` namespace called `external`.
+
+in your `pyproject.toml` add a section:
+
+```toml
+[tool.polugins.lazyframe]
+"my_namespace" = "my_package.namespaces:MyNamespace"
+```
+
+If you don't use `pyproject.toml` you can also create a file `polugins.toml` with this section.
+
+After installing `polugins`, namespaces can be registered like so:
 
 ```python
 from polugins import register_namespaces
@@ -44,21 +58,15 @@ import polars as pl
 from my_package import MyNamespace
 
 register_namespaces(
-    lazyframe_namespaces={
-        'my_namespace': MyNamespace,
-        'also_my_namespace': "my_package:AlsoMyNamespace" # Note the `:` to separate module path from object
-    },
     load_entrypoints=True # Loads from example-package
     load_config=True # Loads from pyproject.toml and polugins.toml
-    load_env=True # Loads from environment variables
   )
 
-# All namespaces are now registered
+# Namespaces are now registered
 (
   pl.LazyFrame()
   .external.some_method()
   .my_namespace.some_method()
-  .also_my_namespace.some_method()
 )
 ```
 
@@ -69,13 +77,121 @@ As an alternative, polars is re-exported through `polugins` such that entrypoint
 ```python
 from polugins import pl
 
-pl.LazyFrame().external.some_method(x=1)
+# Namespaces are now registered
+(
+  pl.LazyFrame()
+  .external.some_method()
+  .my_namespace.some_method()
+)
 ```
+
+Since the registration is dynamic, your linter, typechecker and IDE will not know about these namespaces.
+To solve this, install `polugins_type_gen` and then run `polugins stubs` from the root of you package. Type information is now generated and should be automatically picked up by your tools. 
+
+
+## Usage
+
+Namespaces can be registered in three ways:
+
+- From a configuration file (`pyproject.toml` or `polugins.toml`)
+- From entry points
+- From environment variables
+
+They can also be imported:
+- By module path
+- As imported module
+
+but then types cannot be generated for them so the three first methods are recommended.
+
+### Register from pyproject.toml or polugins.toml
+In either your `pyproject.toml` or a file called `polugins.toml` put
+
+```toml
+[tool.polugins.<extension_class>]
+"<namespace_name>" = "<path>:<class_name>"
+```
+Concrete example:
+
+```toml
+[tool.polugins.lazyframe]
+"my_namespace" = "my_package.namespaces:MyNamespace"
+```
+
+Which will register a  `LazyFrame` namespace located at `my_package.namespaces` called `MyNamespace` as `my_namespace`.
+
+### From entrypoint
+If an installed packages exposes an namespace, they will automatically be picked up. See 
+[Third party Package example](#third-party-package-example) for how to expose namespaces from packages
+
+
+### From Env vars
+Set an env var:
+```bash
+polugins_<extension_class>_<namespace_name>=<path>:<class_name>
+```
+
+Concrete example:
+
+```bash
+polugins_lazyframe_my_namespace=my_package.namespaces:MyNamespace
+```
+
+Which will register a  `LazyFrame` namespace located at `my_package.namespaces` called `MyNamespace` as `my_namespace`.
+
+### From module path
+In the `register_namespaces` call:
+```python
+register_namespaces(
+    <extension_class>_namespaces={
+        '<namespace_name>': "<path>:<class_name>"
+    },
+  )
+```
+Concrete example:
+```python
+register_namespaces(
+    lazyframe_namespaces={
+        'my_namespace': "my_package:MyNamespace"
+    },
+  )
+```
+
+Which will register a  `LazyFrame` namespace located at `my_package.namespaces` called `MyNamespace` as `my_namespace`.
+
+Note that types cannot be generated for namespaces registered with this method
+
+### As imported module  
+In the `register_namespaces` call:
+```python
+from <path> import <class_name>
+
+register_namespaces(
+    <extension_class>_namespaces={
+        '<namespace_name>': <class_name>
+    },
+  )
+```
+Concrete example:
+```python
+from my_package import MyNamespace
+
+register_namespaces(
+    lazyframe_namespaces={
+        'my_namespace': MyNamespace
+    },
+  )
+```
+
+Which will register a  `LazyFrame` namespace located at `my_package.namespaces` called `MyNamespace` as `my_namespace`.
+
+Note that types cannot be generated for namespaces registered with this method
 
 
 ## Generate types
 
-Install `polugins_type_gen` and then run `polugins stubs` to create type stubs at "./typings".
+To generate types install the python package `polugins_type_gen` and then run `polugins stubs` to create type stubs at "./typings".
+
+`polugins_type_gen` is only used as a CLI tool so it's recommended to put this in developer dependencies or installed with a tool like `pipx`.
 
 ## Third party Package example
 
@@ -94,6 +210,39 @@ If building with poetry you should add this to your `pyproject.toml`:
 ```
 
 See `tests/pkgs/example_package` for a example.
+
+If using another tool than `poetry`, use their equivalent way of exposing endpoints.
+
+Don't use the `pl.api.register_x` in your package. This will make the extension be registered on import which we specifically want to avoid.
+
+## Kitchen sink
+
+
+```python
+from polugins import register_namespaces
+import polars as pl
+from my_package import MyNamespace
+
+register_namespaces(
+    # NOTE: Types can be generated for types registered like this: 
+    load_entrypoints=True # Loads from example-package
+    load_config=True # Loads from pyproject.toml and polugins.toml
+    load_env=True # Loads from environment variables
+    # NOTE: Namespaces can also be registered like below but types are NOT be generated for them
+    lazyframe_namespaces={
+        'my_namespace': MyNamespace,
+        'also_my_namespace': "my_package:AlsoMyNamespace" # Note the `:` to separate module path from object
+    },
+  )
+
+# All namespaces are now registered
+(
+  pl.LazyFrame()
+  .external.some_method()
+  .my_namespace.some_method()
+  .also_my_namespace.some_method()
+)
+```
 
 
 ## Implementation
