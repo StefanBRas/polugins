@@ -111,7 +111,7 @@ def is_incomplete(path: Path):
 def main(tmp_dir: Path):
     versions = get_missing_versions()
     print(f"Missing versions: {versions}")
-    for version_ in versions:
+    for version_ in versions.union([newest_version_not_in(versions)]):
         output_dir = Path("src", "polugins_type_gen", "_stubs", str(version_))
         no_docstring_output_dir = Path("no_docstring", str(version_))
         output_dir.mkdir(parents=True)
@@ -139,10 +139,13 @@ def comparison_section(
         body += f"## {extension_class}\n{diff_chunk(diff)}"
     return header + body
 
+def newest_version_not_in(versions: set[version.Version]) -> version.Version:
+    current_versions = get_current_versions()
+    return max(current_versions - versions)
+
 
 def create_pr_body(versions: set[version.Version]):
-    current_versions = get_current_versions()
-    newest_current_version = max(current_versions - versions)
+    newest_current_version = newest_version_not_in(versions) 
 
     comparisons = {
         (version_1, version_2): compare_versions(version_1, version_2)
