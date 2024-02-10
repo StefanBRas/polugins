@@ -5,17 +5,17 @@ from mypy.stubgen import Options as StubOptions
 from mypy.stubgen import generate_stubs
 
 IMPORT_PATHS = [
-             Path("polars", "expr", "expr"),
-             Path("polars", "series", "series"),
-             Path("polars", "lazyframe", "frame"),
-             Path("polars", "dataframe", "frame"),
-        ]
+    Path("polars", "expr", "expr"),
+    Path("polars", "series", "series"),
+    Path("polars", "lazyframe", "frame"),
+    Path("polars", "dataframe", "frame"),
+]
 
 
 if __name__ == "__main__":
     output_dir = sys.argv[1]
     modules = [".".join(import_path.parts) for import_path in IMPORT_PATHS]
-    include_docstrings = sys.argv[2] == 'true'
+    include_docstrings = sys.argv[2] == "true"
     options = StubOptions(
         inspect=True,
         # 'module_file' contains the base class

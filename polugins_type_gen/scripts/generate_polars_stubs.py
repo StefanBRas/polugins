@@ -15,13 +15,17 @@ IMPORT_PATHS = [
 ]
 
 
-def run_stubgen(version: str, no_docstring_stub_path: Path, stub_path: Path, tempdir_path: Path) -> None:
+def run_stubgen(
+    version: str, no_docstring_stub_path: Path, stub_path: Path, tempdir_path: Path
+) -> None:
     venv_path = tempdir_path / f".venv{version}"
     bin_path = venv_path / "bin" / "python"
     subprocess.check_call([sys.executable, "-m", "venv", str(venv_path)])
     subprocess.check_call([bin_path, "-m", "pip", "install", f"polars=={version}", "mypy"])
     subprocess.check_call([bin_path, "scripts/stubgen.py", stub_path, "true"])
-    subprocess.check_call([bin_path, "scripts/stubgen.py", tempdir_path / no_docstring_stub_path, "false"])
+    subprocess.check_call(
+        [bin_path, "scripts/stubgen.py", tempdir_path / no_docstring_stub_path, "false"]
+    )
 
 
 def get_current_versions() -> set[version.Version]:
@@ -109,9 +113,7 @@ def main(tmp_dir: Path):
     print(f"Missing versions: {versions}")
     for version_ in versions:
         output_dir = Path("src", "polugins_type_gen", "_stubs", str(version_))
-        no_docstring_output_dir = Path(
-            "no_docstring", str(version_)
-        )
+        no_docstring_output_dir = Path("no_docstring", str(version_))
         output_dir.mkdir(parents=True)
         run_stubgen(str(version_), no_docstring_output_dir, output_dir, tmp_dir)
         for import_path in IMPORT_PATHS:
@@ -123,13 +125,17 @@ def main(tmp_dir: Path):
                 raise ValueError(msg)
     return versions
 
+
 def diff_chunk(content: str):
     return f"```diff\n{content}\n```\n"
 
-def comparison_section(version_1: version.Version, version_2: version.Version, comparisons: list[tuple[str, str]]):
+
+def comparison_section(
+    version_1: version.Version, version_2: version.Version, comparisons: list[tuple[str, str]]
+):
     header = f"# Changes from {version_1} to {version_2}\n"
     body = ""
-    for (extension_class, diff) in comparisons:
+    for extension_class, diff in comparisons:
         body += f"## {extension_class}\n{diff_chunk(diff)}"
     return header + body
 
@@ -140,14 +146,14 @@ def create_pr_body(versions: set[version.Version]):
 
     comparisons = {
         (version_1, version_2): compare_versions(version_1, version_2)
-        for version_1, version_2 in pairwise(
-            sorted(versions.union([newest_current_version]))
-        )
+        for version_1, version_2 in pairwise(sorted(versions.union([newest_current_version])))
     }
     header = "# Automatic stub gen\n Changes between new versions and last:\n"
-    body = "\n".join(comparison_section(version_1, version_2, comparison) for (version_1, version_2), comparison in comparisons.items())
+    body = "\n".join(
+        comparison_section(version_1, version_2, comparison)
+        for (version_1, version_2), comparison in comparisons.items()
+    )
     return header + body
-
 
 
 def compare_versions(version_1: version.Version, version_2) -> list[tuple[str, str]]:
@@ -179,4 +185,3 @@ if __name__ == "__main__":
         print(body_path)
 
         body_path.write_text(body_content)
-
