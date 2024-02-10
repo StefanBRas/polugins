@@ -31,7 +31,10 @@ jobs:
         poetry install --only dev
     - name: Create Stubs
       run: |
-        poetry run python scripts/generate_polars_stubs.py
+        poetry run python scripts/generate_polars_stubs.py pr_body.md
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
+      with:
+        body-path: pr_body.md
+
 

@@ -42,7 +42,9 @@ def create_stubs(version: str):
     for extension_class, namespaces in all_namespaces.items():
         if namespaces:
             files = importlib_resources.files("polugins_type_gen")
-            stub_path = files / "_stubs" / version / extension_class.import_path
+            stub_path = (
+                Path(str(files)) / "_stubs" / version / extension_class.import_path
+            ).with_suffix(".pyi")
             stub_ast = ast.parse(stub_path.read_text(), type_comments=True)
             new_class_nodes = []
             modules_to_import = set()
