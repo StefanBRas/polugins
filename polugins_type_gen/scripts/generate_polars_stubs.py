@@ -1,63 +1,60 @@
 import subprocess
 import sys
+from difflib import unified_diff
+from itertools import pairwise
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from mypy.stubgen import Options as StubOptions
-from mypy.stubgen import generate_stubs
-from polugins._types import ExtensionClass
+from packaging import version
 
-
-def generate_polars_stub(output_dir: Path):
-    modules = [".".join(enum.import_path.parts) for enum in ExtensionClass]
-    options = StubOptions(
-        inspect=True,
-        # 'module_file' contains the base class
-        #  onto which dynamic methods are registered
-        files=[],
-        output_dir=str(output_dir),
-        include_private=True,
-        export_less=False,
-        # standard params (not auto-defaulted)
-        pyversion=sys.version_info[:2],
-        interpreter=sys.executable,
-        ignore_errors=False,
-        parse_only=False,
-        no_import=False,
-        search_path=["."],
-        doc_dir="",
-        packages=[],
-        modules=modules,
-        verbose=True,  # TODO: change this, but nice for debugging now
-        quiet=False,
-        include_docstrings=True,
-    )
-    generate_stubs(options)
+IMPORT_PATHS = [
+    Path("polars", "expr", "expr"),
+    Path("polars", "series", "series"),
+    Path("polars", "lazyframe", "frame"),
+    Path("polars", "dataframe", "frame"),
+]
 
 
-def install_polars(version: str):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", f"polars=={version}"])
+def run_stubgen(version: str, no_docstring_stub_path: Path, stub_path: Path, tempdir_path: Path) -> None:
+    venv_path = tempdir_path / f".venv{version}"
+    bin_path = venv_path / "bin" / "python"
+    subprocess.check_call([sys.executable, "-m", "venv", str(venv_path)])
+    subprocess.check_call([bin_path, "-m", "pip", "install", f"polars=={version}", "mypy"])
+    subprocess.check_call([bin_path, "scripts/stubgen.py", stub_path, "true"])
+    subprocess.check_call([bin_path, "scripts/stubgen.py", tempdir_path / no_docstring_stub_path, "false"])
 
 
-def get_versions():
+def get_current_versions() -> set[version.Version]:
+    stub_dir = Path(__file__).parent.parent / "src" / "polugins_type_gen" / "_stubs"
+    return {version.parse(p.parts[-1]) for p in stub_dir.iterdir()}
+
+
+def get_available_versions() -> set[version.Version]:
     res = subprocess.run(
         [sys.executable, "-m", "pip", "index", "versions", "polars"],
         capture_output=True,
         text=True,
     )
     version_line_start = "Available versions: "
+    versions = None
     for line in res.stdout.splitlines():
         if line.startswith(version_line_start):
             versions = line.split(version_line_start)[1].split(",")
             break
-    versions = [version.strip() for version in versions]
-    return versions
+    assert versions
+    return {version.parse(version_str.strip()) for version_str in versions}
 
 
-def clean_types(path: Path):
-    extensions_class = ExtensionClass(path.parts[5])
+def get_missing_versions() -> set[version.Version]:
+    # 0.16.13 -> 0.16.14 changes location of imports
+    oldest_version = version.Version("0.16.13")
+    return {v for v in (get_available_versions() - get_current_versions()) if v > oldest_version}
+
+
+def clean_types(path: Path, version):
     stub_content = path.read_text()
-    match extensions_class:
-        case ExtensionClass.DATAFRAME:
+    match path.parts[-2]:
+        case "dataframe":
             if (txt := "P: Incomplete") in stub_content:
                 stub_content = (
                     "from typing_extensions import ParamSpec, Generic\n"
@@ -66,7 +63,9 @@ def clean_types(path: Path):
                     )
                 )
             stub_content = stub_content.replace("_df: Incomplete", "_df: PyDataFrame")
-        case ExtensionClass.LAZYFRAME:
+            stub_content = stub_content.replace("columns: Incomplete", "columns: list[str]")
+
+        case "lazyframe":
             if (txt := "P: Incomplete") in stub_content:
                 stub_content = (
                     "from typing_extensions import ParamSpec, Generic\n"
@@ -75,7 +74,7 @@ def clean_types(path: Path):
                     )
                 )
             stub_content = stub_content.replace("_ldf: Incomplete", "_ldf: PyLazyFrame")
-        case ExtensionClass.EXPR:
+        case "expr":
             if (txt := "P: Incomplete") in stub_content:
                 stub_content = (
                     "from typing_extensions import ParamSpec, Generic\n"
@@ -83,7 +82,7 @@ def clean_types(path: Path):
                         "class Expr", "class Expr(Generic[P])"
                     )
                 )
-        case ExtensionClass.SERIES:
+        case "series":
             array_like = (
                 'ArrayLike = Union[Sequence[Any], "Series", '
                 '"pa.Array", "pa.ChunkedArray", "np.ndarray", "pd.Series", "pd.DatetimeIndex"]'
@@ -94,32 +93,90 @@ def clean_types(path: Path):
                 stub_content = stub_content.replace("len: Incomplete", "len: int").replace(
                     "s: Incomplete", "s: Series"
                 )
+        case err:
+            raise ValueError(err)
     stub_content = stub_content.replace("from _typeshed import Incomplete", "")
-
-    path.with_suffix("").write_text(stub_content)
+    stub_content = f"#: version {version}\n" + stub_content
+    return stub_content
 
 
 def is_incomplete(path: Path):
-    assert "Incomplete" in path.read_text()
+    return "Incomplete" in path.read_text()
 
 
-def main(force: bool = False):
-    versions = get_versions()
-    for version in versions:
-        # 0.16.13 -> 0.16.14 changes location of imports
-        if version == "0.16.13":
-            break
-        output_dir = Path("src", "polugins_type_gen", "_stubs", version)
-        if output_dir.exists() and not force:
-            continue
-        output_dir.mkdir(parents=True, exist_ok=True)
-        install_polars(version)
-        generate_polars_stub(output_dir)
-        for extension_class in ExtensionClass:
-            stub_path = output_dir / extension_class.import_path.with_suffix(".pyi")
-            clean_types(stub_path)
-            stub_path.unlink()
+def main(tmp_dir: Path):
+    versions = get_missing_versions()
+    print(f"Missing versions: {versions}")
+    for version_ in versions:
+        output_dir = Path("src", "polugins_type_gen", "_stubs", str(version_))
+        no_docstring_output_dir = Path(
+            "no_docstring", str(version_)
+        )
+        output_dir.mkdir(parents=True)
+        run_stubgen(str(version_), no_docstring_output_dir, output_dir, tmp_dir)
+        for import_path in IMPORT_PATHS:
+            stub_path = output_dir / import_path.with_suffix(".pyi")
+            cleaned_stub_content = clean_types(stub_path, version_)
+            stub_path.with_suffix(".pyi").write_text(cleaned_stub_content)
+            if is_incomplete(stub_path):
+                msg = f"File {stub_path} could not be cleaned and has Incomplete types."
+                raise ValueError(msg)
+    return versions
+
+def diff_chunk(content: str):
+    return f"```diff\n{content}\n```\n"
+
+def comparison_section(version_1: version.Version, version_2: version.Version, comparisons: list[tuple[str, str]]):
+    header = f"# Changes from {version_1} to {version_2}\n"
+    body = ""
+    for (extension_class, diff) in comparisons:
+        body += f"## {extension_class}\n{diff_chunk(diff)}"
+    return header + body
+
+
+def create_pr_body(versions: set[version.Version]):
+    current_versions = get_current_versions()
+    newest_current_version = max(current_versions - versions)
+
+    comparisons = {
+        (version_1, version_2): compare_versions(version_1, version_2)
+        for version_1, version_2 in pairwise(
+            sorted(versions.union([newest_current_version]))
+        )
+    }
+    header = "# Automatic stub gen\n Changes between new versions and last:\n"
+    body = "\n".join(comparison_section(version_1, version_2, comparison) for (version_1, version_2), comparison in comparisons.items())
+    return header + body
+
+
+
+def compare_versions(version_1: version.Version, version_2) -> list[tuple[str, str]]:
+    results = []
+    stub_dir_1 = Path("no_docstring", str(version_1))
+    stub_dir_2 = Path("no_docstring", str(version_2))
+    for extension_class in IMPORT_PATHS:
+        stub_path1 = stub_dir_1 / extension_class.with_suffix(".pyi")
+        stub_path2 = stub_dir_2 / extension_class.with_suffix(".pyi")
+        result = "\n".join(
+            unified_diff(
+                stub_path1.read_text().splitlines(),
+                stub_path2.read_text().splitlines(),
+                fromfile=str(version_1),
+                tofile=str(version_2),
+            )
+        )
+        results.append((extension_class.parts[-2], result))
+    return results
 
 
 if __name__ == "__main__":
-    main()
+    with TemporaryDirectory() as tempdir:
+        tempdir_path = Path(tempdir)
+        new_versions = main(tempdir_path)
+        body_content = create_pr_body(new_versions)
+
+        body_path = Path(sys.argv[1]) if len(sys.argv) > 1 else tempdir_path / "pr_body.md"
+        print(body_path)
+
+        body_path.write_text(body_content)
+
