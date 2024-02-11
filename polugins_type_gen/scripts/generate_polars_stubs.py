@@ -114,7 +114,7 @@ def main(tmp_dir: Path):
     for version_ in versions.union([newest_version_not_in(versions)]):
         output_dir = Path("src", "polugins_type_gen", "_stubs", str(version_))
         no_docstring_output_dir = Path("no_docstring", str(version_))
-        output_dir.mkdir(parents=True)
+        output_dir.mkdir(parents=True, exist_ok=True)
         run_stubgen(str(version_), no_docstring_output_dir, output_dir, tmp_dir)
         for import_path in IMPORT_PATHS:
             stub_path = output_dir / import_path.with_suffix(".pyi")
