@@ -32,6 +32,8 @@ jobs:
     - name: Create Stubs
       run: |
         poetry run python scripts/generate_polars_stubs.py ${{ github.workspace }}/pr_body.md 
+        git add src
+        git rm --cached ${{ github.workspace }}/pr_body.md
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v6
       with:
