@@ -36,7 +36,7 @@ jobs:
       run: |
         ls 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
+      uses: peter-evans/create-pull-request@v6
       with:
         body-path: "pr_body.md"
 
