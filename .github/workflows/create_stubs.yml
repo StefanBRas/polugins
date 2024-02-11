@@ -38,6 +38,6 @@ jobs:
       with:
         body-path: ${{ github.workspace }}/pr_body.md
         add-paths: |
-            *.py
+            **/*.py
 
 
