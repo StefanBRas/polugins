@@ -185,6 +185,6 @@ if __name__ == "__main__":
         body_content = create_pr_body(new_versions, tempdir_path)
 
         body_path = Path(sys.argv[1]) if len(sys.argv) > 1 else tempdir_path / "pr_body.md"
-        print(body_path)
+        print(f"Wrinting pr template to: {body_path}")
 
         body_path.write_text(body_content)

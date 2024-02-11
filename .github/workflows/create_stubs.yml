@@ -32,9 +32,12 @@ jobs:
     - name: Create Stubs
       run: |
         poetry run python scripts/generate_polars_stubs.py pr_body.md
+    - name: Check output
+      run: |
+        ls 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
       with:
-        body-path: pr_body.md
+        body-path: ./pr_body.md
 
 
