@@ -37,6 +37,7 @@ jobs:
       uses: peter-evans/create-pull-request@v6
       with:
         body-path: ${{ github.workspace }}/pr_body.md
-        add-paths: "src/*"
+        add-paths: |
+            *.py
 
 
