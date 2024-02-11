@@ -32,12 +32,11 @@ jobs:
     - name: Create Stubs
       run: |
         poetry run python scripts/generate_polars_stubs.py ${{ github.workspace }}/pr_body.md 
-        git add src
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v6
       with:
         body-path: ${{ github.workspace }}/pr_body.md
         add-paths: |
-            **/*.py
+            **/*.pyi
 
 
