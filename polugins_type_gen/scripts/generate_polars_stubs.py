@@ -144,11 +144,11 @@ def newest_version_not_in(versions: set[version.Version]) -> version.Version:
     return max(current_versions - versions)
 
 
-def create_pr_body(versions: set[version.Version]):
+def create_pr_body(versions: set[version.Version], tempdir_path: Path):
     newest_current_version = newest_version_not_in(versions) 
 
     comparisons = {
-        (version_1, version_2): compare_versions(version_1, version_2)
+        (version_1, version_2): compare_versions(version_1, version_2, tempdir_path)
         for version_1, version_2 in pairwise(sorted(versions.union([newest_current_version])))
     }
     header = "# Automatic stub gen\n Changes between new versions and last:\n"
@@ -159,10 +159,10 @@ def create_pr_body(versions: set[version.Version]):
     return header + body
 
 
-def compare_versions(version_1: version.Version, version_2) -> list[tuple[str, str]]:
+def compare_versions(version_1: version.Version, version_2, tempdir_path: Path) -> list[tuple[str, str]]:
     results = []
-    stub_dir_1 = Path("no_docstring", str(version_1))
-    stub_dir_2 = Path("no_docstring", str(version_2))
+    stub_dir_1 = tempdir_path / "no_docstring" / str(version_1)
+    stub_dir_2 = tempdir_path / "no_docstring" / str(version_2)
     for extension_class in IMPORT_PATHS:
         stub_path1 = stub_dir_1 / extension_class.with_suffix(".pyi")
         stub_path2 = stub_dir_2 / extension_class.with_suffix(".pyi")
@@ -182,7 +182,7 @@ if __name__ == "__main__":
     with TemporaryDirectory() as tempdir:
         tempdir_path = Path(tempdir)
         new_versions = main(tempdir_path)
-        body_content = create_pr_body(new_versions)
+        body_content = create_pr_body(new_versions, tempdir_path)
 
         body_path = Path(sys.argv[1]) if len(sys.argv) > 1 else tempdir_path / "pr_body.md"
         print(body_path)
