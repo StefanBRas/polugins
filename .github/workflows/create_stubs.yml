@@ -38,6 +38,6 @@ jobs:
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v5
       with:
-        body-path: ./pr_body.md
+        body-path: "pr_body.md"
 
 
