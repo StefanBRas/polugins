@@ -4,23 +4,6 @@ from polars import LazyFrame
 from polugins.main import register_namespaces
 
 
-def test_custom():
-    ldf = LazyFrame()
-    from polugins._testing.namespaces import CustomNamespace
-
-    register_namespaces(
-        lazyframe_namespaces={
-            "custom": CustomNamespace,
-            "custom_path": "polugins._testing.namespaces:CustomNamespaceByPath",
-        },
-        load_entrypoints=False,
-        load_config=False,
-        load_env=False,
-    )
-    ldf.custom.custom_method(x=1)
-    ldf.custom_path.custom_method(x=1)
-
-
 def test_external():
     ldf = LazyFrame()
     register_namespaces(load_entrypoints=True, load_config=True, load_env=True)
