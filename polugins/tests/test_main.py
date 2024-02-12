@@ -1,3 +1,6 @@
+import contextlib
+import os
+
 import pytest
 from polars import LazyFrame
 
@@ -29,3 +32,24 @@ def test_fresh_accessors():
         ldf.config  # type: ignore
     with pytest.raises(AttributeError):
         ldf.custom  # type: ignore
+
+
+@contextlib.contextmanager
+def set_env(**environ):
+    old_environ = dict(os.environ)
+    os.environ.update(environ)
+    try:
+        yield
+    finally:
+        os.environ.clear()
+        os.environ.update(old_environ)
+
+
+def test_suppress_warning(recwarn: pytest.WarningsRecorder):
+    with set_env(
+        polugins_lazyframe_selfregister="polugins._testing.self_register:SelfRegisterNamespace"
+    ):
+        register_namespaces(load_env=True, load_config=False, load_entrypoints=False)
+        ldf = LazyFrame()
+        ldf.selfregister.custom_method(x=1)
+    assert len(recwarn) == 0
