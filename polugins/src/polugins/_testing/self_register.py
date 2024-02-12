@@ -1,6 +1,7 @@
 import polars as pl
 
-@pl.api.register_lazyframe_namespace('selfregister')
+
+@pl.api.register_lazyframe_namespace("selfregister")
 class SelfRegisterNamespace:
     def __init__(self, ldf: pl.LazyFrame):
         self._ldf = ldf
