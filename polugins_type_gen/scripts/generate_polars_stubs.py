@@ -139,13 +139,14 @@ def comparison_section(
         body += f"## {extension_class}\n{diff_chunk(diff)}"
     return header + body
 
+
 def newest_version_not_in(versions: set[version.Version]) -> version.Version:
     current_versions = get_current_versions()
     return max(current_versions - versions)
 
 
 def create_pr_body(versions: set[version.Version], tempdir_path: Path):
-    newest_current_version = newest_version_not_in(versions) 
+    newest_current_version = newest_version_not_in(versions)
 
     comparisons = {
         (version_1, version_2): compare_versions(version_1, version_2, tempdir_path)
@@ -159,7 +160,9 @@ def create_pr_body(versions: set[version.Version], tempdir_path: Path):
     return header + body
 
 
-def compare_versions(version_1: version.Version, version_2, tempdir_path: Path) -> list[tuple[str, str]]:
+def compare_versions(
+    version_1: version.Version, version_2, tempdir_path: Path
+) -> list[tuple[str, str]]:
     results = []
     stub_dir_1 = tempdir_path / "no_docstring" / str(version_1)
     stub_dir_2 = tempdir_path / "no_docstring" / str(version_2)

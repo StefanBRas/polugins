@@ -101,23 +101,11 @@ def _get_namespaces(
 
 def register_namespaces(
     *,
-    lazyframe_namespaces: NamespaceDict = {},
-    dataframe_namespaces: NamespaceDict = {},
-    expression_namespaces: NamespaceDict = {},
-    series_namespaces: NamespaceDict = {},
     load_entrypoints: bool = True,
     load_config: bool = True,
     load_env: bool = True,
 ):
-    for name, namespace in lazyframe_namespaces.items():
-        ExtensionClass.LAZYFRAME.register(name, namespace)
-    for name, namespace in dataframe_namespaces.items():
-        ExtensionClass.DATAFRAME.register(name, namespace)
-    for name, namespace in expression_namespaces.items():
-        ExtensionClass.EXPR.register(name, namespace)
-    for name, namespace in series_namespaces.items():
-        ExtensionClass.SERIES.register(name, namespace)
-    other_namespaces = _get_namespaces(load_entrypoints, load_config, load_env)
-    for extension_class, namespaces in other_namespaces.items():
+    namespaces = _get_namespaces(load_entrypoints, load_config, load_env)
+    for extension_class, namespaces in namespaces.items():
         for name, namespace in namespaces.items():
             extension_class.register(name, namespace)

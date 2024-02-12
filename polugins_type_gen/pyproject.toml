@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "polugins_type_gen"
-version = "0.4.0"
+version = "0.5.0"
 description = "Type stub generator Polugins."
 authors = ["StefanBRas <opensource@bruhn.io>"]
 readme = "README.md"
@@ -14,9 +14,7 @@ polugins = ">=0.2"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-polugins = ">=0.2" # We use it for the scripts/generate_polars_stubs.py
 pytest = "^7.3.1"
-mypy = "1.7.1" # Not sure it's considered Public API what we import, so we fix the version.
 ruff = "0.1.11"
 nox = "^2023.4.22"
 coverage = "^7.2.7"
