@@ -68,6 +68,9 @@ def clean_types(path: Path, version):
                 )
             stub_content = stub_content.replace("_df: Incomplete", "_df: PyDataFrame")
             stub_content = stub_content.replace("columns: Incomplete", "columns: list[str]")
+            stub_content = stub_content.replace(
+                "from builtins import PyDataFrame", "from polars.polars import PyDataFrame"
+            )
 
         case "lazyframe":
             if (txt := "P: Incomplete") in stub_content:
@@ -78,6 +81,9 @@ def clean_types(path: Path, version):
                     )
                 )
             stub_content = stub_content.replace("_ldf: Incomplete", "_ldf: PyLazyFrame")
+            stub_content = stub_content.replace(
+                "from builtins import PyLazyFrame", "from polars.polars import PyLazyFrame"
+            )
         case "expr":
             if (txt := "P: Incomplete") in stub_content:
                 stub_content = (
@@ -86,6 +92,10 @@ def clean_types(path: Path, version):
                         "class Expr", "class Expr(Generic[P])"
                     )
                 )
+            stub_content = stub_content.replace("_pyexpr: Incomplete", "_pyexpr: PyExpr")
+            stub_content = stub_content.replace(
+                "from builtins import PyExpr", "from polars.polars import PyExpr"
+            )
         case "series":
             array_like = (
                 'ArrayLike = Union[Sequence[Any], "Series", '
@@ -97,6 +107,13 @@ def clean_types(path: Path, version):
                 stub_content = stub_content.replace("len: Incomplete", "len: int").replace(
                     "s: Incomplete", "s: Series"
                 )
+            stub_content = stub_content.replace(
+                "from builtins import PySeries", "from polars.polars import PySeries"
+            )
+            stub_content = stub_content.replace("_s: Incomplete", "_s: PySeries")
+            stub_content = stub_content.replace(
+                "_accessors: _ClassVar[set]", "_accessors: _ClassVar[set[str]]"
+            )
         case err:
             raise ValueError(err)
     stub_content = stub_content.replace("from _typeshed import Incomplete", "")
@@ -123,6 +140,12 @@ def main(tmp_dir: Path):
             if is_incomplete(stub_path):
                 msg = f"File {stub_path} could not be cleaned and has Incomplete types."
                 print(msg)
+            no_docstring_stub_path = (
+                tmp_dir / no_docstring_output_dir / import_path.with_suffix(".pyi")
+            )
+            cleaned_no_docstring_stub_content = clean_types(no_docstring_stub_path, version_)
+            no_docstring_stub_path.write_text(cleaned_no_docstring_stub_content)
+
     return versions
 
 

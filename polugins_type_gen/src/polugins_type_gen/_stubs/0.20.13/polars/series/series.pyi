@@ -1,7 +1,8 @@
-#: version 0.20.10
+#: version 0.20.13
 import np as np
 import pa as pa
 import pd as pd
+
 from polars.polars import PySeries
 from datetime import date, datetime, timedelta
 from polars.datatypes.classes import Array as Array, Boolean as Boolean, Categorical as Categorical, Date as Date, Datetime as Datetime, Decimal as Decimal, Duration as Duration, Enum as Enum, Float64 as Float64, Int16 as Int16, Int32 as Int32, Int64 as Int64, Int8 as Int8, List as List, Null as Null, Object as Object, String as String, Time as Time, UInt32 as UInt32, UInt64 as UInt64, UInt8 as UInt8, Unknown as Unknown
@@ -20,7 +21,7 @@ from polars.series.utils import expr_dispatch as expr_dispatch, get_ffi_func as 
 from polars.slice import PolarsSlice as PolarsSlice
 from polars.utils._construction import arrow_to_pyseries as arrow_to_pyseries, dataframe_to_pyseries as dataframe_to_pyseries, iterable_to_pyseries as iterable_to_pyseries, numpy_to_idxs as numpy_to_idxs, numpy_to_pyseries as numpy_to_pyseries, pandas_to_pyseries as pandas_to_pyseries, sequence_to_pyseries as sequence_to_pyseries, series_to_pyseries as series_to_pyseries
 from polars.utils._wrap import wrap_df as wrap_df
-from polars.utils.convert import _date_to_pl_date as _date_to_pl_date, _datetime_to_pl_timestamp as _datetime_to_pl_timestamp, _time_to_pl_time as _time_to_pl_time, _timedelta_to_pl_timedelta as _timedelta_to_pl_timedelta
+from polars.utils.convert import date_to_int as date_to_int, datetime_to_int as datetime_to_int, time_to_int as time_to_int, timedelta_to_int as timedelta_to_int
 from polars.utils.deprecation import deprecate_function as deprecate_function, deprecate_nonkeyword_arguments as deprecate_nonkeyword_arguments, deprecate_renamed_function as deprecate_renamed_function, deprecate_renamed_parameter as deprecate_renamed_parameter, issue_deprecation_warning as issue_deprecation_warning
 from polars.utils.unstable import unstable as unstable
 from polars.utils.various import _is_generator as _is_generator, no_default as no_default, parse_version as parse_version, range_to_slice as range_to_slice, scale_bytes as scale_bytes, sphinx_accessor as sphinx_accessor, warn_null_comparison as warn_null_comparison
@@ -32,8 +33,8 @@ _PYARROW_AVAILABLE: bool
 BUILDING_SPHINX_DOCS: None
 
 class Series:
-    _s: _ClassVar[None] = ...
     _accessors: _ClassVar[set[str]] = ...
+    _s: PySeries
     def __init__(self, name: str | ArrayLike | None = ..., values: ArrayLike | None = ..., dtype: PolarsDataType | None = ...) -> None: ...
     @classmethod
     def _from_pyseries(cls, pyseries: PySeries) -> Self: ...
@@ -2593,7 +2594,7 @@ class Series:
             the underlying data. Data copy occurs, for example, when the Series contains
             nulls or non-numeric types.
 
-            .. deprecated: 0.20.10
+            .. deprecated:: 0.20.10
                 Use the `allow_copy` parameter instead, which is the inverse of this
                 one.
 
@@ -2605,28 +2606,6 @@ class Series:
         array([1, 2, 3], dtype=int64)
         >>> type(arr)
         <class \'numpy.ndarray\'>
-        '''
-    def _view(self) -> SeriesView:
-        '''
-        Get a view into this Series data with a numpy array.
-
-        This operation doesn\'t clone data, but does not include missing values.
-
-        Returns
-        -------
-        SeriesView
-
-        Parameters
-        ----------
-        ignore_nulls
-            If True then nulls are converted to 0.
-            If False then an Exception is raised if nulls are present.
-
-        Examples
-        --------
-        >>> s = pl.Series("a", [1, None])
-        >>> s._view(ignore_nulls=True)
-        SeriesView([1, 0])
         '''
     def to_arrow(self) -> pa.Array:
         '''
@@ -4313,11 +4292,11 @@ class Series:
         0.34776706224699483
         """
     def kurtosis(self) -> float | None:
-        """
+        '''
         Compute the kurtosis (Fisher or Pearson) of a dataset.
 
         Kurtosis is the fourth central moment divided by the square of the
-        variance. If Fisher's definition is used, then 3.0 is subtracted from
+        variance. If Fisher\'s definition is used, then 3.0 is subtracted from
         the result to give 0.0 for a normal distribution.
         If bias is False then the kurtosis is calculated using k statistics to
         eliminate bias coming from biased moment estimators
@@ -4327,11 +4306,21 @@ class Series:
         Parameters
         ----------
         fisher : bool, optional
-            If True, Fisher's definition is used (normal ==> 0.0). If False,
-            Pearson's definition is used (normal ==> 3.0).
+            If True, Fisher\'s definition is used (normal ==> 0.0). If False,
+            Pearson\'s definition is used (normal ==> 3.0).
         bias : bool, optional
             If False, the calculations are corrected for statistical bias.
-        """
+
+        Examples
+        --------
+        >>> s = pl.Series("grades", [66, 79, 54, 97, 96, 70, 69, 85, 93, 75])
+        >>> s.kurtosis()
+        -1.0522623626787952
+        >>> s.kurtosis(fisher=False)
+        1.9477376373212048
+        >>> s.kurtosis(fisher=False, bias=False)
+        2.104036180264273
+        '''
     def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None = ..., upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None = ...) -> Series:
         """
         Set values outside the given boundaries to the boundary value.
@@ -4638,7 +4627,7 @@ class Series:
             Divide by decaying adjustment factor in beginning periods to account for
             imbalance in relative weightings
 
-                - When `adjust=True` the EW function is calculated
+                - When `adjust=True` (the default) the EW function is calculated
                   using weights :math:`w_i = (1 - \\alpha)^i`
                 - When `adjust=False` the EW function is calculated
                   recursively by
@@ -4651,7 +4640,7 @@ class Series:
         ignore_nulls
             Ignore missing values when calculating weights.
 
-                - When `ignore_nulls=False` (default), weights are based on absolute
+                - When `ignore_nulls=False`, weights are based on absolute
                   positions.
                   For example, the weights of :math:`x_0` and :math:`x_2` used in
                   calculating the final weighted average of
@@ -4659,7 +4648,7 @@ class Series:
                   :math:`(1-\\alpha)^2` and :math:`1` if `adjust=True`, and
                   :math:`(1-\\alpha)^2` and :math:`\\alpha` if `adjust=False`.
 
-                - When `ignore_nulls=True`, weights are based
+                - When `ignore_nulls=True` (current default), weights are based
                   on relative positions. For example, the weights of
                   :math:`x_0` and :math:`x_2` used in calculating the final weighted
                   average of [:math:`x_0`, None, :math:`x_2`] are
@@ -4669,7 +4658,7 @@ class Series:
         Examples
         --------
         >>> s = pl.Series([1, 2, 3])
-        >>> s.ewm_mean(com=1)
+        >>> s.ewm_mean(com=1, ignore_nulls=False)
         shape: (3,)
         Series: '' [f64]
         [
@@ -4706,7 +4695,7 @@ class Series:
             Divide by decaying adjustment factor in beginning periods to account for
             imbalance in relative weightings
 
-                - When `adjust=True` the EW function is calculated
+                - When `adjust=True` (the default) the EW function is calculated
                   using weights :math:`w_i = (1 - \\alpha)^i`
                 - When `adjust=False` the EW function is calculated
                   recursively by
@@ -4722,7 +4711,7 @@ class Series:
         ignore_nulls
             Ignore missing values when calculating weights.
 
-                - When `ignore_nulls=False` (default), weights are based on absolute
+                - When `ignore_nulls=False`, weights are based on absolute
                   positions.
                   For example, the weights of :math:`x_0` and :math:`x_2` used in
                   calculating the final weighted average of
@@ -4730,7 +4719,7 @@ class Series:
                   :math:`(1-\\alpha)^2` and :math:`1` if `adjust=True`, and
                   :math:`(1-\\alpha)^2` and :math:`\\alpha` if `adjust=False`.
 
-                - When `ignore_nulls=True`, weights are based
+                - When `ignore_nulls=True` (current default), weights are based
                   on relative positions. For example, the weights of
                   :math:`x_0` and :math:`x_2` used in calculating the final weighted
                   average of [:math:`x_0`, None, :math:`x_2`] are
@@ -4740,7 +4729,7 @@ class Series:
         Examples
         --------
         >>> s = pl.Series("a", [1, 2, 3])
-        >>> s.ewm_std(com=1)
+        >>> s.ewm_std(com=1, ignore_nulls=False)
         shape: (3,)
         Series: \'a\' [f64]
         [
@@ -4777,7 +4766,7 @@ class Series:
             Divide by decaying adjustment factor in beginning periods to account for
             imbalance in relative weightings
 
-                - When `adjust=True` the EW function is calculated
+                - When `adjust=True` (the default) the EW function is calculated
                   using weights :math:`w_i = (1 - \\alpha)^i`
                 - When `adjust=False` the EW function is calculated
                   recursively by
@@ -4793,7 +4782,7 @@ class Series:
         ignore_nulls
             Ignore missing values when calculating weights.
 
-                - When `ignore_nulls=False` (default), weights are based on absolute
+                - When `ignore_nulls=False`, weights are based on absolute
                   positions.
                   For example, the weights of :math:`x_0` and :math:`x_2` used in
                   calculating the final weighted average of
@@ -4801,7 +4790,7 @@ class Series:
                   :math:`(1-\\alpha)^2` and :math:`1` if `adjust=True`, and
                   :math:`(1-\\alpha)^2` and :math:`\\alpha` if `adjust=False`.
 
-                - When `ignore_nulls=True`, weights are based
+                - When `ignore_nulls=True` (current default), weights are based
                   on relative positions. For example, the weights of
                   :math:`x_0` and :math:`x_2` used in calculating the final weighted
                   average of [:math:`x_0`, None, :math:`x_2`] are
@@ -4811,7 +4800,7 @@ class Series:
         Examples
         --------
         >>> s = pl.Series("a", [1, 2, 3])
-        >>> s.ewm_var(com=1)
+        >>> s.ewm_var(com=1, ignore_nulls=False)
         shape: (3,)
         Series: \'a\' [f64]
         [

@@ -1,11 +1,11 @@
-#: version 0.20.10
+#: version 0.20.13
 import P
 import deltalake
 import deltalake.table
 import np as np
 import pa as pa
 import pd as pd
-from _io import BytesIO, TextIOWrapper
+from _io import BytesIO
 
 from polars.polars import PyDataFrame
 from pathlib import Path
@@ -25,11 +25,11 @@ from polars.slice import PolarsSlice as PolarsSlice
 from polars.utils._construction import arrow_to_pydf as arrow_to_pydf, dict_to_pydf as dict_to_pydf, frame_to_pydf as frame_to_pydf, iterable_to_pydf as iterable_to_pydf, numpy_to_idxs as numpy_to_idxs, numpy_to_pydf as numpy_to_pydf, pandas_to_pydf as pandas_to_pydf, sequence_to_pydf as sequence_to_pydf, series_to_pydf as series_to_pydf
 from polars.utils._parse_expr_input import parse_as_expression as parse_as_expression
 from polars.utils._wrap import wrap_expr as wrap_expr, wrap_ldf as wrap_ldf, wrap_s as wrap_s
-from polars.utils.convert import _timedelta_to_pl_duration as _timedelta_to_pl_duration
+from polars.utils.convert import parse_as_duration_string as parse_as_duration_string
 from polars.utils.deprecation import deprecate_function as deprecate_function, deprecate_nonkeyword_arguments as deprecate_nonkeyword_arguments, deprecate_parameter_as_positional as deprecate_parameter_as_positional, deprecate_renamed_function as deprecate_renamed_function, deprecate_renamed_parameter as deprecate_renamed_parameter, deprecate_saturating as deprecate_saturating, issue_deprecation_warning as issue_deprecation_warning
 from polars.utils.unstable import issue_unstable_warning as issue_unstable_warning, unstable as unstable
 from polars.utils.various import _prepare_row_index_args as _prepare_row_index_args, _process_null_values as _process_null_values, handle_projection_columns as handle_projection_columns, is_bool_sequence as is_bool_sequence, is_int_sequence as is_int_sequence, is_str_sequence as is_str_sequence, normalize_filepath as normalize_filepath, parse_version as parse_version, range_to_slice as range_to_slice, scale_bytes as scale_bytes, warn_null_comparison as warn_null_comparison
-from typing import Any, BinaryIO, Callable, ClassVar as _ClassVar, Collection, IO, Iterable, Iterator, Mapping, NoReturn, Sequence
+from typing import Any, Callable, ClassVar as _ClassVar, Collection, IO, Iterable, Iterator, Mapping, NoReturn, Sequence
 
 TYPE_CHECKING: bool
 INTEGER_DTYPES: frozenset
@@ -42,6 +42,7 @@ _dtype_str_repr: builtin_function_or_method
 class DataFrame:
     _accessors: _ClassVar[set] = ...
     columns: list[str]
+    _df: PyDataFrame
     def __init__(self, data: FrameInitTypes | None = ..., schema: SchemaDefinition | None = ...) -> None: ...
     @classmethod
     def _from_pydf(cls, py_df: PyDataFrame) -> Self:
@@ -107,7 +108,7 @@ class DataFrame:
             this does not yield conclusive results, column orientation is used.
         """
     @classmethod
-    def _from_arrow(cls, data: pa.Table, schema: SchemaDefinition | None = ...) -> Self:
+    def _from_arrow(cls, data: pa.Table | pa.RecordBatch, schema: SchemaDefinition | None = ...) -> Self:
         """
         Construct a DataFrame from an Arrow table.
 
@@ -116,8 +117,8 @@ class DataFrame:
 
         Parameters
         ----------
-        data : arrow table, array, or sequence of sequences
-            Data representing an Arrow Table or Array.
+        data : arrow Table, RecordBatch, or sequence of sequences
+            Data representing an Arrow Table or RecordBatch.
         schema : Sequence of str, (str,DataType) pairs, or a {str:DataType,} dict
             The DataFrame schema may be declared in several ways:
 
@@ -186,7 +187,7 @@ class DataFrame:
         polars.io.read_parquet
         """
     @classmethod
-    def _read_avro(cls, source: str | Path | BinaryIO | bytes) -> Self:
+    def _read_avro(cls, source: str | Path | IO[bytes] | bytes) -> Self:
         """
         Read into a DataFrame from Apache Avro format.
 
@@ -354,7 +355,7 @@ class DataFrame:
     def __copy__(self) -> Self: ...
     def __deepcopy__(self, memo: None = ...) -> Self: ...
     def _ipython_key_completions_(self) -> list[str]: ...
-    def _repr_html_(self, **kwargs: Any) -> str:
+    def _repr_html_(self) -> str:
         """
         Format output data in HTML for display in Jupyter Notebooks.
 
@@ -782,7 +783,7 @@ class DataFrame:
         >>> df.write_ndjson()
         \'{"foo":1,"bar":6}\\n{"foo":2,"bar":7}\\n{"foo":3,"bar":8}\\n\'
         '''
-    def write_csv(self, file: BytesIO | TextIOWrapper | str | Path | None = ...) -> str | None:
+    def write_csv(self, file: str | Path | IO[str] | IO[bytes] | None = ...) -> str | None:
         '''
         Write to comma-separated values (CSV) file.
 
@@ -853,7 +854,7 @@ class DataFrame:
         >>> path: pathlib.Path = dirpath / "new_file.csv"
         >>> df.write_csv(path, separator=",")
         '''
-    def write_avro(self, file: BinaryIO | BytesIO | str | Path, compression: AvroCompression = ..., name: str = ...) -> None:
+    def write_avro(self, file: str | Path | IO[bytes], compression: AvroCompression = ..., name: str = ...) -> None:
         '''
         Write to Apache Avro file.
 
@@ -880,7 +881,7 @@ class DataFrame:
         >>> path: pathlib.Path = dirpath / "new_file.avro"
         >>> df.write_avro(path)
         '''
-    def write_excel(self, workbook: Workbook | BytesIO | Path | str | None = ..., worksheet: str | None = ...) -> Workbook:
+    def write_excel(self, workbook: Workbook | IO[bytes] | Path | str | None = ..., worksheet: str | None = ...) -> Workbook:
         '''
         Write frame data to a table in an Excel workbook/worksheet.
 
@@ -1205,7 +1206,7 @@ class DataFrame:
         ...     sheet_zoom=125,
         ... )
         '''
-    def write_ipc(self, file: BinaryIO | BytesIO | str | Path | None, compression: IpcCompression = ...) -> BytesIO | None:
+    def write_ipc(self, file: str | Path | IO[bytes] | None, compression: IpcCompression = ...) -> BytesIO | None:
         '''
         Write to Arrow IPC binary stream or Feather file.
 
@@ -1240,7 +1241,7 @@ class DataFrame:
         >>> path: pathlib.Path = dirpath / "new_file.arrow"
         >>> df.write_ipc(path)
         '''
-    def write_ipc_stream(self, file: BinaryIO | BytesIO | str | Path | None, compression: IpcCompression = ...) -> BytesIO | None:
+    def write_ipc_stream(self, file: str | Path | IO[bytes] | None, compression: IpcCompression = ...) -> BytesIO | None:
         '''
         Write to Arrow IPC record batch stream.
 
@@ -1952,10 +1953,11 @@ class DataFrame:
 
         Customize which percentiles are displayed, applying linear interpolation:
 
-        >>> df.describe(
-        ...     percentiles=[0.1, 0.3, 0.5, 0.7, 0.9],
-        ...     interpolation="linear",
-        ... )
+        >>> with pl.Config(tbl_rows=12):
+        ...     df.describe(
+        ...         percentiles=[0.1, 0.3, 0.5, 0.7, 0.9],
+        ...         interpolation="linear",
+        ...     )
         shape: (11, 7)
         ┌────────────┬──────────┬──────────┬──────────┬──────┬────────────┬──────────┐
         │ statistic  ┆ float    ┆ int      ┆ bool     ┆ str  ┆ date       ┆ time     │
@@ -2845,7 +2847,7 @@ class DataFrame:
         '''
     def rolling(self, index_column: IntoExpr) -> RollingGroupBy:
         '''
-        Create rolling groups based on a time, Int32, or Int64 column.
+        Create rolling groups based on a temporal or integer column.
 
         Different from a `group_by_dynamic` the windows are now determined by the
         individual values and are not of constant intervals. For constant intervals use
@@ -2889,11 +2891,6 @@ class DataFrame:
         not be 24 hours, due to daylight savings). Similarly for "calendar week",
         "calendar month", "calendar quarter", and "calendar year".
 
-        In case of a rolling operation on an integer column, the windows are defined by:
-
-        - **"1i"      # length 1**
-        - **"10i"     # length 10**
-
         Parameters
         ----------
         index_column
@@ -2903,8 +2900,8 @@ class DataFrame:
             then it must be sorted in ascending order within each group).
 
             In case of a rolling operation on indices, dtype needs to be one of
-            {Int32, Int64}. Note that Int32 gets temporarily cast to Int64, so if
-            performance matters use an Int64 column.
+            {UInt32, UInt64, Int32, Int64}. Note that the first three get temporarily
+            cast to Int64, so if performance matters use an Int64 column.
         period
             length of the window - must be non-negative
         offset
@@ -4360,7 +4357,8 @@ class DataFrame:
         ----------
         values
             Column values to aggregate. Can be multiple columns if the *columns*
-            arguments contains multiple columns as well.
+            arguments contains multiple columns as well. If None, all remaining columns
+            will be used.
         index
             One or multiple keys to group by.
         columns
@@ -5847,6 +5845,9 @@ class DataFrame:
         '''
         Approximate count of unique values.
 
+        .. deprecated:: 0.20.11
+            Use `select(pl.all().approx_n_unique())` instead.
+
         This is done using the HyperLogLog++ algorithm for cardinality estimation.
 
         Examples
@@ -5857,7 +5858,7 @@ class DataFrame:
         ...         "b": [1, 2, 1, 1],
         ...     }
         ... )
-        >>> df.approx_n_unique()
+        >>> df.approx_n_unique()  # doctest: +SKIP
         shape: (1, 2)
         ┌─────┬─────┐
         │ a   ┆ b   │

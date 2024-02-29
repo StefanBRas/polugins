@@ -1,9 +1,11 @@
-#: version 0.20.10
+#: version 0.20.13
 import P
 import np as np
 import pl
+
 from polars.polars import PyExpr
 from datetime import timedelta
+from pathlib import Path
 from polars.datatypes.classes import Int64 as Int64
 from polars.datatypes.convert import is_polars_dtype as is_polars_dtype, py_type_to_dtype as py_type_to_dtype
 from polars.dependencies import _check_for_numpy as _check_for_numpy
@@ -19,10 +21,10 @@ from polars.expr.string import ExprStringNameSpace as ExprStringNameSpace
 from polars.expr.struct import ExprStructNameSpace as ExprStructNameSpace
 from polars.meta.thread_pool import thread_pool_size as thread_pool_size
 from polars.utils._parse_expr_input import parse_as_expression as parse_as_expression, parse_as_list_of_expressions as parse_as_list_of_expressions, parse_predicates_constraints_as_expression as parse_predicates_constraints_as_expression
-from polars.utils.convert import _negate_duration as _negate_duration, _timedelta_to_pl_duration as _timedelta_to_pl_duration
+from polars.utils.convert import negate_duration_string as negate_duration_string, parse_as_duration_string as parse_as_duration_string
 from polars.utils.deprecation import deprecate_function as deprecate_function, deprecate_nonkeyword_arguments as deprecate_nonkeyword_arguments, deprecate_renamed_function as deprecate_renamed_function, deprecate_renamed_parameter as deprecate_renamed_parameter, deprecate_saturating as deprecate_saturating, issue_deprecation_warning as issue_deprecation_warning
 from polars.utils.unstable import issue_unstable_warning as issue_unstable_warning, unstable as unstable
-from polars.utils.various import find_stacklevel as find_stacklevel, no_default as no_default, sphinx_accessor as sphinx_accessor, warn_null_comparison as warn_null_comparison
+from polars.utils.various import find_stacklevel as find_stacklevel, no_default as no_default, normalize_filepath as normalize_filepath, sphinx_accessor as sphinx_accessor, warn_null_comparison as warn_null_comparison
 from typing import Any, Callable, ClassVar as _ClassVar, Collection, Iterable, Mapping, NoReturn, Sequence
 
 TYPE_CHECKING: bool
@@ -33,8 +35,8 @@ class Expr:
     class _map_batches_wrapper:
         def __init__(self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None) -> None: ...
         def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
-    _pyexpr: _ClassVar[None] = ...
     _accessors: _ClassVar[set] = ...
+    _pyexpr: PyExpr
     @classmethod
     def _from_pyexpr(cls, pyexpr: PyExpr) -> Self: ...
     def _repr_html_(self) -> str: ...
@@ -72,15 +74,29 @@ class Expr:
     def __array_ufunc__(self, ufunc: Callable[..., Any], method: str, *inputs: Any, **kwargs: Any) -> Self:
         """Numpy universal functions."""
     @classmethod
-    def from_json(cls, value: str) -> Self:
-        """
-        Read an expression from a JSON encoded string to construct an Expression.
+    def deserialize(cls, source: str | Path | IOBase) -> Self:
+        '''
+        Read an expression from a JSON file.
 
         Parameters
         ----------
-        value
-            JSON encoded string value
-        """
+        source
+            Path to a file or a file-like object (by file-like object, we refer to
+            objects that have a `read()` method, such as a file handler (e.g.
+            via builtin `open` function) or `BytesIO`).
+
+        See Also
+        --------
+        Expr.meta.serialize
+
+        Examples
+        --------
+        >>> from io import StringIO
+        >>> expr = pl.col("foo").sum().over("bar")
+        >>> json = expr.meta.serialize()
+        >>> pl.Expr.deserialize(StringIO(json))  # doctest: +ELLIPSIS
+        <Expr [\'col("foo").sum().over([col("ba…\'] at ...>
+        '''
     def to_physical(self) -> Self:
         '''
         Cast to physical representation of the logical dtype.
@@ -2767,7 +2783,7 @@ class Expr:
         '''
     def rolling(self, index_column: str) -> Self:
         '''
-        Create rolling groups based on a time, Int32, or Int64 column.
+        Create rolling groups based on a temporal or integer column.
 
         If you have a time series `<t_0, t_1, ..., t_n>`, then by default the
         windows created will be
@@ -2807,11 +2823,6 @@ class Expr:
         not be 24 hours, due to daylight savings). Similarly for "calendar week",
         "calendar month", "calendar quarter", and "calendar year".
 
-        In case of a rolling operation on an integer column, the windows are defined by:
-
-        - "1i"      # length 1
-        - "10i"     # length 10
-
         Parameters
         ----------
         index_column
@@ -2819,8 +2830,8 @@ class Expr:
             Often of type Date/Datetime.
             This column must be sorted in ascending order.
             In case of a rolling group by on indices, dtype needs to be one of
-            {Int32, Int64}. Note that Int32 gets temporarily cast to Int64, so if
-            performance matters use an Int64 column.
+            {UInt32, UInt64, Int32, Int64}. Note that the first three get temporarily
+            cast to Int64, so if performance matters use an Int64 column.
         period
             length of the window - must be non-negative
         offset
@@ -4860,16 +4871,13 @@ class Expr:
         If `by` has not been specified (the default), the window at a given row will
         include the row itself, and the `window_size - 1` elements before it.
 
-        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="left"`
-        means the windows will be:
+        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="right"`
+        (the default) means the windows will be:
 
-            - [t_0 - window_size, t_0)
-            - [t_1 - window_size, t_1)
+            - (t_0 - window_size, t_0]
+            - (t_1 - window_size, t_1]
             - ...
-            - [t_n - window_size, t_n)
-
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
+            - (t_n - window_size, t_n]
 
         Parameters
         ----------
@@ -5054,16 +5062,13 @@ class Expr:
         If `by` has not been specified (the default), the window at a given row will
         include the row itself, and the `window_size - 1` elements before it.
 
-        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="left"`
-        means the windows will be:
+        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="right"`
+        (the default) means the windows will be:
 
-            - [t_0 - window_size, t_0)
-            - [t_1 - window_size, t_1)
+            - (t_0 - window_size, t_0]
+            - (t_1 - window_size, t_1]
             - ...
-            - [t_n - window_size, t_n)
-
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
+            - (t_n - window_size, t_n]
 
         Parameters
         ----------
@@ -5273,16 +5278,13 @@ class Expr:
         If `by` has not been specified (the default), the window at a given row will
         include the row itself, and the `window_size - 1` elements before it.
 
-        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="left"`
-        means the windows will be:
+        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="right"`
+        (the default) means the windows will be:
 
-            - [t_0 - window_size, t_0)
-            - [t_1 - window_size, t_1)
+            - (t_0 - window_size, t_0]
+            - (t_1 - window_size, t_1]
             - ...
-            - [t_n - window_size, t_n)
-
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
+            - (t_n - window_size, t_n]
 
         Parameters
         ----------
@@ -5496,16 +5498,13 @@ class Expr:
         If `by` has not been specified (the default), the window at a given row will
         include the row itself, and the `window_size - 1` elements before it.
 
-        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="left"`
-        means the windows will be:
+        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="right"`
+        (the default) means the windows will be:
 
-            - [t_0 - window_size, t_0)
-            - [t_1 - window_size, t_1)
+            - (t_0 - window_size, t_0]
+            - (t_1 - window_size, t_1]
             - ...
-            - [t_n - window_size, t_n)
-
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
+            - (t_n - window_size, t_n]
 
         Parameters
         ----------
@@ -5719,8 +5718,6 @@ class Expr:
             - ...
             - [t_n - window_size, t_n)
 
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
 
         Parameters
         ----------
@@ -5932,16 +5929,13 @@ class Expr:
         If `by` has not been specified (the default), the window at a given row will
         include the row itself, and the `window_size - 1` elements before it.
 
-        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="left"`
-        means the windows will be:
+        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="right"`
+        (the default) means the windows will be:
 
-            - [t_0 - window_size, t_0)
-            - [t_1 - window_size, t_1)
+            - (t_0 - window_size, t_0]
+            - (t_1 - window_size, t_1]
             - ...
-            - [t_n - window_size, t_n)
-
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
+            - (t_n - window_size, t_n]
 
         Parameters
         ----------
@@ -6161,8 +6155,6 @@ class Expr:
             - ...
             - [t_n - window_size, t_n)
 
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
 
         Parameters
         ----------
@@ -6292,16 +6284,13 @@ class Expr:
         If `by` has not been specified (the default), the window at a given row will
         include the row itself, and the `window_size - 1` elements before it.
 
-        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="left"`
-        means the windows will be:
+        If you pass a `by` column `<t_0, t_1, ..., t_n>`, then `closed="right"`
+        (the default) means the windows will be:
 
-            - [t_0 - window_size, t_0)
-            - [t_1 - window_size, t_1)
+            - (t_0 - window_size, t_0]
+            - (t_1 - window_size, t_1]
             - ...
-            - [t_n - window_size, t_n)
-
-        With `closed="right"`, the left endpoint is not included and the right
-        endpoint is included.
+            - (t_n - window_size, t_n]
 
         Parameters
         ----------
@@ -7417,7 +7406,7 @@ class Expr:
             Divide by decaying adjustment factor in beginning periods to account for
             imbalance in relative weightings
 
-                - When `adjust=True` the EW function is calculated
+                - When `adjust=True` (the default) the EW function is calculated
                   using weights :math:`w_i = (1 - \\alpha)^i`
                 - When `adjust=False` the EW function is calculated
                   recursively by
@@ -7430,7 +7419,7 @@ class Expr:
         ignore_nulls
             Ignore missing values when calculating weights.
 
-                - When `ignore_nulls=False` (default), weights are based on absolute
+                - When `ignore_nulls=False`, weights are based on absolute
                   positions.
                   For example, the weights of :math:`x_0` and :math:`x_2` used in
                   calculating the final weighted average of
@@ -7438,7 +7427,7 @@ class Expr:
                   :math:`(1-\\alpha)^2` and :math:`1` if `adjust=True`, and
                   :math:`(1-\\alpha)^2` and :math:`\\alpha` if `adjust=False`.
 
-                - When `ignore_nulls=True`, weights are based
+                - When `ignore_nulls=True` (current default), weights are based
                   on relative positions. For example, the weights of
                   :math:`x_0` and :math:`x_2` used in calculating the final weighted
                   average of [:math:`x_0`, None, :math:`x_2`] are
@@ -7448,7 +7437,7 @@ class Expr:
         Examples
         --------
         >>> df = pl.DataFrame({"a": [1, 2, 3]})
-        >>> df.select(pl.col("a").ewm_mean(com=1))
+        >>> df.select(pl.col("a").ewm_mean(com=1, ignore_nulls=False))
         shape: (3, 1)
         ┌──────────┐
         │ a        │
@@ -7488,7 +7477,7 @@ class Expr:
             Divide by decaying adjustment factor in beginning periods to account for
             imbalance in relative weightings
 
-                - When `adjust=True` the EW function is calculated
+                - When `adjust=True` (the default) the EW function is calculated
                   using weights :math:`w_i = (1 - \\alpha)^i`
                 - When `adjust=False` the EW function is calculated
                   recursively by
@@ -7504,7 +7493,7 @@ class Expr:
         ignore_nulls
             Ignore missing values when calculating weights.
 
-                - When `ignore_nulls=False` (default), weights are based on absolute
+                - When `ignore_nulls=False`, weights are based on absolute
                   positions.
                   For example, the weights of :math:`x_0` and :math:`x_2` used in
                   calculating the final weighted average of
@@ -7512,7 +7501,7 @@ class Expr:
                   :math:`(1-\\alpha)^2` and :math:`1` if `adjust=True`, and
                   :math:`(1-\\alpha)^2` and :math:`\\alpha` if `adjust=False`.
 
-                - When `ignore_nulls=True`, weights are based
+                - When `ignore_nulls=True` (current default), weights are based
                   on relative positions. For example, the weights of
                   :math:`x_0` and :math:`x_2` used in calculating the final weighted
                   average of [:math:`x_0`, None, :math:`x_2`] are
@@ -7522,7 +7511,7 @@ class Expr:
         Examples
         --------
         >>> df = pl.DataFrame({"a": [1, 2, 3]})
-        >>> df.select(pl.col("a").ewm_std(com=1))
+        >>> df.select(pl.col("a").ewm_std(com=1, ignore_nulls=False))
         shape: (3, 1)
         ┌──────────┐
         │ a        │
@@ -7562,7 +7551,7 @@ class Expr:
             Divide by decaying adjustment factor in beginning periods to account for
             imbalance in relative weightings
 
-                - When `adjust=True` the EW function is calculated
+                - When `adjust=True` (the default) the EW function is calculated
                   using weights :math:`w_i = (1 - \\alpha)^i`
                 - When `adjust=False` the EW function is calculated
                   recursively by
@@ -7578,7 +7567,7 @@ class Expr:
         ignore_nulls
             Ignore missing values when calculating weights.
 
-                - When `ignore_nulls=False` (default), weights are based on absolute
+                - When `ignore_nulls=False`, weights are based on absolute
                   positions.
                   For example, the weights of :math:`x_0` and :math:`x_2` used in
                   calculating the final weighted average of
@@ -7586,7 +7575,7 @@ class Expr:
                   :math:`(1-\\alpha)^2` and :math:`1` if `adjust=True`, and
                   :math:`(1-\\alpha)^2` and :math:`\\alpha` if `adjust=False`.
 
-                - When `ignore_nulls=True`, weights are based
+                - When `ignore_nulls=True` (current default), weights are based
                   on relative positions. For example, the weights of
                   :math:`x_0` and :math:`x_2` used in calculating the final weighted
                   average of [:math:`x_0`, None, :math:`x_2`] are
@@ -7596,7 +7585,7 @@ class Expr:
         Examples
         --------
         >>> df = pl.DataFrame({"a": [1, 2, 3]})
-        >>> df.select(pl.col("a").ewm_var(com=1))
+        >>> df.select(pl.col("a").ewm_var(com=1, ignore_nulls=False))
         shape: (3, 1)
         ┌──────────┐
         │ a        │
@@ -8399,6 +8388,21 @@ class Expr:
             Use `pl.first()`, to keep the original value.
         return_dtype
             Set return dtype to override automatic return dtype determination.
+        """
+    @classmethod
+    def from_json(cls, value: str) -> Self:
+        """
+        Read an expression from a JSON encoded string to construct an Expression.
+
+        .. deprecated:: 0.20.11
+            This method has been renamed to :meth:`deserialize`.
+            Note that the new method operates on file-like inputs rather than strings.
+            Enclose your input in `io.StringIO` to keep the same behavior.
+
+        Parameters
+        ----------
+        value
+            JSON encoded string value
         """
     @property
     def bin(self): ...
