@@ -240,17 +240,17 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polars"
-version = "0.20.11"
+version = "0.20.13"
 description = "Blazingly fast DataFrame library"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "polars-0.20.11-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:3d8a3fc5ca29daea730806eaac2625446b1a448cf99c2162eef22c9f6d645b52"},
-    {file = "polars-0.20.11-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:ebc75002068308d9bc4242437332c4a91e0c56dee4844952208e481e7bc81db6"},
-    {file = "polars-0.20.11-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a2f8664b0ea1a4e0cfb9594e09b6253078c1d216f1620345ba46b7354af605b0"},
-    {file = "polars-0.20.11-cp38-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:3a78f2a142dbb654c9cc06a99a7c327f881bffc71012c7d9a2c6cd1a0fb228b7"},
-    {file = "polars-0.20.11-cp38-abi3-win_amd64.whl", hash = "sha256:ab742ebb9623a24626c829a58174d2f70e2e9996a3e3449c2c655a978dfc9e34"},
-    {file = "polars-0.20.11.tar.gz", hash = "sha256:7a0b1a566c31925475815aadb4280048aeba740141dd1fe5d673e7621b9a758a"},
+    {file = "polars-0.20.13-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:63bb00eb32b151a949666f8ae050bd09159bca572c0eab17a17abe6ac50fc8e0"},
+    {file = "polars-0.20.13-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:4ed694808252968dcda486dcd6009b8230bada83924d4f5d3359dbe3db6ab8e5"},
+    {file = "polars-0.20.13-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1557e8947a263cefc1937cd047800678fbae8c9a475e6dada5b7dc6557180a4f"},
+    {file = "polars-0.20.13-cp38-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:8694d6fc307256e9e36b03975ccc89ce89290d6d661f75eb60e14e304d1e0968"},
+    {file = "polars-0.20.13-cp38-abi3-win_amd64.whl", hash = "sha256:3917868d0a0331436a426f7acda24b2806e7f2458ee91f581d44765c9e87abe8"},
+    {file = "polars-0.20.13.tar.gz", hash = "sha256:b3115c7499705d8f1a790add5806747a2eb3f19660d277e8e823199dcb66aeaf"},
 ]
 
 [package.extras]

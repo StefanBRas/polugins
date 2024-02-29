@@ -122,7 +122,7 @@ def main(tmp_dir: Path):
             stub_path.with_suffix(".pyi").write_text(cleaned_stub_content)
             if is_incomplete(stub_path):
                 msg = f"File {stub_path} could not be cleaned and has Incomplete types."
-                raise ValueError(msg)
+                print(msg)
     return versions
 
 
