@@ -2,7 +2,7 @@
 import P
 import np as np
 import pl
-from builtins import PyExpr
+from polars.polars import PyExpr
 from datetime import timedelta
 from polars.datatypes.classes import Int64 as Int64
 from polars.datatypes.convert import is_polars_dtype as is_polars_dtype, py_type_to_dtype as py_type_to_dtype

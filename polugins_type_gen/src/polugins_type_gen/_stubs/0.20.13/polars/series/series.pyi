@@ -3,7 +3,7 @@ import np as np
 import pa as pa
 import pd as pd
 
-from builtins import PySeries
+from polars.polars import PySeries
 from datetime import date, datetime, timedelta
 from polars.datatypes.classes import Array as Array, Boolean as Boolean, Categorical as Categorical, Date as Date, Datetime as Datetime, Decimal as Decimal, Duration as Duration, Enum as Enum, Float64 as Float64, Int16 as Int16, Int32 as Int32, Int64 as Int64, Int8 as Int8, List as List, Null as Null, Object as Object, String as String, Time as Time, UInt32 as UInt32, UInt64 as UInt64, UInt8 as UInt8, Unknown as Unknown
 from polars.datatypes.convert import dtype_to_ctype as dtype_to_ctype, is_polars_dtype as is_polars_dtype, maybe_cast as maybe_cast, numpy_char_code_to_dtype as numpy_char_code_to_dtype, py_type_to_dtype as py_type_to_dtype, supported_numpy_char_code as supported_numpy_char_code
@@ -33,8 +33,8 @@ _PYARROW_AVAILABLE: bool
 BUILDING_SPHINX_DOCS: None
 
 class Series:
-    _accessors: _ClassVar[set] = ...
-    _s: Incomplete
+    _accessors: _ClassVar[set[str]] = ...
+    _s: PySeries
     def __init__(self, name: str | ArrayLike | None = ..., values: ArrayLike | None = ..., dtype: PolarsDataType | None = ...) -> None: ...
     @classmethod
     def _from_pyseries(cls, pyseries: PySeries) -> Self: ...

@@ -3,7 +3,7 @@ import P
 import np as np
 import pl
 
-from builtins import PyExpr
+from polars.polars import PyExpr
 from datetime import timedelta
 from pathlib import Path
 from polars.datatypes.classes import Int64 as Int64
@@ -36,7 +36,7 @@ class Expr:
         def __init__(self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None) -> None: ...
         def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
     _accessors: _ClassVar[set] = ...
-    _pyexpr: Incomplete
+    _pyexpr: PyExpr
     @classmethod
     def _from_pyexpr(cls, pyexpr: PyExpr) -> Self: ...
     def _repr_html_(self) -> str: ...

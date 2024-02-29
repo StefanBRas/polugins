@@ -7,7 +7,7 @@ import pa as pa
 import pd as pd
 from _io import BytesIO, TextIOWrapper
 
-from builtins import PyDataFrame
+from polars.polars import PyDataFrame
 from pathlib import Path
 from polars.dataframe._html import NotebookFormatter as NotebookFormatter
 from polars.dataframe.group_by import DynamicGroupBy as DynamicGroupBy, GroupBy as GroupBy, RollingGroupBy as RollingGroupBy

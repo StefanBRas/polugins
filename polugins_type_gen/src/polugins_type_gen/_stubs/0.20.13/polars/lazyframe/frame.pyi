@@ -3,7 +3,7 @@ import P
 import np
 import pa
 
-from builtins import PyLazyFrame
+from polars.polars import PyLazyFrame
 from pathlib import Path
 from polars.convert import from_dict as from_dict
 from polars.datatypes.classes import Boolean as Boolean, Categorical as Categorical, DataTypeGroup as DataTypeGroup, Date as Date, Datetime as Datetime, Duration as Duration, Enum as Enum, Float32 as Float32, Float64 as Float64, Int16 as Int16, Int32 as Int32, Int64 as Int64, Int8 as Int8, Null as Null, Object as Object, String as String, Time as Time, UInt16 as UInt16, UInt32 as UInt32, UInt64 as UInt64, UInt8 as UInt8, Unknown as Unknown
