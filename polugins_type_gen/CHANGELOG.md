@@ -1,5 +1,8 @@
 
 # Unreleased
+# 0.5.3 
+- Added polars stubs for version 0.20.14
+- Formated stubs with ruff.
 # 0.5.2
 - Added polars stubs for version 0.20.13
 - Fixed some wrong imports in version 0.20.10
