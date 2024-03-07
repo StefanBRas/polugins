@@ -2,8 +2,17 @@
 import P
 import np as np
 from datetime import timedelta
-from polars.datatypes.classes import Categorical as Categorical, FLOAT_DTYPES as FLOAT_DTYPES, Struct as Struct, UInt32 as UInt32, Utf8 as Utf8
-from polars.datatypes.convert import is_polars_dtype as is_polars_dtype, py_type_to_dtype as py_type_to_dtype
+from polars.datatypes.classes import (
+    Categorical as Categorical,
+    FLOAT_DTYPES as FLOAT_DTYPES,
+    Struct as Struct,
+    UInt32 as UInt32,
+    Utf8 as Utf8,
+)
+from polars.datatypes.convert import (
+    is_polars_dtype as is_polars_dtype,
+    py_type_to_dtype as py_type_to_dtype,
+)
 from polars.dependencies import _check_for_numpy as _check_for_numpy
 from polars.expr.binary import ExprBinaryNameSpace as ExprBinaryNameSpace
 from polars.expr.categorical import ExprCatNameSpace as ExprCatNameSpace
@@ -12,7 +21,10 @@ from polars.expr.list import ExprListNameSpace as ExprListNameSpace
 from polars.expr.meta import ExprMetaNameSpace as ExprMetaNameSpace
 from polars.expr.string import ExprStringNameSpace as ExprStringNameSpace
 from polars.expr.struct import ExprStructNameSpace as ExprStructNameSpace
-from polars.utils._parse_expr_input import expr_to_lit_or_expr as expr_to_lit_or_expr, selection_to_pyexpr_list as selection_to_pyexpr_list
+from polars.utils._parse_expr_input import (
+    expr_to_lit_or_expr as expr_to_lit_or_expr,
+    selection_to_pyexpr_list as selection_to_pyexpr_list,
+)
 from polars.utils.convert import _timedelta_to_pl_duration as _timedelta_to_pl_duration
 from polars.utils.decorators import deprecated_alias as deprecated_alias, redirect as redirect
 from polars.utils.meta import threadpool_size as threadpool_size
@@ -63,10 +75,12 @@ class Expr:
     def __rtruediv__(self, other: Any) -> Self: ...
     def __xor__(self, other: Expr) -> Self: ...
     def __rxor__(self, other: Expr) -> Self: ...
-    def __array_ufunc__(self, ufunc: Callable[..., Any], method: str, *inputs: Any, **kwargs: Any) -> Self:
+    def __array_ufunc__(
+        self, ufunc: Callable[..., Any], method: str, *inputs: Any, **kwargs: Any
+    ) -> Self:
         """Numpy universal functions."""
     def to_physical(self) -> Self:
-        '''
+        """
         Cast to physical representation of the logical dtype.
 
         - :func:`polars.datatypes.Date` -> :func:`polars.datatypes.Int32`
@@ -106,9 +120,9 @@ class Expr:
         │ a    ┆ 0             │
         └──────┴───────────────┘
 
-        '''
+        """
     def any(self) -> Self:
-        '''
+        """
         Check if any boolean value in a Boolean column is `True`.
 
         Returns
@@ -128,9 +142,9 @@ class Expr:
         │ true ┆ false │
         └──────┴───────┘
 
-        '''
+        """
     def all(self) -> Self:
-        '''
+        """
         Check if all boolean values in a Boolean column are `True`.
 
         This method is an expression - not to be confused with
@@ -155,9 +169,9 @@ class Expr:
         │ true ┆ false ┆ false │
         └──────┴───────┴───────┘
 
-        '''
+        """
     def arg_true(self) -> Self:
-        '''
+        """
         Return indices where expression evaluates `True`.
 
         .. warning::
@@ -184,9 +198,9 @@ class Expr:
         Series.arg_true : Return indices where Series is True
         pl.arg_where
 
-        '''
+        """
     def sqrt(self) -> Self:
-        '''
+        """
         Compute the square root of the elements.
 
         Examples
@@ -204,9 +218,9 @@ class Expr:
         │ 2.0      │
         └──────────┘
 
-        '''
+        """
     def log10(self) -> Self:
-        '''
+        """
         Compute the base 10 logarithm of the input array, element-wise.
 
         Examples
@@ -224,9 +238,9 @@ class Expr:
         │ 0.60206 │
         └─────────┘
 
-        '''
+        """
     def exp(self) -> Self:
-        '''
+        """
         Compute the exponential, element-wise.
 
         Examples
@@ -244,9 +258,9 @@ class Expr:
         │ 54.59815 │
         └──────────┘
 
-        '''
+        """
     def alias(self, name: str) -> Self:
-        '''
+        """
         Rename the output of an expression.
 
         Parameters
@@ -294,9 +308,13 @@ class Expr:
         │ 3   ┆ null │
         └─────┴──────┘
 
-        '''
-    def exclude(self, columns: str | PolarsDataType | Iterable[str] | Iterable[PolarsDataType], *more_columns: str | PolarsDataType) -> Self:
-        '''
+        """
+    def exclude(
+        self,
+        columns: str | PolarsDataType | Iterable[str] | Iterable[PolarsDataType],
+        *more_columns: str | PolarsDataType,
+    ) -> Self:
+        """
         Exclude columns from a multi-column expression.
 
         Only works after a wildcard or regex column selection.
@@ -373,9 +391,9 @@ class Expr:
         │ null │
         └──────┘
 
-        '''
+        """
     def keep_name(self) -> Self:
-        '''
+        """
         Keep the original root name of the expression.
 
         Examples
@@ -415,8 +433,10 @@ class Expr:
         │ 5.0  ┆ 2.5      │
         └──────┴──────────┘
 
-        '''
-    def pipe(self, function: Callable[Concatenate[Expr, P], T], *args: P.args, **kwargs: P.kwargs) -> T:
+        """
+    def pipe(
+        self, function: Callable[Concatenate[Expr, P], T], *args: P.args, **kwargs: P.kwargs
+    ) -> T:
         '''
         Offers a structured way to apply a sequence of user-defined functions (UDFs).
 
@@ -461,7 +481,7 @@ class Expr:
 
         '''
     def prefix(self, prefix: str) -> Self:
-        '''
+        """
         Add a prefix to the root column name of the expression.
 
         Parameters
@@ -515,9 +535,9 @@ class Expr:
         │ 5   ┆ banana ┆ 1   ┆ beetle ┆ 1         ┆ banana         ┆ 5         ┆ beetle       │
         └─────┴────────┴─────┴────────┴───────────┴────────────────┴───────────┴──────────────┘
 
-        '''
+        """
     def suffix(self, suffix: str) -> Self:
-        '''
+        """
         Add a suffix to the root column name of the expression.
 
         Parameters
@@ -571,9 +591,9 @@ class Expr:
         │ 5   ┆ banana ┆ 1   ┆ beetle ┆ 1         ┆ banana         ┆ 5         ┆ beetle       │
         └─────┴────────┴─────┴────────┴───────────┴────────────────┴───────────┴──────────────┘
 
-        '''
+        """
     def map_alias(self, function: Callable[[str], str]) -> Self:
-        '''
+        """
         Rename the output of an expression by mapping a function over the root name.
 
         Parameters
@@ -613,9 +633,9 @@ class Expr:
         └───────────┴───────────┴─────┴─────┘
 
 
-        '''
+        """
     def is_not(self) -> Self:
-        '''
+        """
         Negate a boolean expression.
 
         Examples
@@ -649,9 +669,9 @@ class Expr:
         │ true  │
         └───────┘
 
-        '''
+        """
     def is_null(self) -> Self:
-        '''
+        """
         Returns a boolean Series indicating which values are null.
 
         Examples
@@ -676,9 +696,9 @@ class Expr:
         │ 5    ┆ 5.0 ┆ false    ┆ false    │
         └──────┴─────┴──────────┴──────────┘
 
-        '''
+        """
     def is_not_null(self) -> Self:
-        '''
+        """
         Returns a boolean Series indicating which values are not null.
 
         Examples
@@ -703,9 +723,9 @@ class Expr:
         │ 5    ┆ 5.0 ┆ true       ┆ true       │
         └──────┴─────┴────────────┴────────────┘
 
-        '''
+        """
     def is_finite(self) -> Self:
-        '''
+        """
         Returns a boolean Series indicating which values are finite.
 
         Returns
@@ -732,9 +752,9 @@ class Expr:
         │ true ┆ false │
         └──────┴───────┘
 
-        '''
+        """
     def is_infinite(self) -> Self:
-        '''
+        """
         Returns a boolean Series indicating which values are infinite.
 
         Returns
@@ -761,9 +781,9 @@ class Expr:
         │ false ┆ true  │
         └───────┴───────┘
 
-        '''
+        """
     def is_nan(self) -> Self:
-        '''
+        """
         Returns a boolean Series indicating which values are NaN.
 
         Notes
@@ -793,9 +813,9 @@ class Expr:
         │ 5    ┆ 5.0 ┆ false   │
         └──────┴─────┴─────────┘
 
-        '''
+        """
     def is_not_nan(self) -> Self:
-        '''
+        """
         Returns a boolean Series indicating which values are not NaN.
 
         Notes
@@ -825,9 +845,9 @@ class Expr:
         │ 5    ┆ 5.0 ┆ true         │
         └──────┴─────┴──────────────┘
 
-        '''
+        """
     def agg_groups(self) -> Self:
-        '''
+        """
         Get the group indexes of the group by operation.
 
         Should be used in aggregation context only.
@@ -858,9 +878,9 @@ class Expr:
         │ two   ┆ [3, 4, 5] │
         └───────┴───────────┘
 
-        '''
+        """
     def count(self) -> Self:
-        '''
+        """
         Count the number of values in this expression.
 
         Examples
@@ -876,9 +896,9 @@ class Expr:
         │ 3   ┆ 3   │
         └─────┴─────┘
 
-        '''
+        """
     def len(self) -> Self:
-        '''
+        """
         Count the number of values in this expression.
 
         Alias for :func:`count`.
@@ -901,9 +921,9 @@ class Expr:
         │ 3   ┆ 3   │
         └─────┴─────┘
 
-        '''
+        """
     def slice(self, offset: int | Expr, length: int | Expr | None = ...) -> Self:
-        '''
+        """
         Get a slice of this expression.
 
         Parameters
@@ -933,9 +953,9 @@ class Expr:
         │ 10  ┆ 4   │
         └─────┴─────┘
 
-        '''
+        """
     def append(self, other: Expr) -> Self:
-        '''
+        """
         Append expressions.
 
         This is done by adding the chunks of `other` to this `Series`.
@@ -966,9 +986,9 @@ class Expr:
         │ 10  ┆ 4    │
         └─────┴──────┘
 
-        '''
+        """
     def rechunk(self) -> Self:
-        '''
+        """
         Create a single chunk of memory for this Series.
 
         Examples
@@ -992,9 +1012,9 @@ class Expr:
         │ 2       │
         └─────────┘
 
-        '''
+        """
     def drop_nulls(self) -> Self:
-        '''
+        """
         Drop all null values.
 
         Warnings
@@ -1022,9 +1042,9 @@ class Expr:
         │ NaN │
         └─────┘
 
-        '''
+        """
     def drop_nans(self) -> Self:
-        '''
+        """
         Drop floating point NaN values.
 
         Warnings
@@ -1052,9 +1072,9 @@ class Expr:
         │ 4.0  │
         └──────┘
 
-        '''
+        """
     def cumsum(self) -> Self:
-        '''
+        """
         Get an array with the cumulative sum computed at every element.
 
         Parameters
@@ -1116,9 +1136,9 @@ class Expr:
         │ null   ┆ null         ┆ 43                      │
         └────────┴──────────────┴─────────────────────────┘
 
-        '''
+        """
     def cumprod(self) -> Self:
-        '''
+        """
         Get an array with the cumulative product computed at every element.
 
         Parameters
@@ -1152,9 +1172,9 @@ class Expr:
         │ 24  ┆ 4         │
         └─────┴───────────┘
 
-        '''
+        """
     def cummin(self) -> Self:
-        '''
+        """
         Get an array with the cumulative min computed at every element.
 
         Parameters
@@ -1183,9 +1203,9 @@ class Expr:
         │ 1   ┆ 4         │
         └─────┴───────────┘
 
-        '''
+        """
     def cummax(self) -> Self:
-        '''
+        """
         Get an array with the cumulative max computed at every element.
 
         Parameters
@@ -1242,9 +1262,9 @@ class Expr:
         │ null   ┆ null         ┆ 16                      │
         └────────┴──────────────┴─────────────────────────┘
 
-        '''
+        """
     def cumcount(self) -> Self:
-        '''
+        """
         Get an array with the cumulative count computed at every element.
 
         Counting from 0 to len
@@ -1275,9 +1295,9 @@ class Expr:
         │ 3   ┆ 0         │
         └─────┴───────────┘
 
-        '''
+        """
     def floor(self) -> Self:
-        '''
+        """
         Rounds down to the nearest integer value.
 
         Only works on floating point Series.
@@ -1298,9 +1318,9 @@ class Expr:
         │ 1.0 │
         └─────┘
 
-        '''
+        """
     def ceil(self) -> Self:
-        '''
+        """
         Rounds up to the nearest integer value.
 
         Only works on floating point Series.
@@ -1321,9 +1341,9 @@ class Expr:
         │ 2.0 │
         └─────┘
 
-        '''
+        """
     def round(self, decimals: int = ...) -> Self:
-        '''
+        """
         Round underlying floating point data by `decimals` digits.
 
         Parameters
@@ -1347,9 +1367,9 @@ class Expr:
         │ 1.2 │
         └─────┘
 
-        '''
+        """
     def dot(self, other: Expr | str) -> Self:
-        '''
+        """
         Compute the dot/inner product between two Expressions.
 
         Parameters
@@ -1375,9 +1395,9 @@ class Expr:
         │ 44  │
         └─────┘
 
-        '''
+        """
     def mode(self) -> Self:
-        '''
+        """
         Compute the most occurring value(s).
 
         Can return multiple Values.
@@ -1401,9 +1421,9 @@ class Expr:
         │ 1   ┆ 2   │
         └─────┴─────┘
 
-        '''
+        """
     def cast(self, dtype: PolarsDataType | type[Any]) -> Self:
-        '''
+        """
         Cast between data types.
 
         Parameters
@@ -1439,9 +1459,9 @@ class Expr:
         │ 3.0 ┆ 6   │
         └─────┴─────┘
 
-        '''
+        """
     def sort(self) -> Self:
-        '''
+        """
         Sort this column.
 
         When used in a projection/selection context, the whole column is sorted.
@@ -1517,9 +1537,9 @@ class Expr:
         │ one   ┆ [1, 2, 98] │
         └───────┴────────────┘
 
-        '''
+        """
     def top_k(self, k: int = ...) -> Self:
-        '''
+        """
         Return the `k` largest elements.
 
         This has time complexity:
@@ -1561,9 +1581,9 @@ class Expr:
         │ 2     ┆ 98       │
         └───────┴──────────┘
 
-        '''
+        """
     def bottom_k(self, k: int = ...) -> Self:
-        '''
+        """
         Return the `k` smallest elements.
 
         This has time complexity:
@@ -1605,9 +1625,9 @@ class Expr:
         │ 2     ┆ 98       │
         └───────┴──────────┘
 
-        '''
+        """
     def arg_sort(self) -> Self:
-        '''
+        """
         Get the index values that would sort this column.
 
         Parameters
@@ -1641,9 +1661,9 @@ class Expr:
         │ 2   │
         └─────┘
 
-        '''
+        """
     def arg_max(self) -> Self:
-        '''
+        """
         Get the index of the maximal value.
 
         Examples
@@ -1663,9 +1683,9 @@ class Expr:
         │ 2   │
         └─────┘
 
-        '''
+        """
     def arg_min(self) -> Self:
-        '''
+        """
         Get the index of the minimal value.
 
         Examples
@@ -1685,9 +1705,11 @@ class Expr:
         │ 1   │
         └─────┘
 
-        '''
-    def search_sorted(self, element: Expr | int | float | Series, side: SearchSortedSide = ...) -> Self:
-        '''
+        """
+    def search_sorted(
+        self, element: Expr | int | float | Series, side: SearchSortedSide = ...
+    ) -> Self:
+        """
         Find indices where elements should be inserted to maintain order.
 
         .. math:: a[i-1] < v <= a[i]
@@ -1724,9 +1746,9 @@ class Expr:
         │ 0    ┆ 2     ┆ 4   │
         └──────┴───────┴─────┘
 
-        '''
+        """
     def sort_by(self, by: IntoExpr | Iterable[IntoExpr], *more_by: IntoExpr) -> Self:
-        '''
+        """
         Sort this column by the ordering of other columns.
 
         When used in a projection/selection context, the whole column is sorted.
@@ -1843,9 +1865,9 @@ class Expr:
         │ b     ┆ 2      ┆ 5      |
         └───────┴────────┴────────┘
 
-        '''
+        """
     def take(self, indices: int | list[int] | Expr | Series | np.ndarray[Any, Any]) -> Self:
-        '''
+        """
         Take values by index.
 
         Parameters
@@ -1883,9 +1905,9 @@ class Expr:
         │ two   ┆ 99    │
         └───────┴───────┘
 
-        '''
+        """
     def shift(self, periods: int = ...) -> Self:
-        '''
+        """
         Shift the values by a given period.
 
         Parameters
@@ -1909,9 +1931,9 @@ class Expr:
         │ 3    │
         └──────┘
 
-        '''
+        """
     def shift_and_fill(self, fill_value: int | float | bool | str | Expr | list[Any]) -> Self:
-        '''
+        """
         Shift the values by a given period and fill the resulting null values.
 
         Parameters
@@ -1937,9 +1959,14 @@ class Expr:
         │ 3   │
         └─────┘
 
-        '''
-    def fill_null(self, value: Any | None = ..., strategy: FillNullStrategy | None = ..., limit: int | None = ...) -> Self:
-        '''
+        """
+    def fill_null(
+        self,
+        value: Any | None = ...,
+        strategy: FillNullStrategy | None = ...,
+        limit: int | None = ...,
+    ) -> Self:
+        """
         Fill null values using the specified value or strategy.
 
         To interpolate over null values see interpolate.
@@ -1996,9 +2023,9 @@ class Expr:
         │ 2   ┆ 6   │
         └─────┴─────┘
 
-        '''
+        """
     def fill_nan(self, value: int | float | Expr | None) -> Self:
-        '''
+        """
         Fill floating point NaN value with a fill value.
 
         Examples
@@ -2021,9 +2048,9 @@ class Expr:
         │ zero ┆ 6.0  │
         └──────┴──────┘
 
-        '''
+        """
     def forward_fill(self, limit: int | None = ...) -> Self:
-        '''
+        """
         Fill missing values with the latest seen values.
 
         Parameters
@@ -2051,9 +2078,9 @@ class Expr:
         │ 2   ┆ 6   │
         └─────┴─────┘
 
-        '''
+        """
     def backward_fill(self, limit: int | None = ...) -> Self:
-        '''
+        """
         Fill missing values with the next to be seen values.
 
         Parameters
@@ -2081,9 +2108,9 @@ class Expr:
         │ null ┆ 6   │
         └──────┴─────┘
 
-        '''
+        """
     def reverse(self) -> Self:
-        '''
+        """
         Reverse the selection.
 
         Examples
@@ -2115,9 +2142,9 @@ class Expr:
         │ 5   ┆ banana ┆ 1   ┆ beetle ┆ 1         ┆ banana         ┆ 5         ┆ beetle       │
         └─────┴────────┴─────┴────────┴───────────┴────────────────┴───────────┴──────────────┘
 
-        '''
+        """
     def std(self, ddof: int = ...) -> Self:
-        '''
+        """
         Get standard deviation.
 
         Parameters
@@ -2140,9 +2167,9 @@ class Expr:
         │ 1.0 │
         └─────┘
 
-        '''
+        """
     def var(self, ddof: int = ...) -> Self:
-        '''
+        """
         Get variance.
 
         Parameters
@@ -2165,9 +2192,9 @@ class Expr:
         │ 1.0 │
         └─────┘
 
-        '''
+        """
     def max(self) -> Self:
-        '''
+        """
         Get maximum value.
 
         Examples
@@ -2183,9 +2210,9 @@ class Expr:
         │ 1.0 │
         └─────┘
 
-        '''
+        """
     def min(self) -> Self:
-        '''
+        """
         Get minimum value.
 
         Examples
@@ -2201,9 +2228,9 @@ class Expr:
         │ -1.0 │
         └──────┘
 
-        '''
+        """
     def nan_max(self) -> Self:
-        '''
+        """
         Get maximum value, but propagate/poison encountered NaN values.
 
         This differs from numpy\'s `nanmax` as numpy defaults to propagating NaN values,
@@ -2222,9 +2249,9 @@ class Expr:
         │ NaN │
         └─────┘
 
-        '''
+        """
     def nan_min(self) -> Self:
-        '''
+        """
         Get minimum value, but propagate/poison encountered NaN values.
 
         This differs from numpy\'s `nanmax` as numpy defaults to propagating NaN values,
@@ -2243,9 +2270,9 @@ class Expr:
         │ NaN │
         └─────┘
 
-        '''
+        """
     def sum(self) -> Self:
-        '''
+        """
         Get sum value.
 
         Notes
@@ -2266,9 +2293,9 @@ class Expr:
         │  0  │
         └─────┘
 
-        '''
+        """
     def mean(self) -> Self:
-        '''
+        """
         Get mean value.
 
         Examples
@@ -2284,9 +2311,9 @@ class Expr:
         │ 0.0 │
         └─────┘
 
-        '''
+        """
     def median(self) -> Self:
-        '''
+        """
         Get median value using linear interpolation.
 
         Examples
@@ -2302,9 +2329,9 @@ class Expr:
         │ 0.0 │
         └─────┘
 
-        '''
+        """
     def product(self) -> Self:
-        '''
+        """
         Compute the product of an expression.
 
         Examples
@@ -2320,9 +2347,9 @@ class Expr:
         │ 6   │
         └─────┘
 
-        '''
+        """
     def n_unique(self) -> Self:
-        '''
+        """
         Count unique values.
 
         Examples
@@ -2338,9 +2365,9 @@ class Expr:
         │ 2   │
         └─────┘
 
-        '''
+        """
     def approx_unique(self) -> Self:
-        '''
+        """
         Approx count unique values.
 
         This is done using the HyperLogLog++ algorithm for cardinality estimation.
@@ -2358,9 +2385,9 @@ class Expr:
         │ 2   │
         └─────┘
 
-        '''
+        """
     def null_count(self) -> Self:
-        '''
+        """
         Count null values.
 
         Examples
@@ -2381,9 +2408,9 @@ class Expr:
         │ 2   ┆ 0   │
         └─────┴─────┘
 
-        '''
+        """
     def arg_unique(self) -> Self:
-        '''
+        """
         Get index of first unique value.
 
         Examples
@@ -2416,9 +2443,9 @@ class Expr:
         │ 1   │
         └─────┘
 
-        '''
+        """
     def unique(self) -> Self:
-        '''
+        """
         Get unique values of this expression.
 
         Parameters
@@ -2450,9 +2477,9 @@ class Expr:
         │ 2   │
         └─────┘
 
-        '''
+        """
     def first(self) -> Self:
-        '''
+        """
         Get the first value.
 
         Examples
@@ -2468,9 +2495,9 @@ class Expr:
         │ 1   │
         └─────┘
 
-        '''
+        """
     def last(self) -> Self:
-        '''
+        """
         Get the last value.
 
         Examples
@@ -2486,9 +2513,9 @@ class Expr:
         │ 2   │
         └─────┘
 
-        '''
+        """
     def over(self, expr: IntoExpr | Iterable[IntoExpr], *more_exprs: IntoExpr) -> Self:
-        '''
+        """
         Compute expressions over the given groups.
 
         This expression is similar to performing a groupby aggregation and joining the
@@ -2579,9 +2606,9 @@ class Expr:
         │ b   ┆ 3   ┆ 1   ┆ 1     │
         └─────┴─────┴─────┴───────┘
 
-        '''
+        """
     def is_unique(self) -> Self:
-        '''
+        """
         Get mask of unique values.
 
         Examples
@@ -2599,9 +2626,9 @@ class Expr:
         │ true  │
         └───────┘
 
-        '''
+        """
     def is_first(self) -> Self:
-        '''
+        """
         Get a mask of the first unique value.
 
         Returns
@@ -2629,9 +2656,9 @@ class Expr:
         │ 5   ┆ true     │
         └─────┴──────────┘
 
-        '''
+        """
     def is_duplicated(self) -> Self:
-        '''
+        """
         Get mask of duplicated values.
 
         Examples
@@ -2649,9 +2676,11 @@ class Expr:
         │ false │
         └───────┘
 
-        '''
-    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod = ...) -> Self:
-        '''
+        """
+    def quantile(
+        self, quantile: float | Expr, interpolation: RollingInterpolationMethod = ...
+    ) -> Self:
+        """
         Get quantile value.
 
         Parameters
@@ -2710,9 +2739,9 @@ class Expr:
         │ 1.5 │
         └─────┘
 
-        '''
+        """
     def filter(self, predicate: Expr) -> Self:
-        '''
+        """
         Filter a single column.
 
         Mostly useful in an aggregation context. If you want to filter on a DataFrame
@@ -2747,9 +2776,9 @@ class Expr:
         │ g2        ┆ null ┆ 3   │
         └───────────┴──────┴─────┘
 
-        '''
+        """
     def where(self, predicate: Expr) -> Self:
-        '''
+        """
         Filter a single column.
 
         Alias for :func:`filter`.
@@ -2783,9 +2812,11 @@ class Expr:
         │ g2        ┆ null ┆ 3   │
         └───────────┴──────┴─────┘
 
-        '''
-    def map(self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None = ...) -> Self:
-        '''
+        """
+    def map(
+        self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None = ...
+    ) -> Self:
+        """
         Apply a custom python function to a Series or sequence of Series.
 
         The output of this custom function must be a Series.
@@ -2827,9 +2858,13 @@ class Expr:
         │ 1    ┆ 0      │
         └──────┴────────┘
 
-        '''
-    def apply(self, function: Callable[[Series], Series] | Callable[[Any], Any], return_dtype: PolarsDataType | None = ...) -> Self:
-        '''
+        """
+    def apply(
+        self,
+        function: Callable[[Series], Series] | Callable[[Any], Any],
+        return_dtype: PolarsDataType | None = ...,
+    ) -> Self:
+        """
         Apply a custom/user-defined function (UDF) in a GroupBy or Projection context.
 
         Depending on the context it has the following behavior:
@@ -2930,9 +2965,9 @@ class Expr:
         ...     pl.col("a").sum(),
         ... )  # doctest: +IGNORE_RESULT
 
-        '''
+        """
     def flatten(self) -> Self:
-        '''
+        """
         Flatten a list or string column.
 
         Alias for :func:`polars.expr.list.ExprListNameSpace.explode`.
@@ -2956,7 +2991,7 @@ class Expr:
         │ b     ┆ [2, 3, 4] │
         └───────┴───────────┘
 
-        '''
+        """
     def explode(self) -> Self:
         """
         Explode a list or utf8 Series.
@@ -2974,7 +3009,7 @@ class Expr:
 
         """
     def implode(self) -> Self:
-        '''
+        """
         Aggregate values into a list.
 
         Examples
@@ -2995,9 +3030,9 @@ class Expr:
         │ [1, 2, 3] ┆ [4, 5, 6] │
         └───────────┴───────────┘
 
-        '''
+        """
     def take_every(self, n: int) -> Self:
-        '''
+        """
         Take every nth value in the Series and return as a new Series.
 
         Examples
@@ -3015,9 +3050,9 @@ class Expr:
         │ 7   │
         └─────┘
 
-        '''
+        """
     def head(self, n: int | Expr = ...) -> Self:
-        '''
+        """
         Get the first `n` rows.
 
         Parameters
@@ -3040,9 +3075,9 @@ class Expr:
         │ 3   │
         └─────┘
 
-        '''
+        """
     def tail(self, n: int | Expr = ...) -> Self:
-        '''
+        """
         Get the last `n` rows.
 
         Parameters
@@ -3065,9 +3100,9 @@ class Expr:
         │ 7   │
         └─────┘
 
-        '''
+        """
     def limit(self, n: int | Expr = ...) -> Self:
-        '''
+        """
         Get the first `n` rows (alias for :func:`Expr.head`).
 
         Parameters
@@ -3090,9 +3125,9 @@ class Expr:
         │ 3   │
         └─────┘
 
-        '''
+        """
     def and_(self, *others: Any) -> Self:
-        '''
+        """
         Method equivalent of logical "and" operator ``expr & other & ...``.
 
         Parameters
@@ -3132,9 +3167,9 @@ class Expr:
         │ false │
         └───────┘
 
-        '''
+        """
     def or_(self, *others: Any) -> Self:
-        '''
+        """
         Method equivalent of logical "or" operator ``expr | other | ...``.
 
         Parameters
@@ -3173,9 +3208,9 @@ class Expr:
         │ false │
         └───────┘
 
-        '''
+        """
     def eq(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of equality operator ``expr == other``.
 
         Parameters
@@ -3206,9 +3241,9 @@ class Expr:
         │ 4.0 ┆ 4.0 ┆ true   │
         └─────┴─────┴────────┘
 
-        '''
+        """
     def ge(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of "greater than or equal" operator ``expr >= other``.
 
         Parameters
@@ -3239,9 +3274,9 @@ class Expr:
         │ 2.0 ┆ 1.0 ┆ true   │
         └─────┴─────┴────────┘
 
-        '''
+        """
     def gt(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of "greater than" operator ``expr > other``.
 
         Parameters
@@ -3272,9 +3307,9 @@ class Expr:
         │ 2.0 ┆ 1.0 ┆ true  │
         └─────┴─────┴───────┘
 
-        '''
+        """
     def le(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of "less than or equal" operator ``expr <= other``.
 
         Parameters
@@ -3305,9 +3340,9 @@ class Expr:
         │ 0.5 ┆ 2.0 ┆ true   │
         └─────┴─────┴────────┘
 
-        '''
+        """
     def lt(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of "less than" operator ``expr < other``.
 
         Parameters
@@ -3338,9 +3373,9 @@ class Expr:
         │ 3.0 ┆ 4.0 ┆ true  │
         └─────┴─────┴───────┘
 
-        '''
+        """
     def ne(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of inequality operator ``expr != other``.
 
         Parameters
@@ -3371,9 +3406,9 @@ class Expr:
         │ 4.0 ┆ 4.0 ┆ false  │
         └─────┴─────┴────────┘
 
-        '''
+        """
     def add(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of addition operator ``expr + other``.
 
         Parameters
@@ -3416,9 +3451,9 @@ class Expr:
         │ g   ┆ h   ┆ i   ┆ ghi │
         └─────┴─────┴─────┴─────┘
 
-        '''
+        """
     def floordiv(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of integer division operator ``expr // other``.
 
         Parameters
@@ -3450,9 +3485,9 @@ class Expr:
         --------
         truediv
 
-        '''
+        """
     def mod(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of modulus operator ``expr % other``.
 
         Parameters
@@ -3477,9 +3512,9 @@ class Expr:
         │ 4   ┆ 0   │
         └─────┴─────┘
 
-        '''
+        """
     def mul(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of multiplication operator ``expr * other``.
 
         Parameters
@@ -3507,9 +3542,9 @@ class Expr:
         │ 16  ┆ 32  ┆ 64.0      │
         └─────┴─────┴───────────┘
 
-        '''
+        """
     def sub(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of subtraction operator ``expr - other``.
 
         Parameters
@@ -3537,9 +3572,9 @@ class Expr:
         │ 4   ┆ 2   ┆ -6     │
         └─────┴─────┴────────┘
 
-        '''
+        """
     def truediv(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of float division operator ``expr / other``.
 
         Parameters
@@ -3580,9 +3615,9 @@ class Expr:
         --------
         floordiv
 
-        '''
+        """
     def pow(self, exponent: int | float | Series | Expr) -> Self:
-        '''
+        """
         Method equivalent of exponentiation operator ``expr ** exponent``.
 
         Parameters
@@ -3609,9 +3644,9 @@ class Expr:
         │ 8   ┆ 512.0 ┆ 512.0      │
         └─────┴───────┴────────────┘
 
-        '''
+        """
     def xor(self, other: Any) -> Self:
-        '''
+        """
         Method equivalent of logical exclusive-or operator ``expr ^ other``.
 
         Parameters
@@ -3662,9 +3697,9 @@ class Expr:
         │ 66  ┆ 4   ┆ 01000010 ┆ 00000100 ┆ 70     ┆ 01000110   │
         └─────┴─────┴──────────┴──────────┴────────┴────────────┘
 
-        '''
+        """
     def is_in(self, other: Expr | Collection[Any] | Series) -> Self:
-        '''
+        """
         Check if elements of this expression are present in the other Series.
 
         Parameters
@@ -3693,9 +3728,9 @@ class Expr:
         │ false    │
         └──────────┘
 
-        '''
+        """
     def repeat_by(self, by: Expr | str) -> Self:
-        '''
+        """
         Repeat the elements in this Series as specified in the given expression.
 
         The repeated elements are expanded into a `List`.
@@ -3731,9 +3766,11 @@ class Expr:
         │ ["z", "z", "z"] │
         └─────────────────┘
 
-        '''
-    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval = ...) -> Self:
-        '''
+        """
+    def is_between(
+        self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval = ...
+    ) -> Self:
+        """
         Check if this expression is between the given start and end values.
 
         Parameters
@@ -3809,9 +3846,15 @@ class Expr:
         │ e   ┆ false      │
         └─────┴────────────┘
 
-        '''
-    def hash(self, seed: int = ..., seed_1: int | None = ..., seed_2: int | None = ..., seed_3: int | None = ...) -> Self:
-        '''
+        """
+    def hash(
+        self,
+        seed: int = ...,
+        seed_1: int | None = ...,
+        seed_2: int | None = ...,
+        seed_3: int | None = ...,
+    ) -> Self:
+        """
         Hash the elements in the selection.
 
         The hash value is of type `UInt64`.
@@ -3847,9 +3890,9 @@ class Expr:
         │ 11638928888656214026 ┆ 13382926553367784577 │
         └──────────────────────┴──────────────────────┘
 
-        '''
+        """
     def reinterpret(self) -> Self:
-        '''
+        """
         Reinterpret the underlying bits as a signed/unsigned integer.
 
         This operation is only allowed for 64bit integers. For lower bits integers,
@@ -3881,9 +3924,9 @@ class Expr:
         │ 2             ┆ 2        │
         └───────────────┴──────────┘
 
-        '''
+        """
     def inspect(self, fmt: str = ...) -> Self:
-        '''
+        """
         Print the value that this expression evaluates to and pass on the value.
 
         Examples
@@ -3908,9 +3951,9 @@ class Expr:
         │ 4   │
         └─────┘
 
-        '''
+        """
     def interpolate(self, method: InterpolationMethod = ...) -> Self:
-        '''
+        """
         Fill nulls with linear interpolation over missing values.
 
         Can also be used to regrid data to a new grid - see examples below.
@@ -3967,9 +4010,14 @@ class Expr:
         │ 10          ┆ 20.0   │
         └─────────────┴────────┘
 
-        '''
-    def rolling_min(self, window_size: int | timedelta | str, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_min(
+        self,
+        window_size: int | timedelta | str,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Apply a rolling min (moving min) over the values in this array.
 
         A window of length `window_size` will traverse the array. The values that fill
@@ -4048,9 +4096,14 @@ class Expr:
         │ 5.0  │
         └──────┘
 
-        '''
-    def rolling_max(self, window_size: int | timedelta | str, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_max(
+        self,
+        window_size: int | timedelta | str,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Apply a rolling max (moving max) over the values in this array.
 
         A window of length `window_size` will traverse the array. The values that fill
@@ -4129,9 +4182,14 @@ class Expr:
         │ 6.0  │
         └──────┘
 
-        '''
-    def rolling_mean(self, window_size: int | timedelta | str, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_mean(
+        self,
+        window_size: int | timedelta | str,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Apply a rolling mean (moving mean) over the values in this array.
 
         A window of length `window_size` will traverse the array. The values that fill
@@ -4210,9 +4268,14 @@ class Expr:
         │ 13.0 │
         └──────┘
 
-        '''
-    def rolling_sum(self, window_size: int | timedelta | str, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_sum(
+        self,
+        window_size: int | timedelta | str,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Apply a rolling sum (moving sum) over the values in this array.
 
         A window of length `window_size` will traverse the array. The values that fill
@@ -4291,9 +4354,14 @@ class Expr:
         │ 11.0 │
         └──────┘
 
-        '''
-    def rolling_std(self, window_size: int | timedelta | str, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_std(
+        self,
+        window_size: int | timedelta | str,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Compute a rolling standard deviation.
 
         A window of length `window_size` will traverse the array. The values that fill
@@ -4372,9 +4440,14 @@ class Expr:
         │ 2.0      │
         └──────────┘
 
-        '''
-    def rolling_var(self, window_size: int | timedelta | str, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_var(
+        self,
+        window_size: int | timedelta | str,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Compute a rolling variance.
 
         A window of length `window_size` will traverse the array. The values that fill
@@ -4453,9 +4526,14 @@ class Expr:
         │ 4.0      │
         └──────────┘
 
-        '''
-    def rolling_median(self, window_size: int | timedelta | str, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_median(
+        self,
+        window_size: int | timedelta | str,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Compute a rolling median.
 
         Parameters
@@ -4530,9 +4608,16 @@ class Expr:
         │ 6.0  │
         └──────┘
 
-        '''
-    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod = ..., window_size: int | timedelta | str = ..., weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_quantile(
+        self,
+        quantile: float,
+        interpolation: RollingInterpolationMethod = ...,
+        window_size: int | timedelta | str = ...,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Compute a rolling quantile.
 
         Parameters
@@ -4611,9 +4696,15 @@ class Expr:
         │ 4.0  │
         └──────┘
 
-        '''
-    def rolling_apply(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Self:
-        '''
+        """
+    def rolling_apply(
+        self,
+        function: Callable[[Series], Any],
+        window_size: int,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Self:
+        """
         Apply a custom rolling window function.
 
         Prefer the specific rolling window functions over this one, as they are faster.
@@ -4665,7 +4756,7 @@ class Expr:
         │ 5.567764 │
         └──────────┘
 
-        '''
+        """
     def rolling_skew(self, window_size: int) -> Self:
         """
         Compute a rolling skew.
@@ -4679,7 +4770,7 @@ class Expr:
 
         """
     def abs(self) -> Self:
-        '''
+        """
         Compute absolute values.
 
         Same as `abs(expr)`.
@@ -4704,9 +4795,9 @@ class Expr:
         │ 2.0 │
         └─────┘
 
-        '''
+        """
     def rank(self, method: RankMethod = ...) -> Self:
-        '''
+        """
         Assign ranks to data, dealing with ties appropriately.
 
         Parameters
@@ -4770,9 +4861,9 @@ class Expr:
         │ 5   │
         └─────┘
 
-        '''
+        """
     def diff(self, n: int = ..., null_behavior: NullBehavior = ...) -> Self:
-        '''
+        """
         Calculate the n-th discrete difference.
 
         Parameters
@@ -4825,9 +4916,9 @@ class Expr:
         │ 5    │
         └──────┘
 
-        '''
+        """
     def pct_change(self, n: int = ...) -> Self:
-        '''
+        """
         Computes percentage change between values.
 
         Percentage change (as fraction) between current element and most-recent
@@ -4861,9 +4952,9 @@ class Expr:
         │ 12   ┆ 0.0        │
         └──────┴────────────┘
 
-        '''
+        """
     def skew(self) -> Self:
-        '''
+        """
         Compute the sample skewness of a data set.
 
         For normally distributed data, the skewness should be about zero. For
@@ -4913,9 +5004,9 @@ class Expr:
         │ 0.343622 │
         └──────────┘
 
-        '''
+        """
     def kurtosis(self) -> Self:
-        '''
+        """
         Compute the kurtosis (Fisher or Pearson) of a dataset.
 
         Kurtosis is the fourth central moment divided by the square of the
@@ -4947,9 +5038,9 @@ class Expr:
         │ -1.153061 │
         └───────────┘
 
-        '''
+        """
     def clip(self, lower_bound: int | float, upper_bound: int | float) -> Self:
-        '''
+        """
         Clip (limit) the values in an array to a `min` and `max` boundary.
 
         Only works for numerical types.
@@ -4980,9 +5071,9 @@ class Expr:
         │ 50   ┆ 10          │
         └──────┴─────────────┘
 
-        '''
+        """
     def clip_min(self, lower_bound: int | float) -> Self:
-        '''
+        """
         Clip (limit) the values in an array to a `min` boundary.
 
         Only works for numerical types.
@@ -5011,9 +5102,9 @@ class Expr:
         │ 50   ┆ 50          │
         └──────┴─────────────┘
 
-        '''
+        """
     def clip_max(self, upper_bound: int | float) -> Self:
-        '''
+        """
         Clip (limit) the values in an array to a `max` boundary.
 
         Only works for numerical types.
@@ -5042,9 +5133,9 @@ class Expr:
         │ 50   ┆ 0           │
         └──────┴─────────────┘
 
-        '''
+        """
     def lower_bound(self) -> Self:
-        '''
+        """
         Calculate the lower bound.
 
         Returns a unit Series with the lowest value possible for the dtype of this
@@ -5063,9 +5154,9 @@ class Expr:
         │ -9223372036854775808 │
         └──────────────────────┘
 
-        '''
+        """
     def upper_bound(self) -> Self:
-        '''
+        """
         Calculate the upper bound.
 
         Returns a unit Series with the highest value possible for the dtype of this
@@ -5084,9 +5175,9 @@ class Expr:
         │ 9223372036854775807 │
         └─────────────────────┘
 
-        '''
+        """
     def sign(self) -> Self:
-        '''
+        """
         Compute the element-wise indication of the sign.
 
         The returned values can be -1, 0, or 1:
@@ -5114,9 +5205,9 @@ class Expr:
         │ null │
         └──────┘
 
-        '''
+        """
     def sin(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the sine.
 
         Returns
@@ -5136,9 +5227,9 @@ class Expr:
         │ 0.0 │
         └─────┘
 
-        '''
+        """
     def cos(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the cosine.
 
         Returns
@@ -5158,9 +5249,9 @@ class Expr:
         │ 1.0 │
         └─────┘
 
-        '''
+        """
     def tan(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the tangent.
 
         Returns
@@ -5180,9 +5271,9 @@ class Expr:
         │ 1.56 │
         └──────┘
 
-        '''
+        """
     def arcsin(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the inverse sine.
 
         Returns
@@ -5202,9 +5293,9 @@ class Expr:
         │ 1.570796 │
         └──────────┘
 
-        '''
+        """
     def arccos(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the inverse cosine.
 
         Returns
@@ -5224,9 +5315,9 @@ class Expr:
         │ 1.570796 │
         └──────────┘
 
-        '''
+        """
     def arctan(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the inverse tangent.
 
         Returns
@@ -5246,9 +5337,9 @@ class Expr:
         │ 0.785398 │
         └──────────┘
 
-        '''
+        """
     def sinh(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the hyperbolic sine.
 
         Returns
@@ -5268,9 +5359,9 @@ class Expr:
         │ 1.175201 │
         └──────────┘
 
-        '''
+        """
     def cosh(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the hyperbolic cosine.
 
         Returns
@@ -5290,9 +5381,9 @@ class Expr:
         │ 1.543081 │
         └──────────┘
 
-        '''
+        """
     def tanh(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the hyperbolic tangent.
 
         Returns
@@ -5312,9 +5403,9 @@ class Expr:
         │ 0.761594 │
         └──────────┘
 
-        '''
+        """
     def arcsinh(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the inverse hyperbolic sine.
 
         Returns
@@ -5334,9 +5425,9 @@ class Expr:
         │ 0.881374 │
         └──────────┘
 
-        '''
+        """
     def arccosh(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the inverse hyperbolic cosine.
 
         Returns
@@ -5356,9 +5447,9 @@ class Expr:
         │ 0.0 │
         └─────┘
 
-        '''
+        """
     def arctanh(self) -> Self:
-        '''
+        """
         Compute the element-wise value for the inverse hyperbolic tangent.
 
         Returns
@@ -5378,9 +5469,9 @@ class Expr:
         │ inf │
         └─────┘
 
-        '''
+        """
     def reshape(self, dimensions: tuple[int, ...]) -> Self:
-        '''
+        """
         Reshape this Expr to a flat Series or a Series of Lists.
 
         Parameters
@@ -5415,9 +5506,9 @@ class Expr:
         --------
         ExprListNameSpace.explode : Explode a list column.
 
-        '''
+        """
     def shuffle(self, seed: int | None = ...) -> Self:
-        '''
+        """
         Shuffle the contents of this expression.
 
         Parameters
@@ -5441,9 +5532,9 @@ class Expr:
         │ 3   │
         └─────┘
 
-        '''
+        """
     def sample(self, *args, **kwargs) -> Self:
-        '''
+        """
         Sample from this expression.
 
         Parameters
@@ -5476,9 +5567,15 @@ class Expr:
         │ 1   │
         └─────┘
 
-        '''
-    def ewm_mean(self, com: float | None = ..., span: float | None = ..., half_life: float | None = ..., alpha: float | None = ...) -> Self:
-        '''
+        """
+    def ewm_mean(
+        self,
+        com: float | None = ...,
+        span: float | None = ...,
+        half_life: float | None = ...,
+        alpha: float | None = ...,
+    ) -> Self:
+        """
         Exponentially-weighted moving average.
 
         Parameters
@@ -5549,9 +5646,15 @@ class Expr:
         │ 2.428571 │
         └──────────┘
 
-        '''
-    def ewm_std(self, com: float | None = ..., span: float | None = ..., half_life: float | None = ..., alpha: float | None = ...) -> Self:
-        '''
+        """
+    def ewm_std(
+        self,
+        com: float | None = ...,
+        span: float | None = ...,
+        half_life: float | None = ...,
+        alpha: float | None = ...,
+    ) -> Self:
+        """
         Exponentially-weighted moving standard deviation.
 
         Parameters
@@ -5624,9 +5727,15 @@ class Expr:
         │ 0.963624 │
         └──────────┘
 
-        '''
-    def ewm_var(self, com: float | None = ..., span: float | None = ..., half_life: float | None = ..., alpha: float | None = ...) -> Self:
-        '''
+        """
+    def ewm_var(
+        self,
+        com: float | None = ...,
+        span: float | None = ...,
+        half_life: float | None = ...,
+        alpha: float | None = ...,
+    ) -> Self:
+        """
         Exponentially-weighted moving variance.
 
         Parameters
@@ -5699,9 +5808,9 @@ class Expr:
         │ 0.928571 │
         └──────────┘
 
-        '''
+        """
     def extend_constant(self, value: PythonLiteral | None, n: int) -> Self:
-        '''
+        """
         Extremely fast method for extending the Series with \'n\' copies of a value.
 
         Parameters
@@ -5729,9 +5838,9 @@ class Expr:
         │ 99     │
         └────────┘
 
-        '''
+        """
     def value_counts(self) -> Self:
-        '''
+        """
         Count all unique values and create a struct mapping value to count.
 
         Parameters
@@ -5769,9 +5878,9 @@ class Expr:
         │ {"a",1}   │
         └───────────┘
 
-        '''
+        """
     def unique_counts(self) -> Self:
-        '''
+        """
         Return a count of the unique values in the order of appearance.
 
         This method differs from `value_counts` in that it does not return the
@@ -5800,9 +5909,9 @@ class Expr:
         │ 3   │
         └─────┘
 
-        '''
+        """
     def log(self, base: float = ...) -> Self:
-        '''
+        """
         Compute the logarithm to a given base.
 
         Parameters
@@ -5825,9 +5934,9 @@ class Expr:
         │ 1.584963 │
         └──────────┘
 
-        '''
+        """
     def log1p(self) -> Self:
-        '''
+        """
         Compute the natural logarithm of each element plus one.
 
         This computes `log(1 + x)` but is more numerically stable for `x` close to zero.
@@ -5847,9 +5956,9 @@ class Expr:
         │ 1.386294 │
         └──────────┘
 
-        '''
+        """
     def entropy(self, base: float = ...) -> Self:
-        '''
+        """
         Computes the entropy.
 
         Uses the formula ``-sum(pk * log(pk)`` where ``pk`` are discrete probabilities.
@@ -5883,9 +5992,9 @@ class Expr:
         │ -6.754888 │
         └───────────┘
 
-        '''
+        """
     def cumulative_eval(self, expr: Expr, min_periods: int = ...) -> Self:
-        '''
+        """
         Run an expression over a sliding window that increases `1` slot every iteration.
 
         Parameters
@@ -5930,9 +6039,9 @@ class Expr:
         │ -24.0  │
         └────────┘
 
-        '''
+        """
     def set_sorted(self) -> Self:
-        '''
+        """
         Flags the expression as \'sorted\'.
 
         Enables downstream code to user fast paths for sorted arrays.
@@ -5960,9 +6069,9 @@ class Expr:
         │ 3      │
         └────────┘
 
-        '''
+        """
     def shrink_dtype(self) -> Self:
-        '''
+        """
         Shrink numeric columns to the minimal required datatype.
 
         Shrink to the dtype needed to fit the extrema of this [`Series`].
@@ -5993,11 +6102,11 @@ class Expr:
         │ 3   ┆ 8589934592 ┆ 1073741824 ┆ 112  ┆ 129  ┆ c   ┆ 0.12 ┆ false │
         └─────┴────────────┴────────────┴──────┴──────┴─────┴──────┴───────┘
 
-        '''
+        """
     def cache(self) -> Self:
         """Cache this expression so that it only is executed once per context."""
     def map_dict(self, remapping: dict[Any, Any]) -> Self:
-        '''
+        """
         Replace values in column according to remapping dictionary.
 
         Needs a global string cache for lazily evaluated queries on columns of
@@ -6156,7 +6265,7 @@ class Expr:
         │ 3      ┆ DE           ┆ 4        │
         └────────┴──────────────┴──────────┘
 
-        '''
+        """
     def __getattr__(self, obj: T, item: Any) -> Any: ...
     @property
     def arr(self): ...
@@ -6172,6 +6281,15 @@ class Expr:
     def str(self): ...
     @property
     def struct(self): ...
-def _prepare_alpha(com: float | int | None = ..., span: float | int | None = ..., half_life: float | int | None = ..., alpha: float | int | None = ...) -> float:
+
+def _prepare_alpha(
+    com: float | int | None = ...,
+    span: float | int | None = ...,
+    half_life: float | int | None = ...,
+    alpha: float | int | None = ...,
+) -> float:
     """Normalise EWM decay specification in terms of smoothing factor 'alpha'."""
-def _prepare_rolling_window_args(window_size: int | timedelta | str, min_periods: int | None = ...) -> tuple[str, int]: ...
+
+def _prepare_rolling_window_args(
+    window_size: int | timedelta | str, min_periods: int | None = ...
+) -> tuple[str, int]: ...

@@ -137,6 +137,8 @@ def main(tmp_dir: Path):
             stub_path = output_dir / import_path.with_suffix(".pyi")
             cleaned_stub_content = clean_types(stub_path, version_)
             stub_path.with_suffix(".pyi").write_text(cleaned_stub_content)
+            # run ruff on the cleaned stub
+            subprocess.check_call([sys.executable, "-m", "ruff", "format", str(stub_path)])
             if is_incomplete(stub_path):
                 msg = f"File {stub_path} could not be cleaned and has Incomplete types."
                 print(msg)
@@ -145,6 +147,7 @@ def main(tmp_dir: Path):
             )
             cleaned_no_docstring_stub_content = clean_types(no_docstring_stub_path, version_)
             no_docstring_stub_path.write_text(cleaned_no_docstring_stub_content)
+            subprocess.check_call([sys.executable, "-m", "ruff", "format", str(no_docstring_stub_path)])
 
     return versions
 

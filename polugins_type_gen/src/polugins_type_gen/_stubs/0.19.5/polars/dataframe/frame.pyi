@@ -9,24 +9,94 @@ from _io import BytesIO, TextIOWrapper
 from builtins import PyDataFrame
 from pathlib import Path
 from polars.dataframe._html import NotebookFormatter as NotebookFormatter
-from polars.dataframe.group_by import DynamicGroupBy as DynamicGroupBy, GroupBy as GroupBy, RollingGroupBy as RollingGroupBy
-from polars.datatypes.classes import Boolean as Boolean, FLOAT_DTYPES as FLOAT_DTYPES, Float64 as Float64, NUMERIC_DTYPES as NUMERIC_DTYPES, Object as Object, Utf8 as Utf8
+from polars.dataframe.group_by import (
+    DynamicGroupBy as DynamicGroupBy,
+    GroupBy as GroupBy,
+    RollingGroupBy as RollingGroupBy,
+)
+from polars.datatypes.classes import (
+    Boolean as Boolean,
+    FLOAT_DTYPES as FLOAT_DTYPES,
+    Float64 as Float64,
+    NUMERIC_DTYPES as NUMERIC_DTYPES,
+    Object as Object,
+    Utf8 as Utf8,
+)
 from polars.datatypes.convert import py_type_to_dtype as py_type_to_dtype
-from polars.dependencies import _check_for_numpy as _check_for_numpy, _check_for_pandas as _check_for_pandas, _check_for_pyarrow as _check_for_pyarrow, dataframe_api_compat as dataframe_api_compat
-from polars.exceptions import NoRowsReturnedError as NoRowsReturnedError, TooManyRowsReturnedError as TooManyRowsReturnedError
+from polars.dependencies import (
+    _check_for_numpy as _check_for_numpy,
+    _check_for_pandas as _check_for_pandas,
+    _check_for_pyarrow as _check_for_pyarrow,
+    dataframe_api_compat as dataframe_api_compat,
+)
+from polars.exceptions import (
+    NoRowsReturnedError as NoRowsReturnedError,
+    TooManyRowsReturnedError as TooManyRowsReturnedError,
+)
 from polars.functions.col import col as col
 from polars.functions.lit import lit as lit
 from polars.io._utils import _is_glob_pattern as _is_glob_pattern, _is_local_file as _is_local_file
-from polars.io.spreadsheet._write_utils import _XLFormatCache as _XLFormatCache, _unpack_multi_column_dict as _unpack_multi_column_dict, _xl_apply_conditional_formats as _xl_apply_conditional_formats, _xl_inject_sparklines as _xl_inject_sparklines, _xl_setup_table_columns as _xl_setup_table_columns, _xl_setup_table_options as _xl_setup_table_options, _xl_setup_workbook as _xl_setup_workbook, _xl_unique_table_name as _xl_unique_table_name
-from polars.selectors import _expand_selector_dicts as _expand_selector_dicts, _expand_selectors as _expand_selectors
+from polars.io.spreadsheet._write_utils import (
+    _XLFormatCache as _XLFormatCache,
+    _unpack_multi_column_dict as _unpack_multi_column_dict,
+    _xl_apply_conditional_formats as _xl_apply_conditional_formats,
+    _xl_inject_sparklines as _xl_inject_sparklines,
+    _xl_setup_table_columns as _xl_setup_table_columns,
+    _xl_setup_table_options as _xl_setup_table_options,
+    _xl_setup_workbook as _xl_setup_workbook,
+    _xl_unique_table_name as _xl_unique_table_name,
+)
+from polars.selectors import (
+    _expand_selector_dicts as _expand_selector_dicts,
+    _expand_selectors as _expand_selectors,
+)
 from polars.slice import PolarsSlice as PolarsSlice
-from polars.utils._construction import _post_apply_columns as _post_apply_columns, arrow_to_pydf as arrow_to_pydf, dict_to_pydf as dict_to_pydf, iterable_to_pydf as iterable_to_pydf, numpy_to_idxs as numpy_to_idxs, numpy_to_pydf as numpy_to_pydf, pandas_to_pydf as pandas_to_pydf, sequence_to_pydf as sequence_to_pydf, series_to_pydf as series_to_pydf
+from polars.utils._construction import (
+    _post_apply_columns as _post_apply_columns,
+    arrow_to_pydf as arrow_to_pydf,
+    dict_to_pydf as dict_to_pydf,
+    iterable_to_pydf as iterable_to_pydf,
+    numpy_to_idxs as numpy_to_idxs,
+    numpy_to_pydf as numpy_to_pydf,
+    pandas_to_pydf as pandas_to_pydf,
+    sequence_to_pydf as sequence_to_pydf,
+    series_to_pydf as series_to_pydf,
+)
 from polars.utils._parse_expr_input import parse_as_expression as parse_as_expression
 from polars.utils._wrap import wrap_expr as wrap_expr, wrap_ldf as wrap_ldf, wrap_s as wrap_s
 from polars.utils.convert import _timedelta_to_pl_duration as _timedelta_to_pl_duration
-from polars.utils.deprecation import deprecate_function as deprecate_function, deprecate_nonkeyword_arguments as deprecate_nonkeyword_arguments, deprecate_renamed_function as deprecate_renamed_function, deprecate_renamed_parameter as deprecate_renamed_parameter
-from polars.utils.various import _prepare_row_count_args as _prepare_row_count_args, _process_null_values as _process_null_values, can_create_dicts_with_pyarrow as can_create_dicts_with_pyarrow, handle_projection_columns as handle_projection_columns, is_bool_sequence as is_bool_sequence, is_int_sequence as is_int_sequence, is_str_sequence as is_str_sequence, normalize_filepath as normalize_filepath, parse_percentiles as parse_percentiles, parse_version as parse_version, range_to_slice as range_to_slice, scale_bytes as scale_bytes
-from typing import Any, BinaryIO, Callable, ClassVar as _ClassVar, Collection, Iterable, Iterator, Mapping, NoReturn, Sequence
+from polars.utils.deprecation import (
+    deprecate_function as deprecate_function,
+    deprecate_nonkeyword_arguments as deprecate_nonkeyword_arguments,
+    deprecate_renamed_function as deprecate_renamed_function,
+    deprecate_renamed_parameter as deprecate_renamed_parameter,
+)
+from polars.utils.various import (
+    _prepare_row_count_args as _prepare_row_count_args,
+    _process_null_values as _process_null_values,
+    can_create_dicts_with_pyarrow as can_create_dicts_with_pyarrow,
+    handle_projection_columns as handle_projection_columns,
+    is_bool_sequence as is_bool_sequence,
+    is_int_sequence as is_int_sequence,
+    is_str_sequence as is_str_sequence,
+    normalize_filepath as normalize_filepath,
+    parse_percentiles as parse_percentiles,
+    parse_version as parse_version,
+    range_to_slice as range_to_slice,
+    scale_bytes as scale_bytes,
+)
+from typing import (
+    Any,
+    BinaryIO,
+    Callable,
+    ClassVar as _ClassVar,
+    Collection,
+    Iterable,
+    Iterator,
+    Mapping,
+    NoReturn,
+    Sequence,
+)
 
 TYPE_CHECKING: bool
 INTEGER_DTYPES: frozenset
@@ -37,14 +107,22 @@ _dtype_str_repr: builtin_function_or_method
 class DataFrame:
     _accessors: _ClassVar[set] = ...
     columns: list[str]
-    def __init__(self, data: FrameInitTypes | None = ..., schema: SchemaDefinition | None = ...) -> None: ...
+    def __init__(
+        self, data: FrameInitTypes | None = ..., schema: SchemaDefinition | None = ...
+    ) -> None: ...
     @classmethod
     def _from_pydf(cls, py_df: PyDataFrame) -> Self:
         """Construct Polars DataFrame from FFI PyDataFrame object."""
     @classmethod
-    def _from_dicts(cls, data: Sequence[dict[str, Any]], schema: SchemaDefinition | None = ...) -> Self: ...
+    def _from_dicts(
+        cls, data: Sequence[dict[str, Any]], schema: SchemaDefinition | None = ...
+    ) -> Self: ...
     @classmethod
-    def _from_dict(cls, data: Mapping[str, Sequence[object] | Mapping[str, Sequence[object]] | Series], schema: SchemaDefinition | None = ...) -> Self:
+    def _from_dict(
+        cls,
+        data: Mapping[str, Sequence[object] | Mapping[str, Sequence[object]] | Series],
+        schema: SchemaDefinition | None = ...,
+    ) -> Self:
         """
         Construct a DataFrame from a dictionary of sequences.
 
@@ -228,7 +306,7 @@ class DataFrame:
         """
     @classmethod
     def _read_ipc(cls, source: str | Path | BinaryIO | bytes) -> Self:
-        '''
+        """
         Read into a DataFrame from Arrow IPC file format.
 
         See "File or Random Access format" on https://arrow.apache.org/docs/python/ipc.html.
@@ -254,10 +332,10 @@ class DataFrame:
         memory_map
             Memory map the file
 
-        '''
+        """
     @classmethod
     def _read_ipc_stream(cls, source: str | Path | BinaryIO | bytes) -> Self:
-        '''
+        """
         Read into a DataFrame from Arrow IPC record batch stream format.
 
         See "Streaming format" on https://arrow.apache.org/docs/python/ipc.html.
@@ -280,7 +358,7 @@ class DataFrame:
         rechunk
             Make sure that all data is contiguous.
 
-        '''
+        """
     @classmethod
     def _read_json(cls, source: str | Path | IOBase | bytes) -> Self:
         """
@@ -315,7 +393,7 @@ class DataFrame:
         https://numpy.org/devdocs/user/basics.interoperability.html#the-array-method.
         """
     def __dataframe__(self, nan_as_null: bool = ..., allow_copy: bool = ...) -> PolarsDataFrame:
-        '''
+        """
         Convert to a dataframe object implementing the dataframe interchange protocol.
 
         Parameters
@@ -348,7 +426,7 @@ class DataFrame:
         >>> dfi.get_column(1).dtype
         (<DtypeKind.FLOAT: 2>, 64, \'g\', \'=\')
 
-        '''
+        """
     def __dataframe_consortium_standard__(self) -> Any:
         """
         Provide entry point to the Consortium DataFrame Standard API.
@@ -363,7 +441,9 @@ class DataFrame:
     def _compare_to_non_df(self, other: Any, op: ComparisonOperator) -> DataFrame:
         """Compare a DataFrame with a non-DataFrame object."""
     def _div(self, other: Any) -> DataFrame: ...
-    def _cast_all_from_to(self, df: DataFrame, from_: frozenset[PolarsDataType], to: PolarsDataType) -> DataFrame: ...
+    def _cast_all_from_to(
+        self, df: DataFrame, from_: frozenset[PolarsDataType], to: PolarsDataType
+    ) -> DataFrame: ...
     def __floordiv__(self, other: DataFrame | Series | int | float) -> DataFrame: ...
     def __truediv__(self, other: DataFrame | Series | int | float) -> DataFrame: ...
     def __bool__(self) -> NoReturn: ...
@@ -384,9 +464,21 @@ class DataFrame:
     def __reversed__(self) -> Iterator[Series]: ...
     def _pos_idx(self, idx: int, dim: int) -> int: ...
     def _take_with_series(self, s: Series) -> DataFrame: ...
-    def __getitem__(self, item: str | int | np.ndarray[Any, Any] | MultiColSelector | tuple[int, MultiColSelector] | tuple[MultiRowSelector, MultiColSelector] | tuple[MultiRowSelector, int | str] | tuple[int, int | str]) -> DataFrame | Series:
+    def __getitem__(
+        self,
+        item: str
+        | int
+        | np.ndarray[Any, Any]
+        | MultiColSelector
+        | tuple[int, MultiColSelector]
+        | tuple[MultiRowSelector, MultiColSelector]
+        | tuple[MultiRowSelector, int | str]
+        | tuple[int, int | str],
+    ) -> DataFrame | Series:
         """Get item. Does quite a lot. Read the comments."""
-    def __setitem__(self, key: str | Sequence[int] | Sequence[str] | tuple[Any, str | int], value: Any) -> None: ...
+    def __setitem__(
+        self, key: str | Sequence[int] | Sequence[str] | tuple[Any, str | int], value: Any
+    ) -> None: ...
     def __len__(self) -> int: ...
     def __copy__(self) -> Self: ...
     def __deepcopy__(self, memo: None = ...) -> Self: ...
@@ -403,7 +495,7 @@ class DataFrame:
 
         """
     def item(self, row: int | None = ..., column: int | str | None = ...) -> Any:
-        '''
+        """
         Return the dataframe as a scalar, or return the element at the given row/column.
 
         Parameters
@@ -432,9 +524,9 @@ class DataFrame:
         >>> df.item(2, "b")
         6
 
-        '''
+        """
     def to_arrow(self) -> pa.Table:
-        '''
+        """
         Collect the underlying arrow arrays in an Arrow Table.
 
         This operation is mostly zero copy.
@@ -455,9 +547,9 @@ class DataFrame:
         foo: [[1,2,3,4,5,6]]
         bar: [["a","b","c","d","e","f"]]
 
-        '''
+        """
     def to_dict(self, as_series: bool = ...) -> dict[str, Series] | dict[str, list[Any]]:
-        '''
+        """
         Convert DataFrame to a dictionary mapping column name to values.
 
         Parameters
@@ -539,9 +631,9 @@ class DataFrame:
             -30
         ]}
 
-        '''
+        """
     def to_dicts(self) -> list[dict[str, Any]]:
-        '''
+        """
         Convert every row to a dictionary of Python-native values.
 
         Notes
@@ -557,9 +649,9 @@ class DataFrame:
         >>> df.to_dicts()
         [{\'foo\': 1, \'bar\': 4}, {\'foo\': 2, \'bar\': 5}, {\'foo\': 3, \'bar\': 6}]
 
-        '''
+        """
     def to_numpy(self) -> np.ndarray[Any, Any]:
-        '''
+        """
         Convert DataFrame to a 2D NumPy array.
 
         This operation clones data.
@@ -615,9 +707,9 @@ class DataFrame:
         rec.array([(1, 6.5, \'a\'), (2, 7. , \'b\'), (3, 8.5, \'c\')],
                   dtype=[(\'foo\', \'u1\'), (\'bar\', \'<f4\'), (\'ham\', \'<U1\')])
 
-        '''
+        """
     def to_pandas(self, *args: Any, **kwargs: Any) -> pd.DataFrame:
-        '''
+        """
         Cast to a pandas DataFrame.
 
         This requires that :mod:`pandas` and :mod:`pyarrow` are installed.
@@ -688,9 +780,9 @@ class DataFrame:
         ham    large_string[pyarrow]
         dtype: object
 
-        '''
+        """
     def to_series(self, index: int = ...) -> Series:
-        '''
+        """
         Select column as Series at index location.
 
         Parameters
@@ -720,9 +812,9 @@ class DataFrame:
                 8
         ]
 
-        '''
+        """
     def to_init_repr(self, n: int = ...) -> str:
-        '''
+        """
         Convert DataFrame to instantiatable string representation.
 
         Parameters
@@ -766,9 +858,9 @@ class DataFrame:
         │ 3   ┆ 8.0 ┆ c   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def write_json(self, file: IOBase | str | Path | None = ...) -> str | None:
-        '''
+        """
         Serialize to JSON representation.
 
         Parameters
@@ -798,9 +890,9 @@ class DataFrame:
         >>> df.write_json(row_oriented=True)
         \'[{"foo":1,"bar":6},{"foo":2,"bar":7},{"foo":3,"bar":8}]\'
 
-        '''
+        """
     def write_ndjson(self, file: IOBase | str | Path | None = ...) -> str | None:
-        '''
+        """
         Serialize to newline delimited JSON representation.
 
         Parameters
@@ -820,9 +912,9 @@ class DataFrame:
         >>> df.write_ndjson()
         \'{"foo":1,"bar":6}\\n{"foo":2,"bar":7}\\n{"foo":3,"bar":8}\\n\'
 
-        '''
+        """
     def write_csv(self, file: BytesIO | TextIOWrapper | str | Path | None = ...) -> str | None:
-        '''
+        """
         Write to comma-separated values (CSV) file.
 
         Parameters
@@ -890,9 +982,11 @@ class DataFrame:
         >>> path: pathlib.Path = dirpath / "new_file.csv"
         >>> df.write_csv(path, separator=",")
 
-        '''
-    def write_avro(self, file: BinaryIO | BytesIO | str | Path, compression: AvroCompression = ...) -> None:
-        '''
+        """
+    def write_avro(
+        self, file: BinaryIO | BytesIO | str | Path, compression: AvroCompression = ...
+    ) -> None:
+        """
         Write to Apache Avro file.
 
         Parameters
@@ -916,9 +1010,11 @@ class DataFrame:
         >>> path: pathlib.Path = dirpath / "new_file.avro"
         >>> df.write_avro(path)
 
-        '''
-    def write_excel(self, workbook: Workbook | BytesIO | Path | str | None = ..., worksheet: str | None = ...) -> Workbook:
-        '''
+        """
+    def write_excel(
+        self, workbook: Workbook | BytesIO | Path | str | None = ..., worksheet: str | None = ...
+    ) -> Workbook:
+        """
         Write frame data to a table in an Excel workbook/worksheet.
 
         Parameters
@@ -1243,9 +1339,11 @@ class DataFrame:
         ...     sheet_zoom=125,
         ... )
 
-        '''
-    def write_ipc(self, file: BinaryIO | BytesIO | str | Path | None, compression: IpcCompression = ...) -> BytesIO | None:
-        '''
+        """
+    def write_ipc(
+        self, file: BinaryIO | BytesIO | str | Path | None, compression: IpcCompression = ...
+    ) -> BytesIO | None:
+        """
         Write to Arrow IPC binary stream or Feather file.
 
         See "File or Random Access format" in https://arrow.apache.org/docs/python/ipc.html.
@@ -1272,9 +1370,11 @@ class DataFrame:
         >>> path: pathlib.Path = dirpath / "new_file.arrow"
         >>> df.write_ipc(path)
 
-        '''
-    def write_ipc_stream(self, file: BinaryIO | BytesIO | str | Path | None, compression: IpcCompression = ...) -> BytesIO | None:
-        '''
+        """
+    def write_ipc_stream(
+        self, file: BinaryIO | BytesIO | str | Path | None, compression: IpcCompression = ...
+    ) -> BytesIO | None:
+        """
         Write to Arrow IPC record batch stream.
 
         See "Streaming format" in https://arrow.apache.org/docs/python/ipc.html.
@@ -1301,9 +1401,9 @@ class DataFrame:
         >>> path: pathlib.Path = dirpath / "new_file.arrow"
         >>> df.write_ipc_stream(path)
 
-        '''
+        """
     def write_parquet(self, file: str | Path | BytesIO) -> None:
-        '''
+        """
         Write to Apache Parquet file.
 
         Parameters
@@ -1365,9 +1465,9 @@ class DataFrame:
         ...     pyarrow_options={"partition_cols": ["watermark"]},
         ... )
 
-        '''
+        """
     def write_database(self, *args, **kwargs) -> None:
-        '''
+        """
         Write a polars frame to a database.
 
         Parameters
@@ -1387,9 +1487,9 @@ class DataFrame:
             \'fail\' will fail if table already exists.
         engine : {\'sqlalchemy\', \'adbc\'}
             Select the engine used for writing the data.
-        '''
+        """
     def write_delta(self, target: str | Path | deltalake.DeltaTable) -> None:
-        '''
+        """
         Write DataFrame as delta table.
 
         Parameters
@@ -1495,9 +1595,9 @@ class DataFrame:
         ...     },
         ... )  # doctest: +SKIP
 
-        '''
+        """
     def estimated_size(self, unit: SizeUnit = ...) -> int | float:
-        '''
+        """
         Return an estimation of the total (heap) allocated size of the `DataFrame`.
 
         Estimated size is given in the specified unit (bytes by default).
@@ -1533,9 +1633,9 @@ class DataFrame:
         >>> df.estimated_size("mb")
         24.689577102661133
 
-        '''
+        """
     def transpose(self) -> Self:
-        '''
+        """
         Transpose a DataFrame over the diagonal.
 
         Parameters
@@ -1642,9 +1742,9 @@ class DataFrame:
         │ col1   ┆ 1   ┆ 3   ┆ 2   │
         │ col2   ┆ 3   ┆ 4   ┆ 6   │
         └────────┴─────┴─────┴─────┘
-        '''
+        """
     def reverse(self) -> DataFrame:
-        '''
+        """
         Reverse the DataFrame.
 
         Examples
@@ -1667,9 +1767,9 @@ class DataFrame:
         │ a   ┆ 1   │
         └─────┴─────┘
 
-        '''
+        """
     def rename(self, mapping: dict[str, str]) -> DataFrame:
-        '''
+        """
         Rename column names.
 
         Parameters
@@ -1694,9 +1794,9 @@ class DataFrame:
         │ 3     ┆ 8   ┆ c   │
         └───────┴─────┴─────┘
 
-        '''
+        """
     def insert_at_idx(self, index: int, series: Series) -> Self:
-        '''
+        """
         Insert a Series at a certain column index. This operation is in place.
 
         Parameters
@@ -1743,9 +1843,11 @@ class DataFrame:
         │ 4   ┆ 13.0 ┆ true  ┆ 0.0  │
         └─────┴──────┴───────┴──────┘
 
-        '''
-    def filter(self, predicate: Expr | str | Series | list[bool] | np.ndarray[Any, Any] | bool) -> DataFrame:
-        '''
+        """
+    def filter(
+        self, predicate: Expr | str | Series | list[bool] | np.ndarray[Any, Any] | bool
+    ) -> DataFrame:
+        """
         Filter the rows in the DataFrame based on a predicate expression.
 
         The original order of the remaining rows is preserved.
@@ -1803,9 +1905,9 @@ class DataFrame:
         │ 3   ┆ 8   ┆ c   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def glimpse(self) -> str | None:
-        '''
+        """
         Return a dense preview of the DataFrame.
 
         The formatting shows one line per column so that wide dataframes display
@@ -1849,9 +1951,9 @@ class DataFrame:
         $ e  <str> \'usd\', \'eur\', None
         $ f <date> 2020-01-01, 2021-01-02, 2022-01-01
 
-        '''
+        """
     def describe(self, percentiles: Sequence[float] | float | None = ...) -> Self:
-        '''
+        """
         Summary statistics for a DataFrame.
 
         Parameters
@@ -1895,9 +1997,9 @@ class DataFrame:
         │ max        ┆ 3.0      ┆ 5.0      ┆ 1.0      ┆ c    ┆ usd  ┆ 2022-01-01 │
         └────────────┴──────────┴──────────┴──────────┴──────┴──────┴────────────┘
 
-        '''
+        """
     def find_idx_by_name(self, name: str) -> int:
-        '''
+        """
         Find the index of a column by name.
 
         Parameters
@@ -1913,9 +2015,9 @@ class DataFrame:
         >>> df.find_idx_by_name("ham")
         2
 
-        '''
+        """
     def replace_at_idx(self, index: int, series: Series) -> Self:
-        '''
+        """
         Replace a column at an index location.
 
         Parameters
@@ -1947,9 +2049,9 @@ class DataFrame:
         │ 30    ┆ 8   ┆ c   │
         └───────┴─────┴─────┘
 
-        '''
+        """
     def sort(self, by: IntoExpr | Iterable[IntoExpr], *more_by: IntoExpr) -> DataFrame:
-        '''
+        """
         Sort the dataframe by the given columns.
 
         Parameters
@@ -2030,9 +2132,9 @@ class DataFrame:
         │ 2    ┆ 5.0 ┆ c   │
         └──────┴─────┴─────┘
 
-        '''
+        """
     def top_k(self, k: int) -> DataFrame:
-        '''
+        """
         Return the `k` largest elements.
 
         If \'descending=True` the smallest elements will be given.
@@ -2097,9 +2199,9 @@ class DataFrame:
         │ c   ┆ 1   │
         └─────┴─────┘
 
-        '''
+        """
     def bottom_k(self, k: int) -> DataFrame:
-        '''
+        """
         Return the `k` smallest elements.
 
         If \'descending=True` the largest elements will be given.
@@ -2164,9 +2266,9 @@ class DataFrame:
         │ b   ┆ 2   │
         └─────┴─────┘
 
-        '''
+        """
     def frame_equal(self, other: DataFrame) -> bool:
-        '''
+        """
         Check if DataFrame is equal to other.
 
         Parameters
@@ -2197,9 +2299,9 @@ class DataFrame:
         >>> df1.frame_equal(df2)
         False
 
-        '''
+        """
     def replace(self, *args, **kwargs) -> Self:
-        '''
+        """
         Replace a column by a new Series.
 
         Parameters
@@ -2225,9 +2327,9 @@ class DataFrame:
         │ 30  ┆ 6   │
         └─────┴─────┘
 
-        '''
+        """
     def slice(self, offset: int, length: int | None = ...) -> Self:
-        '''
+        """
         Get a slice of this DataFrame.
 
         Parameters
@@ -2258,9 +2360,9 @@ class DataFrame:
         │ 3   ┆ 8.0 ┆ c   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def head(self, n: int = ...) -> Self:
-        '''
+        """
         Get the first `n` rows.
 
         Parameters
@@ -2307,9 +2409,9 @@ class DataFrame:
         │ 2   ┆ 7   ┆ b   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def tail(self, n: int = ...) -> Self:
-        '''
+        """
         Get the last `n` rows.
 
         Parameters
@@ -2356,7 +2458,7 @@ class DataFrame:
         │ 5   ┆ 10  ┆ e   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def limit(self, n: int = ...) -> Self:
         """
         Get the first `n` rows.
@@ -2374,8 +2476,10 @@ class DataFrame:
         head
 
         """
-    def drop_nulls(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...) -> DataFrame:
-        '''
+    def drop_nulls(
+        self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...
+    ) -> DataFrame:
+        """
         Drop all rows that contain null values.
 
         The original order of the remaining rows is preserved.
@@ -2477,9 +2581,11 @@ class DataFrame:
         │ 1    ┆ 1    │
         └──────┴──────┘
 
-        '''
-    def pipe(self, function: Callable[Concatenate[DataFrame, P], T], *args: P.args, **kwargs: P.kwargs) -> T:
-        '''
+        """
+    def pipe(
+        self, function: Callable[Concatenate[DataFrame, P], T], *args: P.args, **kwargs: P.kwargs
+    ) -> T:
+        """
         Offers a structured way to apply a sequence of user-defined functions (UDFs).
 
         Parameters
@@ -2539,9 +2645,9 @@ class DataFrame:
         │ 4   ┆ 2   │
         └─────┴─────┘
 
-        '''
+        """
     def with_row_count(self, name: str = ..., offset: int = ...) -> Self:
-        '''
+        """
         Add a column at index 0 that counts the rows.
 
         Parameters
@@ -2571,9 +2677,9 @@ class DataFrame:
         │ 2      ┆ 5   ┆ 6   │
         └────────┴─────┴─────┘
 
-        '''
+        """
     def group_by(self, by: IntoExpr | Iterable[IntoExpr], *more_by: IntoExpr) -> GroupBy:
-        '''
+        """
         Start a group by operation.
 
         Parameters
@@ -2704,9 +2810,9 @@ class DataFrame:
         │ c   ┆ 3   ┆ 1   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def group_by_rolling(self, index_column: IntoExpr) -> RollingGroupBy:
-        '''
+        """
         Create rolling groups based on a time, Int32, or Int64 column.
 
         Different from a ``group_by_dynamic`` the windows are now determined by the
@@ -2828,9 +2934,9 @@ class DataFrame:
         │ 2020-01-08 23:16:43 ┆ 1     ┆ 1     ┆ 1     │
         └─────────────────────┴───────┴───────┴───────┘
 
-        '''
+        """
     def group_by_dynamic(self, index_column: IntoExpr) -> DynamicGroupBy:
-        '''
+        """
         Group based on a time value (or index value of type Int32, Int64).
 
         Time windows are calculated and rows are assigned to windows. Different from a
@@ -3134,9 +3240,9 @@ class DataFrame:
         │ 4               ┆ 7               ┆ 4   ┆ ["C"]           │
         └─────────────────┴─────────────────┴─────┴─────────────────┘
 
-        '''
+        """
     def upsample(self, time_column: str) -> Self:
-        '''
+        """
         Upsample a DataFrame at a regular frequency.
 
         The `every` and `offset` arguments are created with
@@ -3222,9 +3328,9 @@ class DataFrame:
         │ 2021-06-01 00:00:00 ┆ B      ┆ 3      │
         └─────────────────────┴────────┴────────┘
 
-        '''
+        """
     def join_asof(self, other: DataFrame) -> DataFrame:
-        '''
+        """
         Perform an asof join.
 
         This is similar to a left-join except that we match on nearest key rather than
@@ -3343,9 +3449,14 @@ class DataFrame:
         │ 2019-05-12 00:00:00 ┆ 83.52      ┆ 4696 │
         └─────────────────────┴────────────┴──────┘
 
-        '''
-    def join(self, other: DataFrame, on: str | Expr | Sequence[str | Expr] | None = ..., how: JoinStrategy = ...) -> DataFrame:
-        '''
+        """
+    def join(
+        self,
+        other: DataFrame,
+        on: str | Expr | Sequence[str | Expr] | None = ...,
+        how: JoinStrategy = ...,
+    ) -> DataFrame:
+        """
         Join in SQL-like fashion.
 
         Parameters
@@ -3466,9 +3577,11 @@ class DataFrame:
         -----
         For joining on columns with categorical data, see ``pl.StringCache()``.
 
-        '''
-    def map_rows(self, function: Callable[[tuple[Any, ...]], Any], return_dtype: PolarsDataType | None = ...) -> DataFrame:
-        '''
+        """
+    def map_rows(
+        self, function: Callable[[tuple[Any, ...]], Any], return_dtype: PolarsDataType | None = ...
+    ) -> DataFrame:
+        """
         Apply a custom/user-defined function (UDF) over the rows of the DataFrame.
 
         .. warning::
@@ -3553,9 +3666,9 @@ class DataFrame:
 
         >>> df.select(pl.col("foo") * 2 + pl.col("bar"))  # doctest: +IGNORE_RESULT
 
-        '''
+        """
     def hstack(self, columns: list[Series] | DataFrame) -> Self:
-        '''
+        """
         Return a new DataFrame grown horizontally by stacking multiple Series to it.
 
         Parameters
@@ -3587,9 +3700,9 @@ class DataFrame:
         │ 3   ┆ 8   ┆ c   ┆ 30    │
         └─────┴─────┴─────┴───────┘
 
-        '''
+        """
     def vstack(self, *args, **kwargs) -> Self:
-        '''
+        """
         Grow this DataFrame vertically by stacking a DataFrame to it.
 
         Parameters
@@ -3632,9 +3745,9 @@ class DataFrame:
         │ 4   ┆ 9   ┆ d   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def extend(self, other: DataFrame) -> Self:
-        '''
+        """
         Extend the memory backed by this `DataFrame` with the values from `other`.
 
         Different from ``vstack`` which adds the chunks from ``other`` to the chunks of
@@ -3686,9 +3799,13 @@ class DataFrame:
         │ 30  ┆ 60  │
         └─────┴─────┘
 
-        '''
-    def drop(self, columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector], *more_columns: ColumnNameOrSelector) -> DataFrame:
-        '''
+        """
+    def drop(
+        self,
+        columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector],
+        *more_columns: ColumnNameOrSelector,
+    ) -> DataFrame:
+        """
         Remove columns from the dataframe.
 
         Parameters
@@ -3765,9 +3882,9 @@ class DataFrame:
         │ 8.0 │
         └─────┘
 
-        '''
+        """
     def drop_in_place(self, name: str) -> Series:
-        '''
+        """
         Drop a single column in-place and return the dropped column.
 
         Parameters
@@ -3798,9 +3915,11 @@ class DataFrame:
             "c"
         ]
 
-        '''
-    def cast(self, dtypes: Mapping[ColumnNameOrSelector, PolarsDataType] | PolarsDataType) -> DataFrame:
-        '''
+        """
+    def cast(
+        self, dtypes: Mapping[ColumnNameOrSelector, PolarsDataType] | PolarsDataType
+    ) -> DataFrame:
+        """
         Cast DataFrame column(s) to the specified dtype(s).
 
         Parameters
@@ -3859,9 +3978,9 @@ class DataFrame:
         │ 3   ┆ 8   ┆ 2022-05-06 │
         └─────┴─────┴────────────┘
 
-        '''
+        """
     def clear(self, n: int = ...) -> Self:
-        '''
+        """
         Create an empty (n=0) or `n`-row null-filled (n>0) copy of the DataFrame.
 
         Returns a `n`-row null-filled DataFrame with an identical schema.
@@ -3905,9 +4024,9 @@ class DataFrame:
         │ null ┆ null ┆ null │
         └──────┴──────┴──────┘
 
-        '''
+        """
     def clone(self) -> Self:
-        '''
+        """
         Cheap deepcopy/clone.
 
         See Also
@@ -3937,9 +4056,9 @@ class DataFrame:
         │ 4   ┆ 13.0 ┆ true  │
         └─────┴──────┴───────┘
 
-        '''
+        """
     def get_columns(self) -> list[Series]:
-        '''
+        """
         Get the DataFrame as a List of Series.
 
         Examples
@@ -3991,9 +4110,9 @@ class DataFrame:
             true
         ]]
 
-        '''
+        """
     def get_column(self, name: str) -> Series:
-        '''
+        """
         Get a single column as Series by name.
 
         Parameters
@@ -4017,9 +4136,14 @@ class DataFrame:
                 3
         ]
 
-        '''
-    def fill_null(self, value: Any | None = ..., strategy: FillNullStrategy | None = ..., limit: int | None = ...) -> DataFrame:
-        '''
+        """
+    def fill_null(
+        self,
+        value: Any | None = ...,
+        strategy: FillNullStrategy | None = ...,
+        limit: int | None = ...,
+    ) -> DataFrame:
+        """
         Fill null values using the specified value or strategy.
 
         Parameters
@@ -4102,9 +4226,9 @@ class DataFrame:
         │ 4   ┆ 13.0 │
         └─────┴──────┘
 
-        '''
+        """
     def fill_nan(self, value: Expr | int | float | None) -> DataFrame:
-        '''
+        """
         Fill floating point NaN values by an Expression evaluation.
 
         Parameters
@@ -4147,9 +4271,11 @@ class DataFrame:
         │ 4.0  ┆ 13.0 │
         └──────┴──────┘
 
-        '''
-    def explode(self, columns: str | Expr | Sequence[str | Expr], *more_columns: str | Expr) -> DataFrame:
-        '''
+        """
+    def explode(
+        self, columns: str | Expr | Sequence[str | Expr], *more_columns: str | Expr
+    ) -> DataFrame:
+        """
         Explode the dataframe to long format by exploding the given columns.
 
         Parameters
@@ -4201,9 +4327,15 @@ class DataFrame:
         │ c       ┆ 8       │
         └─────────┴─────────┘
 
-        '''
-    def pivot(self, values: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, index: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, columns: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, aggregate_function: PivotAgg | Expr | None = ...) -> Self:
-        '''
+        """
+    def pivot(
+        self,
+        values: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None,
+        index: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None,
+        columns: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None,
+        aggregate_function: PivotAgg | Expr | None = ...,
+    ) -> Self:
+        """
         Create a spreadsheet-style pivot table as a DataFrame.
 
         Only available in eager mode. See "Examples" section below for how to do a
@@ -4337,9 +4469,15 @@ class DataFrame:
         │ b    ┆ 0.964028 ┆ 0.999954 │
         └──────┴──────────┴──────────┘
 
-        '''
-    def melt(self, id_vars: Sequence[str] | str | None = ..., value_vars: Sequence[str] | str | None = ..., variable_name: str | None = ..., value_name: str | None = ...) -> Self:
-        '''
+        """
+    def melt(
+        self,
+        id_vars: Sequence[str] | str | None = ...,
+        value_vars: Sequence[str] | str | None = ...,
+        variable_name: str | None = ...,
+        value_name: str | None = ...,
+    ) -> Self:
+        """
         Unpivot a DataFrame from wide to long format.
 
         Optionally leaves identifiers set.
@@ -4385,9 +4523,15 @@ class DataFrame:
         │ z   ┆ c        ┆ 6     │
         └─────┴──────────┴───────┘
 
-        '''
-    def unstack(self, step: int, how: UnstackDirection = ..., columns: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ..., fill_values: list[Any] | None = ...) -> DataFrame:
-        '''
+        """
+    def unstack(
+        self,
+        step: int,
+        how: UnstackDirection = ...,
+        columns: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ...,
+        fill_values: list[Any] | None = ...,
+    ) -> DataFrame:
+        """
         Unstack a long table to a wide form without doing an aggregation.
 
         This can be much faster than a pivot, because it can skip the grouping phase.
@@ -4475,9 +4619,13 @@ class DataFrame:
         │ 5   ┆ 0   │
         └─────┴─────┘
 
-        '''
-    def partition_by(self, by: ColumnNameOrSelector | Sequence[ColumnNameOrSelector], *more_by: ColumnNameOrSelector) -> list[Self] | dict[Any, Self]:
-        '''
+        """
+    def partition_by(
+        self,
+        by: ColumnNameOrSelector | Sequence[ColumnNameOrSelector],
+        *more_by: ColumnNameOrSelector,
+    ) -> list[Self] | dict[Any, Self]:
+        """
         Group by the given columns and return the groups as separate dataframes.
 
         Parameters
@@ -4603,9 +4751,9 @@ class DataFrame:
         │ c   ┆ 3   ┆ 1   │
         └─────┴─────┴─────┘}
 
-        '''
+        """
     def shift(self, periods: int) -> Self:
-        '''
+        """
         Shift values by the given period.
 
         Parameters
@@ -4649,9 +4797,9 @@ class DataFrame:
         │ null ┆ null ┆ null │
         └──────┴──────┴──────┘
 
-        '''
+        """
     def shift_and_fill(self, fill_value: int | str | float) -> DataFrame:
-        '''
+        """
         Shift the values by a given period and fill the resulting null values.
 
         Parameters
@@ -4682,9 +4830,9 @@ class DataFrame:
         │ 2   ┆ 7   ┆ b   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def is_duplicated(self) -> Series:
-        '''
+        """
         Get a mask of all duplicated rows in this DataFrame.
 
         Examples
@@ -4717,9 +4865,9 @@ class DataFrame:
         │ 1   ┆ x   │
         │ 1   ┆ x   │
         └─────┴─────┘
-        '''
+        """
     def is_unique(self) -> Series:
-        '''
+        """
         Get a mask of all unique rows in this DataFrame.
 
         Examples
@@ -4752,9 +4900,9 @@ class DataFrame:
         │ 2   ┆ y   │
         │ 3   ┆ z   │
         └─────┴─────┘
-        '''
+        """
     def lazy(self) -> LazyFrame:
-        '''
+        """
         Start a lazy query from this point. This returns a `LazyFrame` object.
 
         Operations on a `LazyFrame` are not executed until this is requested by either
@@ -4790,9 +4938,9 @@ class DataFrame:
         >>> df.lazy()  # doctest: +ELLIPSIS
         <LazyFrame [3 cols, {"a": Int64 … "c": Boolean}] at ...>
 
-        '''
+        """
     def select(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> DataFrame:
-        '''
+        """
         Select columns from this DataFrame.
 
         Parameters
@@ -4890,8 +5038,10 @@ class DataFrame:
         │ {1,0}     │
         └───────────┘
 
-        '''
-    def select_seq(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> DataFrame:
+        """
+    def select_seq(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> DataFrame:
         """
         Select columns from this LazyFrame.
 
@@ -4913,8 +5063,10 @@ class DataFrame:
         select
 
         """
-    def with_columns(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> DataFrame:
-        '''
+    def with_columns(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> DataFrame:
+        """
         Add columns to this DataFrame.
 
         Added columns will replace existing columns with the same name.
@@ -5056,8 +5208,10 @@ class DataFrame:
         │ 4   ┆ 13.0 ┆ {1,3.0}     │
         └─────┴──────┴─────────────┘
 
-        '''
-    def with_columns_seq(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> DataFrame:
+        """
+    def with_columns_seq(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> DataFrame:
         """
         Add columns to this DataFrame.
 
@@ -5087,7 +5241,7 @@ class DataFrame:
 
         """
     def n_chunks(self, strategy: str = ...) -> int | list[int]:
-        '''
+        """
         Get number of chunks used by the ChunkedArrays of this DataFrame.
 
         Parameters
@@ -5111,9 +5265,9 @@ class DataFrame:
         >>> df.n_chunks(strategy="all")
         [1, 1, 1]
 
-        '''
+        """
     def max(self, axis: int = ...) -> Self | Series:
-        '''
+        """
         Aggregate the columns of this DataFrame to their maximum value.
 
         Examples
@@ -5135,9 +5289,9 @@ class DataFrame:
         │ 3   ┆ 8   ┆ c   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def min(self, axis: int = ...) -> Self | Series:
-        '''
+        """
         Aggregate the columns of this DataFrame to their minimum value.
 
         Examples
@@ -5159,9 +5313,9 @@ class DataFrame:
         │ 1   ┆ 6   ┆ a   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def sum(self) -> Self | Series:
-        '''
+        """
         Aggregate the columns of this DataFrame to their sum value.
 
         Parameters
@@ -5198,9 +5352,9 @@ class DataFrame:
                 "38c"
         ]
 
-        '''
+        """
     def mean(self) -> Self | Series:
-        '''
+        """
         Aggregate the columns of this DataFrame to their mean value.
 
         Parameters
@@ -5238,9 +5392,9 @@ class DataFrame:
             5.5
         ]
 
-        '''
+        """
     def std(self, ddof: int = ...) -> Self:
-        '''
+        """
         Aggregate the columns of this DataFrame to their standard deviation value.
 
         Parameters
@@ -5278,9 +5432,9 @@ class DataFrame:
         │ 0.816497 ┆ 0.816497 ┆ null │
         └──────────┴──────────┴──────┘
 
-        '''
+        """
     def var(self, ddof: int = ...) -> Self:
-        '''
+        """
         Aggregate the columns of this DataFrame to their variance value.
 
         Parameters
@@ -5318,9 +5472,9 @@ class DataFrame:
         │ 0.666667 ┆ 0.666667 ┆ null │
         └──────────┴──────────┴──────┘
 
-        '''
+        """
     def median(self) -> Self:
-        '''
+        """
         Aggregate the columns of this DataFrame to their median value.
 
         Examples
@@ -5342,9 +5496,9 @@ class DataFrame:
         │ 2.0 ┆ 7.0 ┆ null │
         └─────┴─────┴──────┘
 
-        '''
+        """
     def product(self) -> DataFrame:
-        '''
+        """
         Aggregate the columns of this DataFrame to their product values.
 
         Examples
@@ -5367,9 +5521,9 @@ class DataFrame:
         │ 6   ┆ 20.0 ┆ 0   │
         └─────┴──────┴─────┘
 
-        '''
+        """
     def quantile(self, quantile: float, interpolation: RollingInterpolationMethod = ...) -> Self:
-        '''
+        """
         Aggregate the columns of this DataFrame to their quantile value.
 
         Parameters
@@ -5398,9 +5552,11 @@ class DataFrame:
         │ 2.0 ┆ 7.0 ┆ null │
         └─────┴─────┴──────┘
 
-        '''
-    def to_dummies(self, columns: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ...) -> Self:
-        '''
+        """
+    def to_dummies(
+        self, columns: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ...
+    ) -> Self:
+        """
         Convert categorical variables into dummy/indicator variables.
 
         Parameters
@@ -5467,9 +5623,11 @@ class DataFrame:
         │ 1     ┆ 1     ┆ b   │
         └───────┴───────┴─────┘
 
-        '''
-    def unique(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...) -> DataFrame:
-        '''
+        """
+    def unique(
+        self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...
+    ) -> DataFrame:
+        """
         Drop duplicate rows from this dataframe.
 
         Parameters
@@ -5542,9 +5700,9 @@ class DataFrame:
         │ 1   ┆ a   ┆ b   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def n_unique(self, subset: str | Expr | Sequence[str | Expr] | None = ...) -> int:
-        '''
+        """
         Return the number of unique rows, or the number of unique row-subsets.
 
         Parameters
@@ -5598,9 +5756,9 @@ class DataFrame:
         ... )
         3
 
-        '''
+        """
     def approx_n_unique(self) -> DataFrame:
-        '''
+        """
         Approximate count of unique values.
 
         This is done using the HyperLogLog++ algorithm for cardinality estimation.
@@ -5623,7 +5781,7 @@ class DataFrame:
         │ 4   ┆ 2   │
         └─────┴─────┘
 
-        '''
+        """
     def approx_unique(self, *args, **kwargs) -> DataFrame:
         """
         Approximate count of unique values.
@@ -5640,7 +5798,7 @@ class DataFrame:
         performance.
         """
     def null_count(self) -> Self:
-        '''
+        """
         Create a new DataFrame that shows the null counts per column.
 
         Examples
@@ -5662,9 +5820,9 @@ class DataFrame:
         │ 1   ┆ 1   ┆ 0   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def sample(self, n: int | Series | None = ...) -> Self:
-        '''
+        """
         Sample from this DataFrame.
 
         Parameters
@@ -5704,9 +5862,9 @@ class DataFrame:
         │ 2   ┆ 7   ┆ b   │
         └─────┴─────┴─────┘
 
-        '''
+        """
     def fold(self, operation: Callable[[Series, Series], Series]) -> Series:
-        '''
+        """
         Apply a horizontal reduction on a DataFrame.
 
         This can be used to effectively determine aggregations on a row level, and can
@@ -5792,9 +5950,9 @@ class DataFrame:
         operation
             function that takes two `Series` and returns a `Series`.
 
-        '''
+        """
     def row(self, index: int | None = ...) -> tuple[Any, ...] | dict[str, Any]:
-        '''
+        """
         Get the values of a single row, either by index or by predicate.
 
         Parameters
@@ -5857,9 +6015,9 @@ class DataFrame:
         >>> df.row(by_predicate=(pl.col("ham") == "b"))
         (2, 7, \'b\')
 
-        '''
+        """
     def rows(self) -> list[tuple[Any, ...]] | list[dict[str, Any]]:
-        '''
+        """
         Returns all data in the DataFrame as a list of rows of python-native values.
 
         Parameters
@@ -5909,9 +6067,11 @@ class DataFrame:
          {\'x\': \'b\', \'y\': 3, \'z\': 6},
          {\'x\': \'a\', \'y\': 4, \'z\': 9}]
 
-        '''
-    def rows_by_key(self, key: ColumnNameOrSelector | Sequence[ColumnNameOrSelector]) -> dict[Any, Iterable[Any]]:
-        '''
+        """
+    def rows_by_key(
+        self, key: ColumnNameOrSelector | Sequence[ColumnNameOrSelector]
+    ) -> dict[Any, Iterable[Any]]:
+        """
         Returns DataFrame data as a keyed dictionary of python-native values.
 
         Note that this method should not be used in place of native operations, due to
@@ -6000,9 +6160,9 @@ class DataFrame:
                           {\'w\': \'b\', \'x\': \'q\', \'y\': 3.0, \'z\': 7}],
              (\'a\', \'k\'): [{\'w\': \'a\', \'x\': \'k\', \'y\': 4.5, \'z\': 6}]})
 
-        '''
+        """
     def iter_rows(self) -> Iterator[tuple[Any, ...]] | Iterator[dict[str, Any]]:
-        '''
+        """
         Returns an iterator over the DataFrame of rows of python-native values.
 
         Parameters
@@ -6053,9 +6213,9 @@ class DataFrame:
         >>> [row["b"] for row in df.iter_rows(named=True)]
         [2, 4, 6]
 
-        '''
+        """
     def iter_slices(self, n_rows: int = ...) -> Iterator[DataFrame]:
-        '''
+        """
         Returns a non-copying iterator of slices over the underlying DataFrame.
 
         Parameters
@@ -6101,7 +6261,7 @@ class DataFrame:
         iter_rows : Row iterator over frame data (does not materialise all rows).
         partition_by : Split into multiple DataFrames, partitioned by groups.
 
-        '''
+        """
     def shrink_to_fit(self) -> Self:
         """
         Shrink DataFrame memory usage.
@@ -6110,7 +6270,7 @@ class DataFrame:
 
         """
     def take_every(self, n: int) -> DataFrame:
-        '''
+        """
         Take every nth row in the DataFrame and return as a new DataFrame.
 
         Examples
@@ -6127,9 +6287,15 @@ class DataFrame:
         │ 3   ┆ 7   │
         └─────┴─────┘
 
-        '''
-    def hash_rows(self, seed: int = ..., seed_1: int | None = ..., seed_2: int | None = ..., seed_3: int | None = ...) -> Series:
-        '''
+        """
+    def hash_rows(
+        self,
+        seed: int = ...,
+        seed_1: int | None = ...,
+        seed_2: int | None = ...,
+        seed_3: int | None = ...,
+    ) -> Series:
+        """
         Hash and combine the rows in this DataFrame.
 
         The hash value is of type `UInt64`.
@@ -6163,9 +6329,9 @@ class DataFrame:
             2047317070637311557
         ]
 
-        '''
+        """
     def interpolate(self) -> DataFrame:
-        '''
+        """
         Interpolate intermediate values. The interpolation method is linear.
 
         Examples
@@ -6190,9 +6356,9 @@ class DataFrame:
         │ 10  ┆ null ┆ 9   │
         └─────┴──────┴─────┘
 
-        '''
+        """
     def is_empty(self) -> bool:
-        '''
+        """
         Check if the dataframe is empty.
 
         Examples
@@ -6203,9 +6369,9 @@ class DataFrame:
         >>> df.filter(pl.col("foo") > 99).is_empty()
         True
 
-        '''
+        """
     def to_struct(self, name: str) -> Series:
-        '''
+        """
         Convert a ``DataFrame`` to a ``Series`` of type ``Struct``.
 
         Parameters
@@ -6232,9 +6398,13 @@ class DataFrame:
             {5,"five"}
         ]
 
-        '''
-    def unnest(self, columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector], *more_columns: ColumnNameOrSelector) -> Self:
-        '''
+        """
+    def unnest(
+        self,
+        columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector],
+        *more_columns: ColumnNameOrSelector,
+    ) -> Self:
+        """
         Decompose struct columns into separate columns for each of their fields.
 
         The new columns will be inserted into the dataframe at the location of the
@@ -6280,9 +6450,9 @@ class DataFrame:
         │ bar    ┆ 2   ┆ b   ┆ null ┆ [3]       ┆ womp  │
         └────────┴─────┴─────┴──────┴───────────┴───────┘
 
-        '''
+        """
     def corr(self, **kwargs: Any) -> DataFrame:
-        '''
+        """
         Return pairwise Pearson product-moment correlation coefficients between columns.
 
         See numpy ``corrcoef`` for more information:
@@ -6312,9 +6482,9 @@ class DataFrame:
         │ 1.0  ┆ -1.0 ┆ 1.0  │
         └──────┴──────┴──────┘
 
-        '''
+        """
     def merge_sorted(self, other: DataFrame, key: str) -> DataFrame:
-        '''
+        """
         Take two sorted DataFrames and merge them by the sorted key.
 
         The output of this operation will also be sorted.
@@ -6376,7 +6546,7 @@ class DataFrame:
         │ steve  ┆ 42  │
         │ elise  ┆ 44  │
         └────────┴─────┘
-        '''
+        """
     def set_sorted(self, column: str | Iterable[str], *more_columns: str) -> DataFrame:
         """
         Indicate that one or multiple columns are sorted.
@@ -6390,8 +6560,13 @@ class DataFrame:
         descending
             Whether the columns are sorted in descending order.
         """
-    def update(self, other: DataFrame, on: str | Sequence[str] | None = ..., how: Literal['left', 'inner'] = ...) -> DataFrame:
-        '''
+    def update(
+        self,
+        other: DataFrame,
+        on: str | Sequence[str] | None = ...,
+        how: Literal["left", "inner"] = ...,
+    ) -> DataFrame:
+        """
         Update the values in this `DataFrame` with the non-null values in `other`.
 
         Notes
@@ -6464,7 +6639,7 @@ class DataFrame:
         │ 4   ┆ 700 │
         └─────┴─────┘
 
-        '''
+        """
     def groupby(self, *args, **kwargs) -> GroupBy:
         """
         Start a group by operation.
@@ -6530,7 +6705,7 @@ class DataFrame:
 
         """
     def groupby_dynamic(self, *args, **kwargs) -> DynamicGroupBy:
-        '''
+        """
         Group based on a time value (or index value of type Int32, Int64).
 
         .. deprecated:: 0.19.0
@@ -6591,7 +6766,7 @@ class DataFrame:
             of which will be sorted by `index_column` (but note that if `by` columns are
             passed, it will only be sorted within each `by` group).
 
-        '''
+        """
     def apply(self, *args, **kwargs) -> DataFrame:
         """
         Apply a custom/user-defined function (UDF) over the rows of the DataFrame.
@@ -6622,4 +6797,5 @@ class DataFrame:
     def flags(self): ...
     @property
     def schema(self): ...
+
 def _prepare_other_arg(other: Any, length: int | None = ...) -> Series: ...
