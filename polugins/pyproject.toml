@@ -14,12 +14,12 @@ tomli = ">=0.2.0"
 
 [tool.poetry.group.dev.dependencies]
 example-package = {path = "tests/pkgs/example_package"}
-ruff = "0.1.11"
 nox = "^2023.4.22"
-pytest = "^7.3.1"
+pytest = "^8.0.0"
 pytest-env = "^0.8.2"
 pytest-cov = "^4.1.0"
 coverage = "^7.2.7"
+ruff = "0.3.1"
 
 [tool.poetry.group.nox]
 optional = true
@@ -44,8 +44,9 @@ env = [
 
 [tool.ruff]
 extend = "../ruff.toml"
+src = ["src"]
 
-select = [
+lint.select = [
 "E",
 "F",
 "I",
@@ -56,9 +57,8 @@ select = [
 "C4", # comprehensions
 "EM" # Err msg, asign to var first.
 ]
-ignore = []
-src = ["src"]
+lint.ignore = []
 # Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
+lint.fixable = ["ALL"]
+lint.unfixable = []
 

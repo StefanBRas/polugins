@@ -1,8 +1,7 @@
-""" Namespaces for testing
+"""Namespaces for testing
 Yes, should go in a test packages.
 Here for now to test a package importing from itself
 """
-
 
 import polars as pl
 

@@ -147,7 +147,9 @@ def main(tmp_dir: Path):
             )
             cleaned_no_docstring_stub_content = clean_types(no_docstring_stub_path, version_)
             no_docstring_stub_path.write_text(cleaned_no_docstring_stub_content)
-            subprocess.check_call([sys.executable, "-m", "ruff", "format", str(no_docstring_stub_path)])
+            subprocess.check_call(
+                [sys.executable, "-m", "ruff", "format", str(no_docstring_stub_path)]
+            )
 
     return versions
 

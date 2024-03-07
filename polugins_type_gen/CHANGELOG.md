@@ -1,5 +1,6 @@
 
 # Unreleased
+- Use importlib.metadata to get version.
 # 0.5.3 
 - Added polars stubs for version 0.20.14
 - Formated stubs with ruff.

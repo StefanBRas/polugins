@@ -1,6 +1,7 @@
 """Nox sessions.
 From https://github.com/cjolowicz/cookiecutter-hypermodern-python-instance
 """
+
 from pathlib import Path
 from typing import Iterable
 

@@ -14,7 +14,7 @@ polugins = ">=0.2"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.3.1"
+pytest = "^8.0.0"
 nox = "^2023.4.22"
 coverage = "^7.2.7"
 pytest-env = "^0.8.2"
@@ -50,22 +50,4 @@ pythonpath = [
 
 [tool.ruff]
 extend = "../ruff.toml"
-
-select = [
-"E",
-"F",
-"I",
-"PTH", # use pathlib
-"RUF",
-"SIM", # simplify
-"A", # name shadowing builtin
-"C4", # comprehensions
-"EM" # Err msg, asign to var first.
-]
-ignore = []
 src = ["src"]
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["ALL"]
-unfixable = []
-extend-include = ["*.pyi"]
-
