@@ -5,24 +5,93 @@ import pa
 from builtins import PyLazyFrame
 from pathlib import Path
 from polars.convert import from_dict as from_dict
-from polars.datatypes.classes import Boolean as Boolean, Categorical as Categorical, DataTypeGroup as DataTypeGroup, Date as Date, Datetime as Datetime, Duration as Duration, Enum as Enum, Float32 as Float32, Float64 as Float64, Int16 as Int16, Int32 as Int32, Int64 as Int64, Int8 as Int8, Null as Null, Object as Object, String as String, Time as Time, UInt16 as UInt16, UInt32 as UInt32, UInt64 as UInt64, UInt8 as UInt8, Unknown as Unknown
-from polars.datatypes.convert import is_polars_dtype as is_polars_dtype, py_type_to_dtype as py_type_to_dtype
-from polars.io._utils import _is_local_file as _is_local_file, _is_supported_cloud as _is_supported_cloud
+from polars.datatypes.classes import (
+    Boolean as Boolean,
+    Categorical as Categorical,
+    DataTypeGroup as DataTypeGroup,
+    Date as Date,
+    Datetime as Datetime,
+    Duration as Duration,
+    Enum as Enum,
+    Float32 as Float32,
+    Float64 as Float64,
+    Int16 as Int16,
+    Int32 as Int32,
+    Int64 as Int64,
+    Int8 as Int8,
+    Null as Null,
+    Object as Object,
+    String as String,
+    Time as Time,
+    UInt16 as UInt16,
+    UInt32 as UInt32,
+    UInt64 as UInt64,
+    UInt8 as UInt8,
+    Unknown as Unknown,
+)
+from polars.datatypes.convert import (
+    is_polars_dtype as is_polars_dtype,
+    py_type_to_dtype as py_type_to_dtype,
+)
+from polars.io._utils import (
+    _is_local_file as _is_local_file,
+    _is_supported_cloud as _is_supported_cloud,
+)
 from polars.io.csv._utils import _check_arg_is_1byte as _check_arg_is_1byte
 from polars.io.ipc.anonymous_scan import _scan_ipc_fsspec as _scan_ipc_fsspec
 from polars.io.parquet.anonymous_scan import _scan_parquet_fsspec as _scan_parquet_fsspec
 from polars.lazyframe.group_by import LazyGroupBy as LazyGroupBy
 from polars.lazyframe.in_process import InProcessQuery as InProcessQuery
-from polars.selectors import _expand_selectors as _expand_selectors, by_dtype as by_dtype, expand_selector as expand_selector
+from polars.selectors import (
+    _expand_selectors as _expand_selectors,
+    by_dtype as by_dtype,
+    expand_selector as expand_selector,
+)
 from polars.slice import LazyPolarsSlice as LazyPolarsSlice
-from polars.utils._async import _AioDataFrameResult as _AioDataFrameResult, _GeventDataFrameResult as _GeventDataFrameResult
-from polars.utils._parse_expr_input import parse_as_expression as parse_as_expression, parse_as_list_of_expressions as parse_as_list_of_expressions
+from polars.utils._async import (
+    _AioDataFrameResult as _AioDataFrameResult,
+    _GeventDataFrameResult as _GeventDataFrameResult,
+)
+from polars.utils._parse_expr_input import (
+    parse_as_expression as parse_as_expression,
+    parse_as_list_of_expressions as parse_as_list_of_expressions,
+)
 from polars.utils._wrap import wrap_df as wrap_df, wrap_expr as wrap_expr
-from polars.utils.convert import _negate_duration as _negate_duration, _timedelta_to_pl_duration as _timedelta_to_pl_duration
-from polars.utils.deprecation import deprecate_function as deprecate_function, deprecate_parameter_as_positional as deprecate_parameter_as_positional, deprecate_renamed_function as deprecate_renamed_function, deprecate_renamed_parameter as deprecate_renamed_parameter, deprecate_saturating as deprecate_saturating, issue_deprecation_warning as issue_deprecation_warning
-from polars.utils.unstable import issue_unstable_warning as issue_unstable_warning, unstable as unstable
-from polars.utils.various import _in_notebook as _in_notebook, _prepare_row_index_args as _prepare_row_index_args, _process_null_values as _process_null_values, is_bool_sequence as is_bool_sequence, is_sequence as is_sequence, normalize_filepath as normalize_filepath, parse_percentiles as parse_percentiles
-from typing import Any, Callable, ClassVar as _ClassVar, Collection, Iterable, Mapping, NoReturn, Sequence
+from polars.utils.convert import (
+    _negate_duration as _negate_duration,
+    _timedelta_to_pl_duration as _timedelta_to_pl_duration,
+)
+from polars.utils.deprecation import (
+    deprecate_function as deprecate_function,
+    deprecate_parameter_as_positional as deprecate_parameter_as_positional,
+    deprecate_renamed_function as deprecate_renamed_function,
+    deprecate_renamed_parameter as deprecate_renamed_parameter,
+    deprecate_saturating as deprecate_saturating,
+    issue_deprecation_warning as issue_deprecation_warning,
+)
+from polars.utils.unstable import (
+    issue_unstable_warning as issue_unstable_warning,
+    unstable as unstable,
+)
+from polars.utils.various import (
+    _in_notebook as _in_notebook,
+    _prepare_row_index_args as _prepare_row_index_args,
+    _process_null_values as _process_null_values,
+    is_bool_sequence as is_bool_sequence,
+    is_sequence as is_sequence,
+    normalize_filepath as normalize_filepath,
+    parse_percentiles as parse_percentiles,
+)
+from typing import (
+    Any,
+    Callable,
+    ClassVar as _ClassVar,
+    Collection,
+    Iterable,
+    Mapping,
+    NoReturn,
+    Sequence,
+)
 
 TYPE_CHECKING: bool
 DTYPE_TEMPORAL_UNITS: frozenset
@@ -30,7 +99,9 @@ N_INFER_DEFAULT: int
 
 class LazyFrame:
     _accessors: _ClassVar[set] = ...
-    def __init__(self, data: FrameInitTypes | None = ..., schema: SchemaDefinition | None = ...) -> None: ...
+    def __init__(
+        self, data: FrameInitTypes | None = ..., schema: SchemaDefinition | None = ...
+    ) -> None: ...
     @classmethod
     def _from_pyldf(cls, ldf: PyLazyFrame) -> Self: ...
     @classmethod
@@ -78,10 +149,12 @@ class LazyFrame:
         polars.io.scan_ndjson
         """
     @classmethod
-    def _scan_python_function(cls, schema: pa.schema | Mapping[str, PolarsDataType], scan_fn: Any) -> Self: ...
+    def _scan_python_function(
+        cls, schema: pa.schema | Mapping[str, PolarsDataType], scan_fn: Any
+    ) -> Self: ...
     @classmethod
     def deserialize(cls, source: str | Path | IOBase) -> Self:
-        '''
+        """
         Read a logical plan from a JSON file to construct a LazyFrame.
 
         Parameters
@@ -109,7 +182,7 @@ class LazyFrame:
         ╞═════╡
         │ 6   │
         └─────┘
-        '''
+        """
     def __bool__(self) -> NoReturn: ...
     def _comparison_error(self, operator: str) -> NoReturn: ...
     def __eq__(self, other: Any) -> NoReturn: ...
@@ -124,7 +197,7 @@ class LazyFrame:
     def __getitem__(self, item: int | range | slice) -> LazyFrame: ...
     def _repr_html_(self) -> str: ...
     def serialize(self, file: IOBase | str | Path | None = ...) -> str | None:
-        '''
+        """
         Serialize the logical plan of this LazyFrame to a file or string in JSON format.
 
         Parameters
@@ -158,9 +231,11 @@ class LazyFrame:
         ╞═════╡
         │ 6   │
         └─────┘
-        '''
-    def pipe(self, function: Callable[Concatenate[LazyFrame, P], T], *args: P.args, **kwargs: P.kwargs) -> T:
-        '''
+        """
+    def pipe(
+        self, function: Callable[Concatenate[LazyFrame, P], T], *args: P.args, **kwargs: P.kwargs
+    ) -> T:
+        """
         Offers a structured way to apply a sequence of user-defined functions (UDFs).
 
         Parameters
@@ -222,9 +297,9 @@ class LazyFrame:
         │ 3   ┆ 1   │
         │ 4   ┆ 2   │
         └─────┴─────┘
-        '''
+        """
     def describe(self, percentiles: Sequence[float] | float | None = ...) -> DataFrame:
-        '''
+        """
         Creates a summary of statistics for a LazyFrame, returning a DataFrame.
 
         Parameters
@@ -311,9 +386,9 @@ class LazyFrame:
         │ 90%        ┆ 2.96     ┆ 49.0     ┆ null     ┆ null ┆ 2022-09-13 ┆ 21:33:18 │
         │ max        ┆ 3.0      ┆ 50.0     ┆ 1.0      ┆ zz   ┆ 2022-12-31 ┆ 23:15:10 │
         └────────────┴──────────┴──────────┴──────────┴──────┴────────────┴──────────┘
-        '''
+        """
     def explain(self) -> str:
-        '''
+        """
         Create a string representation of the query plan.
 
         Different optimizations can be turned on or off.
@@ -356,9 +431,9 @@ class LazyFrame:
         >>> lf.group_by("a", maintain_order=True).agg(pl.all().sum()).sort(
         ...     "a"
         ... ).explain()  # doctest: +SKIP
-        '''
+        """
     def show_graph(self) -> str | None:
-        '''
+        """
         Show a plot of the query plan. Note that you should have graphviz installed.
 
         Parameters
@@ -402,9 +477,9 @@ class LazyFrame:
         >>> lf.group_by("a", maintain_order=True).agg(pl.all().sum()).sort(
         ...     "a"
         ... ).show_graph()  # doctest: +SKIP
-        '''
+        """
     def inspect(self, fmt: str = ...) -> Self:
-        '''
+        """
         Inspect a node in the computation graph.
 
         Print the value that this node in the computation graph evaluates to and pass on
@@ -419,9 +494,9 @@ class LazyFrame:
         ...     .filter(pl.col("bar") == pl.col("foo"))
         ... )  # doctest: +ELLIPSIS
         <LazyFrame [2 cols, {"foo": Int64, "bar": Int64}] at ...>
-        '''
+        """
     def sort(self, by: IntoExpr | Iterable[IntoExpr], *more_by: IntoExpr) -> Self:
-        '''
+        """
         Sort the LazyFrame by the given columns.
 
         Parameters
@@ -505,9 +580,9 @@ class LazyFrame:
         │ null ┆ 4.0 ┆ b   │
         │ 2    ┆ 5.0 ┆ c   │
         └──────┴─────┴─────┘
-        '''
+        """
     def top_k(self, k: int) -> Self:
-        '''
+        """
         Return the `k` largest elements.
 
         If `descending=True` the smallest elements will be given.
@@ -571,9 +646,9 @@ class LazyFrame:
         │ a   ┆ 2   │
         │ c   ┆ 1   │
         └─────┴─────┘
-        '''
+        """
     def bottom_k(self, k: int) -> Self:
-        '''
+        """
         Return the `k` smallest elements.
 
         If `descending=True` the largest elements will be given.
@@ -637,9 +712,9 @@ class LazyFrame:
         │ b   ┆ 1   │
         │ b   ┆ 2   │
         └─────┴─────┘
-        '''
+        """
     def profile(self) -> tuple[DataFrame, DataFrame]:
-        '''
+        """
         Profile a LazyFrame.
 
         This will run the query and return a tuple
@@ -708,9 +783,9 @@ class LazyFrame:
          │ group_by_partitioned(a) ┆ 5     ┆ 470  │
          │ sort(a)                 ┆ 475   ┆ 1964 │
          └─────────────────────────┴───────┴──────┘)
-        '''
+        """
     def collect(self) -> DataFrame | InProcessQuery:
-        '''
+        """
         Materialize this LazyFrame into a DataFrame.
 
         By default, all query optimizations are enabled. Individual optimizations may
@@ -798,9 +873,9 @@ class LazyFrame:
         │ b   ┆ 11  ┆ 10  │
         │ c   ┆ 6   ┆ 1   │
         └─────┴─────┴─────┘
-        '''
+        """
     def collect_async(self) -> Awaitable[DataFrame] | _GeventDataFrameResult[DataFrame]:
-        '''
+        """
         Collect DataFrame asynchronously in thread pool.
 
         .. warning::
@@ -891,9 +966,9 @@ class LazyFrame:
         │ b   ┆ 11  ┆ 10  │
         │ c   ┆ 6   ┆ 1   │
         └─────┴─────┴─────┘
-        '''
+        """
     def sink_parquet(self, path: str | Path) -> DataFrame:
-        '''
+        """
         Evaluate the query in streaming mode and write to a Parquet file.
 
         .. warning::
@@ -952,9 +1027,9 @@ class LazyFrame:
         --------
         >>> lf = pl.scan_csv("/path/to/my_larger_than_ram_file.csv")  # doctest: +SKIP
         >>> lf.sink_parquet("out.parquet")  # doctest: +SKIP
-        '''
+        """
     def sink_ipc(self, path: str | Path) -> DataFrame:
-        '''
+        """
         Evaluate the query in streaming mode and write to an IPC file.
 
         .. warning::
@@ -994,9 +1069,9 @@ class LazyFrame:
         --------
         >>> lf = pl.scan_csv("/path/to/my_larger_than_ram_file.csv")  # doctest: +SKIP
         >>> lf.sink_ipc("out.arrow")  # doctest: +SKIP
-        '''
+        """
     def sink_csv(self, path: str | Path) -> DataFrame:
-        '''
+        """
         Evaluate the query in streaming mode and write to a CSV file.
 
         .. warning::
@@ -1081,9 +1156,9 @@ class LazyFrame:
         --------
         >>> lf = pl.scan_csv("/path/to/my_larger_than_ram_file.csv")  # doctest: +SKIP
         >>> lf.sink_csv("out.csv")  # doctest: +SKIP
-        '''
+        """
     def sink_ndjson(self, path: str | Path) -> DataFrame:
-        '''
+        """
         Evaluate the query in streaming mode and write to an NDJSON file.
 
         .. warning::
@@ -1120,10 +1195,10 @@ class LazyFrame:
         --------
         >>> lf = pl.scan_csv("/path/to/my_larger_than_ram_file.csv")  # doctest: +SKIP
         >>> lf.sink_ndjson("out.ndjson")  # doctest: +SKIP
-        '''
+        """
     def _set_sink_optimizations(self) -> PyLazyFrame: ...
     def fetch(self, n_rows: int = ...) -> DataFrame:
-        '''
+        """
         Collect a small number of rows for debugging purposes.
 
         Parameters
@@ -1186,9 +1261,9 @@ class LazyFrame:
         │ a   ┆ 1   ┆ 6   │
         │ b   ┆ 2   ┆ 5   │
         └─────┴─────┴─────┘
-        '''
+        """
     def lazy(self) -> Self:
-        '''
+        """
         Return lazy representation, i.e. itself.
 
         Useful for writing code that expects either a :class:`DataFrame` or
@@ -1209,11 +1284,14 @@ class LazyFrame:
         ... )
         >>> lf.lazy()  # doctest: +ELLIPSIS
         <LazyFrame [3 cols, {"a": Int64 … "c": Boolean}] at ...>
-        '''
+        """
     def cache(self) -> Self:
         """Cache the result once the execution of the physical plan hits this node."""
-    def cast(self, dtypes: Mapping[ColumnNameOrSelector | PolarsDataType, PolarsDataType] | PolarsDataType) -> Self:
-        '''
+    def cast(
+        self,
+        dtypes: Mapping[ColumnNameOrSelector | PolarsDataType, PolarsDataType] | PolarsDataType,
+    ) -> Self:
+        """
         Cast LazyFrame column(s) to the specified dtype(s).
 
         Parameters
@@ -1285,9 +1363,9 @@ class LazyFrame:
         {\'foo\': [\'1\', \'2\', \'3\'],
          \'bar\': [\'6.0\', \'7.0\', \'8.0\'],
          \'ham\': [\'2020-01-02\', \'2021-03-04\', \'2022-05-06\']}
-        '''
+        """
     def clear(self, n: int = ...) -> LazyFrame:
-        '''
+        """
         Create an empty copy of the current LazyFrame, with zero to \'n\' rows.
 
         Returns a copy with an identical schema but no data.
@@ -1329,9 +1407,9 @@ class LazyFrame:
         │ null ┆ null ┆ null │
         │ null ┆ null ┆ null │
         └──────┴──────┴──────┘
-        '''
+        """
     def clone(self) -> Self:
-        '''
+        """
         Create a copy of this LazyFrame.
 
         This is a cheap operation that does not copy data.
@@ -1352,9 +1430,17 @@ class LazyFrame:
         ... )
         >>> lf.clone()  # doctest: +ELLIPSIS
         <LazyFrame [3 cols, {"a": Int64 … "c": Boolean}] at ...>
-        '''
-    def filter(self, *predicates: IntoExprColumn | Iterable[IntoExprColumn] | bool | list[bool] | np.ndarray[Any, Any], **constraints: Any) -> Self:
-        '''
+        """
+    def filter(
+        self,
+        *predicates: IntoExprColumn
+        | Iterable[IntoExprColumn]
+        | bool
+        | list[bool]
+        | np.ndarray[Any, Any],
+        **constraints: Any,
+    ) -> Self:
+        """
         Filter the rows in the LazyFrame based on a predicate expression.
 
         The original order of the remaining rows is preserved.
@@ -1442,9 +1528,9 @@ class LazyFrame:
         │ 1   ┆ 6   ┆ a   │
         │ 3   ┆ 8   ┆ c   │
         └─────┴─────┴─────┘
-        '''
+        """
     def select(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> Self:
-        '''
+        """
         Select columns from this LazyFrame.
 
         Parameters
@@ -1542,7 +1628,7 @@ class LazyFrame:
         │ {0,1}     │
         │ {1,0}     │
         └───────────┘
-        '''
+        """
     def select_seq(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> Self:
         """
         Select columns from this LazyFrame.
@@ -1565,7 +1651,7 @@ class LazyFrame:
         select
         """
     def group_by(self, *by: IntoExpr | Iterable[IntoExpr], **named_by: IntoExpr) -> LazyGroupBy:
-        '''
+        """
         Start a group by operation.
 
         Parameters
@@ -1652,9 +1738,9 @@ class LazyFrame:
         │ b   ┆ 1   ┆ 3.0 │
         │ c   ┆ 1   ┆ 1.0 │
         └─────┴─────┴─────┘
-        '''
+        """
     def rolling(self, index_column: IntoExpr) -> LazyGroupBy:
-        '''
+        """
         Create rolling groups based on a time, Int32, or Int64 column.
 
         Different from a `dynamic_group_by` the windows are now determined by the
@@ -1777,9 +1863,9 @@ class LazyFrame:
         │ 2020-01-03 19:45:32 ┆ 11    ┆ 2     ┆ 9     │
         │ 2020-01-08 23:16:43 ┆ 1     ┆ 1     ┆ 1     │
         └─────────────────────┴───────┴───────┴───────┘
-        '''
+        """
     def group_by_dynamic(self, index_column: IntoExpr) -> LazyGroupBy:
-        '''
+        """
         Group based on a time value (or index value of type Int32, Int64).
 
         Time windows are calculated and rows are assigned to windows. Different from a
@@ -2082,9 +2168,9 @@ class LazyFrame:
         │ 2               ┆ 5               ┆ 2   ┆ ["B", "B", "C"] │
         │ 4               ┆ 7               ┆ 4   ┆ ["C"]           │
         └─────────────────┴─────────────────┴─────┴─────────────────┘
-        '''
+        """
     def join_asof(self, other: LazyFrame) -> Self:
-        '''
+        """
         Perform an asof join.
 
         This is similar to a left-join except that we match on nearest key rather than
@@ -2198,9 +2284,14 @@ class LazyFrame:
         │ 2018-05-12 00:00:00 ┆ 83.12      ┆ 4566 │
         │ 2019-05-12 00:00:00 ┆ 83.52      ┆ 4696 │
         └─────────────────────┴────────────┴──────┘
-        '''
-    def join(self, other: LazyFrame, on: str | Expr | Sequence[str | Expr] | None = ..., how: JoinStrategy = ...) -> Self:
-        '''
+        """
+    def join(
+        self,
+        other: LazyFrame,
+        on: str | Expr | Sequence[str | Expr] | None = ...,
+        how: JoinStrategy = ...,
+    ) -> Self:
+        """
         Add a join operation to the Logical Plan.
 
         Parameters
@@ -2333,9 +2424,9 @@ class LazyFrame:
         ╞═════╪═════╪═════╡
         │ 3   ┆ 8.0 ┆ c   │
         └─────┴─────┴─────┘
-        '''
+        """
     def with_columns(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> Self:
-        '''
+        """
         Add columns to this LazyFrame.
 
         Added columns will replace existing columns with the same name.
@@ -2475,8 +2566,10 @@ class LazyFrame:
         │ 3   ┆ 10.0 ┆ {1,6.0}     │
         │ 4   ┆ 13.0 ┆ {1,3.0}     │
         └─────┴──────┴─────────────┘
-        '''
-    def with_columns_seq(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> Self:
+        """
+    def with_columns_seq(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> Self:
         """
         Add columns to this LazyFrame.
 
@@ -2505,7 +2598,7 @@ class LazyFrame:
         with_columns
         """
     def with_context(self, other: Self | list[Self]) -> Self:
-        '''
+        """
         Add an external context to the computation graph.
 
         This allows expressions to also access columns from DataFrames
@@ -2557,9 +2650,9 @@ class LazyFrame:
         │ 0.0       │
         │ 1.0       │
         └───────────┘
-        '''
+        """
     def drop(self, *columns: ColumnNameOrSelector | Iterable[ColumnNameOrSelector]) -> Self:
-        '''
+        """
         Remove columns from the DataFrame.
 
         Parameters
@@ -2619,9 +2712,9 @@ class LazyFrame:
         │ 7.0 │
         │ 8.0 │
         └─────┘
-        '''
+        """
     def rename(self, mapping: dict[str, str] | Callable[[str], str]) -> Self:
-        '''
+        """
         Rename column names.
 
         Parameters
@@ -2666,9 +2759,9 @@ class LazyFrame:
         │ 2   ┆ 7   ┆ b   │
         │ 3   ┆ 8   ┆ c   │
         └─────┴─────┴─────┘
-        '''
+        """
     def reverse(self) -> Self:
-        '''
+        """
         Reverse the DataFrame.
 
         Examples
@@ -2690,9 +2783,9 @@ class LazyFrame:
         │ b   ┆ 2   │
         │ a   ┆ 1   │
         └─────┴─────┘
-        '''
+        """
     def shift(self, n: int | IntoExprColumn = ...) -> Self:
-        '''
+        """
         Shift values by the given number of indices.
 
         Parameters
@@ -2761,9 +2854,9 @@ class LazyFrame:
         │ 100 ┆ 100 │
         │ 100 ┆ 100 │
         └─────┴─────┘
-        '''
+        """
     def slice(self, offset: int, length: int | None = ...) -> Self:
-        '''
+        """
         Get a slice of this DataFrame.
 
         Parameters
@@ -2793,9 +2886,9 @@ class LazyFrame:
         │ y   ┆ 3   ┆ 4   │
         │ z   ┆ 5   ┆ 6   │
         └─────┴─────┴─────┘
-        '''
+        """
     def limit(self, n: int = ...) -> Self:
-        '''
+        """
         Get the first `n` rows.
 
         Alias for :func:`LazyFrame.head`.
@@ -2842,9 +2935,9 @@ class LazyFrame:
         │ 1   ┆ 7   │
         │ 2   ┆ 8   │
         └─────┴─────┘
-        '''
+        """
     def head(self, n: int = ...) -> Self:
-        '''
+        """
         Get the first `n` rows.
 
         Parameters
@@ -2889,9 +2982,9 @@ class LazyFrame:
         │ 1   ┆ 7   │
         │ 2   ┆ 8   │
         └─────┴─────┘
-        '''
+        """
     def tail(self, n: int = ...) -> Self:
-        '''
+        """
         Get the last `n` rows.
 
         Parameters
@@ -2930,9 +3023,9 @@ class LazyFrame:
         │ 5   ┆ 11  │
         │ 6   ┆ 12  │
         └─────┴─────┘
-        '''
+        """
     def last(self) -> Self:
-        '''
+        """
         Get the last row of the DataFrame.
 
         Examples
@@ -2952,9 +3045,9 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 5   ┆ 6   │
         └─────┴─────┘
-        '''
+        """
     def first(self) -> Self:
-        '''
+        """
         Get the first row of the DataFrame.
 
         Examples
@@ -2974,9 +3067,9 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 1   ┆ 2   │
         └─────┴─────┘
-        '''
+        """
     def approx_n_unique(self) -> Self:
-        '''
+        """
         Approximate count of unique values.
 
         This is done using the HyperLogLog++ algorithm for cardinality estimation.
@@ -2998,9 +3091,9 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 4   ┆ 2   │
         └─────┴─────┘
-        '''
+        """
     def with_row_index(self, name: str = ..., offset: int = ...) -> Self:
-        '''
+        """
         Add a row index as the first column in the LazyFrame.
 
         Parameters
@@ -3068,9 +3161,9 @@ class LazyFrame:
         │ 1     ┆ 3   ┆ 4   │
         │ 2     ┆ 5   ┆ 6   │
         └───────┴─────┴─────┘
-        '''
+        """
     def with_row_count(self, name: str = ..., offset: int = ...) -> Self:
-        '''
+        """
         Add a column at index 0 that counts the rows.
 
         .. deprecated::
@@ -3108,9 +3201,9 @@ class LazyFrame:
         │ 1      ┆ 3   ┆ 4   │
         │ 2      ┆ 5   ┆ 6   │
         └────────┴─────┴─────┘
-        '''
+        """
     def gather_every(self, n: int, offset: int = ...) -> Self:
-        '''
+        """
         Take every nth row in the LazyFrame and return as a new LazyFrame.
 
         Parameters
@@ -3148,9 +3241,14 @@ class LazyFrame:
         │ 2   ┆ 6   │
         │ 4   ┆ 8   │
         └─────┴─────┘
-        '''
-    def fill_null(self, value: Any | None = ..., strategy: FillNullStrategy | None = ..., limit: int | None = ...) -> Self:
-        '''
+        """
+    def fill_null(
+        self,
+        value: Any | None = ...,
+        strategy: FillNullStrategy | None = ...,
+        limit: int | None = ...,
+    ) -> Self:
+        """
         Fill null values using the specified value or strategy.
 
         Parameters
@@ -3223,9 +3321,9 @@ class LazyFrame:
         │ 0   ┆ 0.0  │
         │ 4   ┆ 13.0 │
         └─────┴──────┘
-        '''
+        """
     def fill_nan(self, value: int | float | Expr | None) -> Self:
-        '''
+        """
         Fill floating point NaN values.
 
         Parameters
@@ -3258,9 +3356,9 @@ class LazyFrame:
         │ 99.0 ┆ 99.0 │
         │ 4.0  ┆ 13.0 │
         └──────┴──────┘
-        '''
+        """
     def std(self, ddof: int = ...) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame to their standard deviation value.
 
         Parameters
@@ -3296,9 +3394,9 @@ class LazyFrame:
         ╞══════════╪══════════╡
         │ 1.118034 ┆ 0.433013 │
         └──────────┴──────────┘
-        '''
+        """
     def var(self, ddof: int = ...) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame to their variance value.
 
         Parameters
@@ -3334,9 +3432,9 @@ class LazyFrame:
         ╞══════╪════════╡
         │ 1.25 ┆ 0.1875 │
         └──────┴────────┘
-        '''
+        """
     def max(self) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame to their maximum value.
 
         Examples
@@ -3356,9 +3454,9 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 4   ┆ 2   │
         └─────┴─────┘
-        '''
+        """
     def min(self) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame to their minimum value.
 
         Examples
@@ -3378,9 +3476,9 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 1   ┆ 1   │
         └─────┴─────┘
-        '''
+        """
     def sum(self) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame to their sum value.
 
         Examples
@@ -3400,9 +3498,9 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 10  ┆ 5   │
         └─────┴─────┘
-        '''
+        """
     def mean(self) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame to their mean value.
 
         Examples
@@ -3422,9 +3520,9 @@ class LazyFrame:
         ╞═════╪══════╡
         │ 2.5 ┆ 1.25 │
         └─────┴──────┘
-        '''
+        """
     def median(self) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame to their median value.
 
         Examples
@@ -3444,9 +3542,9 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 2.5 ┆ 1.0 │
         └─────┴─────┘
-        '''
+        """
     def null_count(self) -> Self:
-        '''
+        """
         Aggregate the columns in the LazyFrame as the sum of their null value count.
 
         Examples
@@ -3467,9 +3565,11 @@ class LazyFrame:
         ╞═════╪═════╪═════╡
         │ 1   ┆ 1   ┆ 0   │
         └─────┴─────┴─────┘
-        '''
-    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod = ...) -> Self:
-        '''
+        """
+    def quantile(
+        self, quantile: float | Expr, interpolation: RollingInterpolationMethod = ...
+    ) -> Self:
+        """
         Aggregate the columns in the LazyFrame to their quantile value.
 
         Parameters
@@ -3496,9 +3596,11 @@ class LazyFrame:
         ╞═════╪═════╡
         │ 3.0 ┆ 1.0 │
         └─────┴─────┘
-        '''
-    def explode(self, columns: str | Expr | Sequence[str | Expr], *more_columns: str | Expr) -> Self:
-        '''
+        """
+    def explode(
+        self, columns: str | Expr | Sequence[str | Expr], *more_columns: str | Expr
+    ) -> Self:
+        """
         Explode the DataFrame to long format by exploding the given columns.
 
         Parameters
@@ -3533,9 +3635,11 @@ class LazyFrame:
         │ c       ┆ 7       │
         │ c       ┆ 8       │
         └─────────┴─────────┘
-        '''
-    def unique(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...) -> Self:
-        '''
+        """
+    def unique(
+        self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...
+    ) -> Self:
+        """
         Drop duplicate rows from this DataFrame.
 
         Parameters
@@ -3607,9 +3711,11 @@ class LazyFrame:
         │ 3   ┆ a   ┆ b   │
         │ 1   ┆ a   ┆ b   │
         └─────┴─────┴─────┘
-        '''
-    def drop_nulls(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...) -> Self:
-        '''
+        """
+    def drop_nulls(
+        self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None = ...
+    ) -> Self:
+        """
         Drop all rows that contain null values.
 
         The original order of the remaining rows is preserved.
@@ -3697,9 +3803,15 @@ class LazyFrame:
         │ null ┆ 2   ┆ null │
         │ null ┆ 1   ┆ 1    │
         └──────┴─────┴──────┘
-        '''
-    def melt(self, id_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ..., value_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ..., variable_name: str | None = ..., value_name: str | None = ...) -> Self:
-        '''
+        """
+    def melt(
+        self,
+        id_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ...,
+        value_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = ...,
+        variable_name: str | None = ...,
+        value_name: str | None = ...,
+    ) -> Self:
+        """
         Unpivot a DataFrame from wide to long format.
 
         Optionally leaves identifiers set.
@@ -3749,9 +3861,9 @@ class LazyFrame:
         │ y   ┆ c        ┆ 4     │
         │ z   ┆ c        ┆ 6     │
         └─────┴──────────┴───────┘
-        '''
+        """
     def map_batches(self, function: Callable[[DataFrame], DataFrame]) -> Self:
-        '''
+        """
         Apply a custom function.
 
         It is important that the function returns a Polars DataFrame.
@@ -3819,9 +3931,9 @@ class LazyFrame:
         │ -4      ┆ 199996 │
         │ -2      ┆ 199998 │
         └─────────┴────────┘
-        '''
+        """
     def interpolate(self) -> Self:
-        '''
+        """
         Interpolate intermediate values. The interpolation method is linear.
 
         Examples
@@ -3845,9 +3957,13 @@ class LazyFrame:
         │ 9.0  ┆ 9.0  ┆ 6.333333 │
         │ 10.0 ┆ null ┆ 9.0      │
         └──────┴──────┴──────────┘
-        '''
-    def unnest(self, columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector], *more_columns: ColumnNameOrSelector) -> Self:
-        '''
+        """
+    def unnest(
+        self,
+        columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector],
+        *more_columns: ColumnNameOrSelector,
+    ) -> Self:
+        """
         Decompose struct columns into separate columns for each of their fields.
 
         The new columns will be inserted into the DataFrame at the location of the
@@ -3892,9 +4008,9 @@ class LazyFrame:
         │ foo    ┆ 1   ┆ a   ┆ true ┆ [1, 2]    ┆ baz   │
         │ bar    ┆ 2   ┆ b   ┆ null ┆ [3]       ┆ womp  │
         └────────┴─────┴─────┴──────┴───────────┴───────┘
-        '''
+        """
     def merge_sorted(self, other: LazyFrame, key: str) -> Self:
-        '''
+        """
         Take two sorted DataFrames and merge them by the sorted key.
 
         The output of this operation will also be sorted.
@@ -3956,7 +4072,7 @@ class LazyFrame:
         │ steve  ┆ 42  │
         │ elise  ┆ 44  │
         └────────┴─────┘
-        '''
+        """
     def set_sorted(self, column: str | Iterable[str], *more_columns: str) -> Self:
         """
         Indicate that one or multiple columns are sorted.
@@ -3970,8 +4086,13 @@ class LazyFrame:
         descending
             Whether the columns are sorted in descending order.
         """
-    def update(self, other: LazyFrame, on: str | Sequence[str] | None = ..., how: Literal['left', 'inner', 'outer'] = ...) -> Self:
-        '''
+    def update(
+        self,
+        other: LazyFrame,
+        on: str | Sequence[str] | None = ...,
+        how: Literal["left", "inner", "outer"] = ...,
+    ) -> Self:
+        """
         Update the values in this `LazyFrame` with the non-null values in `other`.
 
         .. warning::
@@ -4096,9 +4217,9 @@ class LazyFrame:
         │ 4   ┆ 700  │
         │ 5   ┆ -66  │
         └─────┴──────┘
-        '''
+        """
     def count(self) -> Self:
-        '''
+        """
         Return the number of non-null elements for each column.
 
         Examples
@@ -4115,7 +4236,7 @@ class LazyFrame:
         ╞═════╪═════╪═════╡
         │ 4   ┆ 3   ┆ 0   │
         └─────┴─────┴─────┘
-        '''
+        """
     def groupby(self, by: IntoExpr | Iterable[IntoExpr], *more_by: IntoExpr) -> LazyGroupBy:
         """
         Start a group by operation.
@@ -4217,7 +4338,7 @@ class LazyFrame:
             passed, it will only be sorted within each `by` group).
         """
     def groupby_dynamic(self, index_column: IntoExpr) -> LazyGroupBy:
-        '''
+        """
         Group based on a time value (or index value of type Int32, Int64).
 
         .. deprecated:: 0.19.0
@@ -4277,7 +4398,7 @@ class LazyFrame:
             Object you can call `.agg` on to aggregate by groups, the result
             of which will be sorted by `index_column` (but note that if `by` columns are
             passed, it will only be sorted within each `by` group).
-        '''
+        """
     def map(self, function: Callable[[DataFrame], DataFrame]) -> Self:
         """
         Apply a custom function.

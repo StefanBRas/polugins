@@ -4,10 +4,48 @@ import pa as pa
 import pd as pd
 from builtins import PySeries
 from datetime import date, datetime, timedelta
-from polars.datatypes.classes import Array as Array, Boolean as Boolean, Categorical as Categorical, Date as Date, Datetime as Datetime, Decimal as Decimal, Duration as Duration, Enum as Enum, Float64 as Float64, Int16 as Int16, Int32 as Int32, Int64 as Int64, Int8 as Int8, List as List, Null as Null, Object as Object, String as String, Time as Time, UInt32 as UInt32, UInt64 as UInt64, Unknown as Unknown
-from polars.datatypes.convert import dtype_to_ctype as dtype_to_ctype, is_polars_dtype as is_polars_dtype, maybe_cast as maybe_cast, numpy_char_code_to_dtype as numpy_char_code_to_dtype, py_type_to_dtype as py_type_to_dtype, supported_numpy_char_code as supported_numpy_char_code
-from polars.dependencies import _check_for_numpy as _check_for_numpy, _check_for_pandas as _check_for_pandas, _check_for_pyarrow as _check_for_pyarrow, dataframe_api_compat as dataframe_api_compat, hvplot as hvplot
-from polars.exceptions import ModuleUpgradeRequired as ModuleUpgradeRequired, ShapeError as ShapeError
+from polars.datatypes.classes import (
+    Array as Array,
+    Boolean as Boolean,
+    Categorical as Categorical,
+    Date as Date,
+    Datetime as Datetime,
+    Decimal as Decimal,
+    Duration as Duration,
+    Enum as Enum,
+    Float64 as Float64,
+    Int16 as Int16,
+    Int32 as Int32,
+    Int64 as Int64,
+    Int8 as Int8,
+    List as List,
+    Null as Null,
+    Object as Object,
+    String as String,
+    Time as Time,
+    UInt32 as UInt32,
+    UInt64 as UInt64,
+    Unknown as Unknown,
+)
+from polars.datatypes.convert import (
+    dtype_to_ctype as dtype_to_ctype,
+    is_polars_dtype as is_polars_dtype,
+    maybe_cast as maybe_cast,
+    numpy_char_code_to_dtype as numpy_char_code_to_dtype,
+    py_type_to_dtype as py_type_to_dtype,
+    supported_numpy_char_code as supported_numpy_char_code,
+)
+from polars.dependencies import (
+    _check_for_numpy as _check_for_numpy,
+    _check_for_pandas as _check_for_pandas,
+    _check_for_pyarrow as _check_for_pyarrow,
+    dataframe_api_compat as dataframe_api_compat,
+    hvplot as hvplot,
+)
+from polars.exceptions import (
+    ModuleUpgradeRequired as ModuleUpgradeRequired,
+    ShapeError as ShapeError,
+)
 from polars.series.array import ArrayNameSpace as ArrayNameSpace
 from polars.series.binary import BinaryNameSpace as BinaryNameSpace
 from polars.series.categorical import CatNameSpace as CatNameSpace
@@ -17,14 +55,53 @@ from polars.series.string import StringNameSpace as StringNameSpace
 from polars.series.struct import StructNameSpace as StructNameSpace
 from polars.series.utils import expr_dispatch as expr_dispatch, get_ffi_func as get_ffi_func
 from polars.slice import PolarsSlice as PolarsSlice
-from polars.utils._construction import arrow_to_pyseries as arrow_to_pyseries, dataframe_to_pyseries as dataframe_to_pyseries, iterable_to_pyseries as iterable_to_pyseries, numpy_to_idxs as numpy_to_idxs, numpy_to_pyseries as numpy_to_pyseries, pandas_to_pyseries as pandas_to_pyseries, sequence_to_pyseries as sequence_to_pyseries, series_to_pyseries as series_to_pyseries
+from polars.utils._construction import (
+    arrow_to_pyseries as arrow_to_pyseries,
+    dataframe_to_pyseries as dataframe_to_pyseries,
+    iterable_to_pyseries as iterable_to_pyseries,
+    numpy_to_idxs as numpy_to_idxs,
+    numpy_to_pyseries as numpy_to_pyseries,
+    pandas_to_pyseries as pandas_to_pyseries,
+    sequence_to_pyseries as sequence_to_pyseries,
+    series_to_pyseries as series_to_pyseries,
+)
 from polars.utils._wrap import wrap_df as wrap_df
-from polars.utils.convert import _date_to_pl_date as _date_to_pl_date, _datetime_to_pl_timestamp as _datetime_to_pl_timestamp, _time_to_pl_time as _time_to_pl_time, _timedelta_to_pl_timedelta as _timedelta_to_pl_timedelta
-from polars.utils.deprecation import deprecate_function as deprecate_function, deprecate_nonkeyword_arguments as deprecate_nonkeyword_arguments, deprecate_renamed_function as deprecate_renamed_function, deprecate_renamed_parameter as deprecate_renamed_parameter, issue_deprecation_warning as issue_deprecation_warning
+from polars.utils.convert import (
+    _date_to_pl_date as _date_to_pl_date,
+    _datetime_to_pl_timestamp as _datetime_to_pl_timestamp,
+    _time_to_pl_time as _time_to_pl_time,
+    _timedelta_to_pl_timedelta as _timedelta_to_pl_timedelta,
+)
+from polars.utils.deprecation import (
+    deprecate_function as deprecate_function,
+    deprecate_nonkeyword_arguments as deprecate_nonkeyword_arguments,
+    deprecate_renamed_function as deprecate_renamed_function,
+    deprecate_renamed_parameter as deprecate_renamed_parameter,
+    issue_deprecation_warning as issue_deprecation_warning,
+)
 from polars.utils.meta import get_index_type as get_index_type
 from polars.utils.unstable import unstable as unstable
-from polars.utils.various import _is_generator as _is_generator, no_default as no_default, parse_version as parse_version, range_to_slice as range_to_slice, scale_bytes as scale_bytes, sphinx_accessor as sphinx_accessor, warn_null_comparison as warn_null_comparison
-from typing import Any, ArrayLike, Callable, ClassVar as _ClassVar, Collection, Generator, Iterable, Mapping, NoReturn, Sequence
+from polars.utils.various import (
+    _is_generator as _is_generator,
+    no_default as no_default,
+    parse_version as parse_version,
+    range_to_slice as range_to_slice,
+    scale_bytes as scale_bytes,
+    sphinx_accessor as sphinx_accessor,
+    warn_null_comparison as warn_null_comparison,
+)
+from typing import (
+    Any,
+    ArrayLike,
+    Callable,
+    ClassVar as _ClassVar,
+    Collection,
+    Generator,
+    Iterable,
+    Mapping,
+    NoReturn,
+    Sequence,
+)
 
 TYPE_CHECKING: bool
 _HVPLOT_AVAILABLE: bool
@@ -33,7 +110,12 @@ _PYARROW_AVAILABLE: bool
 class Series:
     _s: _ClassVar[None] = ...
     _accessors: _ClassVar[set] = ...
-    def __init__(self, name: str | ArrayLike | None = ..., values: ArrayLike | None = ..., dtype: PolarsDataType | None = ...) -> None: ...
+    def __init__(
+        self,
+        name: str | ArrayLike | None = ...,
+        values: ArrayLike | None = ...,
+        dtype: PolarsDataType | None = ...,
+    ) -> None: ...
     @classmethod
     def _from_pyseries(cls, pyseries: PySeries) -> Self: ...
     @classmethod
@@ -63,7 +145,7 @@ class Series:
         This method is mainly intended for use with the dataframe interchange protocol.
         """
     def _get_buffers(self) -> SeriesBuffers:
-        '''
+        """
         Return the underlying values, validity, and offsets buffers as Series.
 
         The values buffer always exists.
@@ -84,7 +166,7 @@ class Series:
         Notes
         -----
         This method is mainly intended for use with the dataframe interchange protocol.
-        '''
+        """
     def _from_buffer(self, dtype: PolarsDataType, buffer_info: BufferInfo, owner: Any) -> Self:
         """
         Construct a Series from information about its underlying buffer.
@@ -112,7 +194,9 @@ class Series:
         -----
         This method is mainly intended for use with the dataframe interchange protocol.
         """
-    def _from_buffers(self, dtype: PolarsDataType, data: Series | Sequence[Series], validity: Series | None = ...) -> Self:
+    def _from_buffers(
+        self, dtype: PolarsDataType, data: Series | Sequence[Series], validity: Series | None = ...
+    ) -> Self:
         """
         Construct a Series from information about its underlying buffers.
 
@@ -173,7 +257,7 @@ class Series:
     def eq(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series == other`."""
     def eq_missing(self, other: Any) -> Series | Expr:
-        '''
+        """
         Method equivalent of equality operator `series == other` where `None == None`.
 
         This differs from the standard `ne` where null values are propagated.
@@ -208,11 +292,11 @@ class Series:
             true
             true
         ]
-        '''
+        """
     def ne(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series != other`."""
     def ne_missing(self, other: Any) -> Series | Expr:
-        '''
+        """
         Method equivalent of equality operator `series != other` where `None == None`.
 
         This differs from the standard `ne` where null values are propagated.
@@ -247,7 +331,7 @@ class Series:
             false
             false
         ]
-        '''
+        """
     def ge(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series >= other`."""
     def gt(self, other: Any) -> Series | Expr:
@@ -279,8 +363,14 @@ class Series:
     def __iter__(self) -> Generator[Any, None, None]: ...
     def _pos_idxs(self, size: int) -> Series: ...
     def _take_with_series(self, s: Series) -> Series: ...
-    def __getitem__(self, item: int | Series | range | slice | np.ndarray[Any, Any] | list[int]) -> Any: ...
-    def __setitem__(self, key: int | Series | np.ndarray[Any, Any] | Sequence[object] | tuple[object], value: Any) -> None: ...
+    def __getitem__(
+        self, item: int | Series | range | slice | np.ndarray[Any, Any] | list[int]
+    ) -> Any: ...
+    def __setitem__(
+        self,
+        key: int | Series | np.ndarray[Any, Any] | Sequence[object] | tuple[object],
+        value: Any,
+    ) -> None: ...
     def __array__(self, dtype: Any = ...) -> np.ndarray[Any, Any]:
         """
         Numpy __array__ interface protocol.
@@ -300,7 +390,7 @@ class Series:
     def _repr_html_(self) -> str:
         """Format output data in HTML for display in Jupyter Notebooks."""
     def item(self, index: int | None = ...) -> Any:
-        '''
+        """
         Return the Series as a scalar, or return the element at the given index.
 
         If no index is provided, this is equivalent to `s[0]`, with a check
@@ -314,9 +404,9 @@ class Series:
         >>> s2 = pl.Series("a", [9, 8, 7])
         >>> s2.cum_sum().item(-1)
         24
-        '''
+        """
     def estimated_size(self, unit: SizeUnit = ...) -> int | float:
-        '''
+        """
         Return an estimation of the total (heap) allocated size of the Series.
 
         Estimated size is given in the specified unit (bytes by default).
@@ -344,7 +434,7 @@ class Series:
         4000000
         >>> s.estimated_size("mb")
         3.814697265625
-        '''
+        """
     def sqrt(self) -> Series:
         """
         Compute the square root of the elements.
@@ -530,7 +620,7 @@ class Series:
         ]
         """
     def drop_nulls(self) -> Series:
-        '''
+        """
         Drop all null values.
 
         The original order of the remaining elements is preserved.
@@ -555,9 +645,9 @@ class Series:
                 3.0
                 NaN
         ]
-        '''
+        """
     def drop_nans(self) -> Series:
-        '''
+        """
         Drop all floating point NaN values.
 
         The original order of the remaining elements is preserved.
@@ -582,9 +672,9 @@ class Series:
                 null
                 3.0
         ]
-        '''
+        """
     def to_frame(self, name: str | None = ...) -> DataFrame:
-        '''
+        """
         Cast this Series to a DataFrame.
 
         Parameters
@@ -618,9 +708,13 @@ class Series:
         │ 123 │
         │ 456 │
         └─────┘
-        '''
-    def describe(self, percentiles: Sequence[float] | float | None = ..., interpolation: RollingInterpolationMethod = ...) -> DataFrame:
-        '''
+        """
+    def describe(
+        self,
+        percentiles: Sequence[float] | float | None = ...,
+        interpolation: RollingInterpolationMethod = ...,
+    ) -> DataFrame:
+        """
         Quick summary statistics of a Series.
 
         Series with mixed datatypes will return summary statistics for the datatype of
@@ -679,9 +773,9 @@ class Series:
         │ min        ┆ aa    │
         │ max        ┆ cc    │
         └────────────┴───────┘
-        '''
+        """
     def sum(self) -> int | float:
-        '''
+        """
         Reduce this Series to the sum value.
 
         Notes
@@ -694,9 +788,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.sum()
         6
-        '''
+        """
     def mean(self) -> PythonLiteral | None:
-        '''
+        """
         Reduce this Series to the mean value.
 
         Examples
@@ -704,9 +798,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.mean()
         2.0
-        '''
+        """
     def product(self) -> int | float:
-        '''
+        """
         Reduce this Series to the product value.
 
         Examples
@@ -714,9 +808,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.product()
         6
-        '''
+        """
     def pow(self, exponent: int | float | Series) -> Series:
-        '''
+        """
         Raise to the power of the given exponent.
 
         Parameters
@@ -736,9 +830,9 @@ class Series:
                 27.0
                 64.0
         ]
-        '''
+        """
     def min(self) -> PythonLiteral | None:
-        '''
+        """
         Get the minimal value in this Series.
 
         Examples
@@ -746,9 +840,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.min()
         1
-        '''
+        """
     def max(self) -> PythonLiteral | None:
-        '''
+        """
         Get the maximum value in this Series.
 
         Examples
@@ -756,9 +850,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.max()
         3
-        '''
+        """
     def nan_max(self) -> int | float | date | datetime | timedelta | str:
-        '''
+        """
         Get maximum value, but propagate/poison encountered NaN values.
 
         This differs from numpy\'s `nanmax` as numpy defaults to propagating NaN values,
@@ -773,9 +867,9 @@ class Series:
         >>> s = pl.Series("a", [1, float("nan"), 4])
         >>> s.nan_max()
         nan
-        '''
+        """
     def nan_min(self) -> int | float | date | datetime | timedelta | str:
-        '''
+        """
         Get minimum value, but propagate/poison encountered NaN values.
 
         This differs from numpy\'s `nanmax` as numpy defaults to propagating NaN values,
@@ -790,9 +884,9 @@ class Series:
         >>> s = pl.Series("a", [1, float("nan"), 4])
         >>> s.nan_min()
         nan
-        '''
+        """
     def std(self, ddof: int = ...) -> float | None:
-        '''
+        """
         Get the standard deviation of this Series.
 
         Parameters
@@ -807,9 +901,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.std()
         1.0
-        '''
+        """
     def var(self, ddof: int = ...) -> float | None:
-        '''
+        """
         Get variance of this Series.
 
         Parameters
@@ -824,9 +918,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.var()
         1.0
-        '''
+        """
     def median(self) -> PythonLiteral | None:
-        '''
+        """
         Get the median of this Series.
 
         Examples
@@ -834,9 +928,11 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.median()
         2.0
-        '''
-    def quantile(self, quantile: float, interpolation: RollingInterpolationMethod = ...) -> float | None:
-        '''
+        """
+    def quantile(
+        self, quantile: float, interpolation: RollingInterpolationMethod = ...
+    ) -> float | None:
+        """
         Get the quantile value of this Series.
 
         Parameters
@@ -851,9 +947,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.quantile(0.5)
         2.0
-        '''
+        """
     def to_dummies(self, separator: str = ...) -> DataFrame:
-        '''
+        """
         Get dummy/indicator variables.
 
         Parameters
@@ -875,9 +971,9 @@ class Series:
         │ 0   ┆ 1   ┆ 0   │
         │ 0   ┆ 0   ┆ 1   │
         └─────┴─────┴─────┘
-        '''
+        """
     def cut(self, breaks: Sequence[float]) -> Series | DataFrame:
-        '''
+        """
         Bin continuous values into discrete categories.
 
         .. warning::
@@ -962,9 +1058,9 @@ class Series:
         │ 1   ┆ 1.0         ┆ (-1, 1]    │
         │ 2   ┆ inf         ┆ (1, inf]   │
         └─────┴─────────────┴────────────┘
-        '''
+        """
     def qcut(self, quantiles: Sequence[float] | int) -> Series | DataFrame:
-        '''
+        """
         Bin continuous values into discrete categories based on their quantiles.
 
         .. warning::
@@ -1068,9 +1164,9 @@ class Series:
         │ 1   ┆ 1.0         ┆ (-1, 1]    │
         │ 2   ┆ inf         ┆ (1, inf]   │
         └─────┴─────────────┴────────────┘
-        '''
+        """
     def rle(self) -> Series:
-        '''
+        """
         Get the lengths and values of runs of identical values.
 
         Returns
@@ -1099,9 +1195,9 @@ class Series:
         │ 1       ┆ 1      │
         │ 2       ┆ 3      │
         └─────────┴────────┘
-        '''
+        """
     def rle_id(self) -> Series:
-        '''
+        """
         Get a distinct integer ID for each run of identical values.
 
         The ID increases by one each time the value of a column (which can be a
@@ -1134,9 +1230,9 @@ class Series:
             5
             5
         ]
-        '''
+        """
     def hist(self, bins: list[float] | None = ...) -> DataFrame:
-        '''
+        """
         Bin values into buckets and count their occurrences.
 
         .. warning::
@@ -1176,9 +1272,9 @@ class Series:
         │ 6.75        ┆ (4.5, 6.75] ┆ 0     │
         │ inf         ┆ (6.75, inf] ┆ 2     │
         └─────────────┴─────────────┴───────┘
-        '''
+        """
     def value_counts(self) -> DataFrame:
-        '''
+        """
         Count the occurrences of unique values.
 
         Parameters
@@ -1226,9 +1322,9 @@ class Series:
         │ red   ┆ 2     │
         │ green ┆ 1     │
         └───────┴───────┘
-        '''
+        """
     def unique_counts(self) -> Series:
-        '''
+        """
         Return a count of the unique values in the order of appearance.
 
         Examples
@@ -1242,7 +1338,7 @@ class Series:
             2
             3
         ]
-        '''
+        """
     def entropy(self, base: float = ...) -> float | None:
         """
         Computes the entropy.
@@ -1266,7 +1362,7 @@ class Series:
         0.8568409950394724
         """
     def cumulative_eval(self, expr: Expr, min_periods: int = ...) -> Series:
-        '''
+        """
         Run an expression over a sliding window that increases `1` slot every iteration.
 
         .. warning::
@@ -1302,9 +1398,9 @@ class Series:
             -15.0
             -24.0
         ]
-        '''
+        """
     def alias(self, name: str) -> Series:
-        '''
+        """
         Rename the series.
 
         Parameters
@@ -1323,9 +1419,9 @@ class Series:
                 2
                 3
         ]
-        '''
+        """
     def rename(self, name: str) -> Series:
-        '''
+        """
         Rename this Series.
 
         Alias for :func:`Series.alias`.
@@ -1346,9 +1442,9 @@ class Series:
                 2
                 3
         ]
-        '''
+        """
     def chunk_lengths(self) -> list[int]:
-        '''
+        """
         Get the length of each individual chunk.
 
         Examples
@@ -1365,9 +1461,9 @@ class Series:
 
         >>> pl.concat([s, s2], rechunk=False).chunk_lengths()
         [3, 3]
-        '''
+        """
     def n_chunks(self) -> int:
-        '''
+        """
         Get the number of chunks that this Series contains.
 
         Examples
@@ -1386,9 +1482,9 @@ class Series:
 
         >>> pl.concat([s, s2], rechunk=False).n_chunks()
         2
-        '''
+        """
     def cum_max(self) -> Series:
-        '''
+        """
         Get an array with the cumulative max computed at every element.
 
         Parameters
@@ -1407,9 +1503,9 @@ class Series:
             5
             5
         ]
-        '''
+        """
     def cum_min(self) -> Series:
-        '''
+        """
         Get an array with the cumulative min computed at every element.
 
         Parameters
@@ -1428,9 +1524,9 @@ class Series:
             1
             1
         ]
-        '''
+        """
     def cum_prod(self) -> Series:
-        '''
+        """
         Get an array with the cumulative product computed at every element.
 
         Parameters
@@ -1454,9 +1550,9 @@ class Series:
             2
             6
         ]
-        '''
+        """
     def cum_sum(self) -> Series:
-        '''
+        """
         Get an array with the cumulative sum computed at every element.
 
         Parameters
@@ -1480,9 +1576,9 @@ class Series:
             3
             6
         ]
-        '''
+        """
     def cum_count(self) -> Self:
-        '''
+        """
         Return the cumulative count of the non-null values in the column.
 
         Parameters
@@ -1502,9 +1598,9 @@ class Series:
                 2
                 3
         ]
-        '''
+        """
     def slice(self, offset: int, length: int | None = ...) -> Series:
-        '''
+        """
         Get a slice of this Series.
 
         Parameters
@@ -1525,9 +1621,9 @@ class Series:
                 2
                 3
         ]
-        '''
+        """
     def append(self, other: Series) -> Self:
-        '''
+        """
         Append a Series to this one.
 
         The resulting series will consist of multiple chunks.
@@ -1565,9 +1661,9 @@ class Series:
 
         >>> a.n_chunks()
         2
-        '''
+        """
     def extend(self, other: Series) -> Self:
-        '''
+        """
         Extend the memory backed by this Series with the values from another.
 
         Different from `append`, which adds the chunks from `other` to the chunks of
@@ -1619,9 +1715,9 @@ class Series:
 
         >>> a.n_chunks()
         1
-        '''
+        """
     def filter(self, predicate: Series | list[bool]) -> Self:
-        '''
+        """
         Filter elements by a boolean mask.
 
         The original order of the remaining elements is preserved.
@@ -1642,9 +1738,9 @@ class Series:
                 1
                 3
         ]
-        '''
+        """
     def head(self, n: int = ...) -> Series:
-        '''
+        """
         Get the first `n` elements.
 
         Parameters
@@ -1678,9 +1774,9 @@ class Series:
                 1
                 2
         ]
-        '''
+        """
     def tail(self, n: int = ...) -> Series:
-        '''
+        """
         Get the last `n` elements.
 
         Parameters
@@ -1714,7 +1810,7 @@ class Series:
                 4
                 5
         ]
-        '''
+        """
     def limit(self, n: int = ...) -> Series:
         """
         Get the first `n` elements.
@@ -1732,7 +1828,7 @@ class Series:
         head
         """
     def gather_every(self, n: int, offset: int = ...) -> Series:
-        '''
+        """
         Take every nth value in the Series and return as new Series.
 
         Parameters
@@ -1759,9 +1855,9 @@ class Series:
             2
             4
         ]
-        '''
+        """
     def sort(self) -> Self:
-        '''
+        """
         Sort this Series.
 
         Parameters
@@ -1794,9 +1890,9 @@ class Series:
                 2
                 1
         ]
-        '''
+        """
     def top_k(self, k: int | IntoExprColumn = ...) -> Series:
-        '''
+        """
         Return the `k` largest elements.
 
         This has time complexity:
@@ -1823,9 +1919,9 @@ class Series:
             4
             3
         ]
-        '''
+        """
     def bottom_k(self, k: int | IntoExprColumn = ...) -> Series:
-        '''
+        """
         Return the `k` smallest elements.
 
         This has time complexity:
@@ -1852,9 +1948,9 @@ class Series:
             2
             3
         ]
-        '''
+        """
     def arg_sort(self) -> Series:
-        '''
+        """
         Get the index values that would sort this Series.
 
         Parameters
@@ -1877,9 +1973,9 @@ class Series:
             2
             0
         ]
-        '''
+        """
     def arg_unique(self) -> Series:
-        '''
+        """
         Get unique index as Series.
 
         Returns
@@ -1897,9 +1993,9 @@ class Series:
                 1
                 3
         ]
-        '''
+        """
     def arg_min(self) -> int | None:
-        '''
+        """
         Get the index of the minimal value.
 
         Returns
@@ -1911,9 +2007,9 @@ class Series:
         >>> s = pl.Series("a", [3, 2, 1])
         >>> s.arg_min()
         2
-        '''
+        """
     def arg_max(self) -> int | None:
-        '''
+        """
         Get the index of the maximal value.
 
         Returns
@@ -1925,8 +2021,12 @@ class Series:
         >>> s = pl.Series("a", [3, 2, 1])
         >>> s.arg_max()
         0
-        '''
-    def search_sorted(self, element: int | float | Series | np.ndarray[Any, Any] | list[int] | list[float], side: SearchSortedSide = ...) -> int | Series:
+        """
+    def search_sorted(
+        self,
+        element: int | float | Series | np.ndarray[Any, Any] | list[int] | list[float],
+        side: SearchSortedSide = ...,
+    ) -> int | Series:
         """
         Find indices where elements should be inserted to maintain order.
 
@@ -1942,7 +2042,7 @@ class Series:
             If 'right', return the rightmost suitable location found is given.
         """
     def unique(self) -> Series:
-        '''
+        """
         Get unique elements in series.
 
         Parameters
@@ -1961,9 +2061,9 @@ class Series:
             2
             3
         ]
-        '''
+        """
     def gather(self, indices: int | list[int] | Expr | Series | np.ndarray[Any, Any]) -> Series:
-        '''
+        """
         Take values by index.
 
         Parameters
@@ -1981,7 +2081,7 @@ class Series:
                 2
                 4
         ]
-        '''
+        """
     def null_count(self) -> int:
         """
         Count the null values in this Series.
@@ -2008,7 +2108,7 @@ class Series:
         To confirm that a column has `null` values use :func:`null_count`.
         """
     def is_empty(self) -> bool:
-        '''
+        """
         Check if the Series is empty.
 
         Examples
@@ -2016,7 +2116,7 @@ class Series:
         >>> s = pl.Series("a", [], dtype=pl.Float32)
         >>> s.is_empty()
         True
-        '''
+        """
     def is_sorted(self) -> bool:
         """
         Check if the Series is sorted.
@@ -2037,7 +2137,7 @@ class Series:
         True
         """
     def not_(self) -> Series:
-        '''
+        """
         Negate a boolean Series.
 
         Returns
@@ -2056,9 +2156,9 @@ class Series:
             true
             true
         ]
-        '''
+        """
     def is_null(self) -> Series:
-        '''
+        """
         Returns a boolean Series indicating which values are null.
 
         Returns
@@ -2078,9 +2178,9 @@ class Series:
             false
             true
         ]
-        '''
+        """
     def is_not_null(self) -> Series:
-        '''
+        """
         Returns a boolean Series indicating which values are not null.
 
         Returns
@@ -2100,9 +2200,9 @@ class Series:
             true
             false
         ]
-        '''
+        """
     def is_finite(self) -> Series:
-        '''
+        """
         Returns a boolean Series indicating which values are finite.
 
         Returns
@@ -2122,9 +2222,9 @@ class Series:
                 true
                 false
         ]
-        '''
+        """
     def is_infinite(self) -> Series:
-        '''
+        """
         Returns a boolean Series indicating which values are infinite.
 
         Returns
@@ -2144,9 +2244,9 @@ class Series:
                 false
                 true
         ]
-        '''
+        """
     def is_nan(self) -> Series:
-        '''
+        """
         Returns a boolean Series indicating which values are not NaN.
 
         Returns
@@ -2167,9 +2267,9 @@ class Series:
                 false
                 true
         ]
-        '''
+        """
     def is_not_nan(self) -> Series:
-        '''
+        """
         Returns a boolean Series indicating which values are not NaN.
 
         Returns
@@ -2190,9 +2290,9 @@ class Series:
                 true
                 false
         ]
-        '''
+        """
     def is_in(self, other: Series | Collection[Any]) -> Series:
-        '''
+        """
         Check if elements of this Series are in the other Series.
 
         Returns
@@ -2239,9 +2339,9 @@ class Series:
             true
             false
         ]
-        '''
+        """
     def arg_true(self) -> Series:
-        '''
+        """
         Get index values where Boolean Series evaluate True.
 
         Returns
@@ -2258,9 +2358,9 @@ class Series:
         [
                 1
         ]
-        '''
+        """
     def is_unique(self) -> Series:
-        '''
+        """
         Get mask of all unique values.
 
         Returns
@@ -2280,7 +2380,7 @@ class Series:
                 false
                 true
         ]
-        '''
+        """
     def is_first_distinct(self) -> Series:
         """
         Return a boolean mask indicating the first occurrence of each distinct value.
@@ -2328,7 +2428,7 @@ class Series:
         ]
         """
     def is_duplicated(self) -> Series:
-        '''
+        """
         Get mask of all duplicated values.
 
         Returns
@@ -2348,7 +2448,7 @@ class Series:
                 true
                 false
         ]
-        '''
+        """
     def explode(self) -> Series:
         """
         Explode a list Series.
@@ -2366,7 +2466,7 @@ class Series:
         Series.str.explode : Explode a string column.
         """
     def equals(self, other: Series) -> bool:
-        '''
+        """
         Check whether the Series is equal to another Series.
 
         Parameters
@@ -2391,9 +2491,11 @@ class Series:
         True
         >>> s1.equals(s2)
         False
-        '''
-    def cast(self, dtype: PolarsDataType | type[int] | type[float] | type[str] | type[bool]) -> Self:
-        '''
+        """
+    def cast(
+        self, dtype: PolarsDataType | type[int] | type[float] | type[str] | type[bool]
+    ) -> Self:
+        """
         Cast between data types.
 
         Parameters
@@ -2424,9 +2526,9 @@ class Series:
             0
             1
         ]
-        '''
+        """
     def to_physical(self) -> Series:
-        '''
+        """
         Cast to physical representation of the logical dtype.
 
         - :func:`polars.datatypes.Date` -> :func:`polars.datatypes.Int32`
@@ -2454,9 +2556,9 @@ class Series:
             1
             0
         ]
-        '''
+        """
     def to_list(self) -> list[Any]:
-        '''
+        """
         Convert this Series to a Python List. This operation clones data.
 
         Parameters
@@ -2471,7 +2573,7 @@ class Series:
         [1, 2, 3]
         >>> type(s.to_list())
         <class \'list\'>
-        '''
+        """
     def rechunk(self) -> Self:
         """
         Create a single chunk of memory for this Series.
@@ -2482,7 +2584,7 @@ class Series:
             In place or not.
         """
     def reverse(self) -> Series:
-        '''
+        """
         Return Series in reverse order.
 
         Examples
@@ -2496,9 +2598,11 @@ class Series:
             2
             1
         ]
-        '''
-    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval = ...) -> Series:
-        '''
+        """
+    def is_between(
+        self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval = ...
+    ) -> Series:
+        """
         Get a boolean mask of the values that are between the given lower/upper bounds.
 
         Parameters
@@ -2552,9 +2656,9 @@ class Series:
             true
             false
         ]
-        '''
+        """
     def to_numpy(self, *args: Any) -> np.ndarray[Any, Any]:
-        '''
+        """
         Convert this Series to numpy.
 
         This operation may clone data but is completely safe. Note that:
@@ -2592,9 +2696,9 @@ class Series:
         array([1, 2, 3], dtype=int64)
         >>> type(arr)
         <class \'numpy.ndarray\'>
-        '''
+        """
     def _view(self) -> SeriesView:
-        '''
+        """
         Get a view into this Series data with a numpy array.
 
         This operation doesn\'t clone data, but does not include missing values.
@@ -2614,9 +2718,9 @@ class Series:
         >>> s = pl.Series("a", [1, None])
         >>> s._view(ignore_nulls=True)
         SeriesView([1, 0])
-        '''
+        """
     def to_arrow(self) -> pa.Array:
-        '''
+        """
         Get the underlying Arrow Array.
 
         If the Series contains only a single chunk this operation is zero copy.
@@ -2632,9 +2736,9 @@ class Series:
           2,
           3
         ]
-        '''
+        """
     def to_pandas(self, **kwargs: Any) -> pd.Series[Any]:
-        '''
+        """
         Convert this Series to a pandas Series.
 
         This operation copies data if `use_pyarrow_extension_array` is not enabled.
@@ -2685,9 +2789,9 @@ class Series:
         1       2
         2    <NA>
         Name: b, dtype: int64[pyarrow]
-        '''
+        """
     def to_init_repr(self, n: int = ...) -> str:
-        '''
+        """
         Convert Series to instantiatable string representation.
 
         Parameters
@@ -2715,9 +2819,9 @@ class Series:
             null
             4
         ]
-        '''
+        """
     def count(self) -> int:
-        '''
+        """
         Return the number of non-null elements in the column.
 
         See Also
@@ -2729,9 +2833,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, None])
         >>> s.count()
         2
-        '''
+        """
     def len(self) -> int:
-        '''
+        """
         Return the number of elements in the Series.
 
         Null values count towards the total.
@@ -2745,9 +2849,9 @@ class Series:
         >>> s = pl.Series("a", [1, 2, None])
         >>> s.len()
         3
-        '''
+        """
     def set(self, filter: Series, value: int | float | str | bool | None) -> Series:
-        '''
+        """
         Set masked values.
 
         Parameters
@@ -2790,9 +2894,13 @@ class Series:
         │ 10      │
         │ 3       │
         └─────────┘
-        '''
-    def scatter(self, indices: Series | Iterable[int] | int | np.ndarray[Any, Any], values: Series | Iterable[PythonLiteral] | PythonLiteral | None) -> Series:
-        '''
+        """
+    def scatter(
+        self,
+        indices: Series | Iterable[int] | int | np.ndarray[Any, Any],
+        values: Series | Iterable[PythonLiteral] | PythonLiteral | None,
+    ) -> Series:
+        """
         Set values at the index locations.
 
         Parameters
@@ -2835,9 +2943,9 @@ class Series:
         │ 10      │
         │ 3       │
         └─────────┘
-        '''
+        """
     def clear(self, n: int = ...) -> Series:
-        '''
+        """
         Create an empty copy of the current Series, with zero to \'n\' elements.
 
         The copy has an identical name/dtype, but no data.
@@ -2867,9 +2975,9 @@ class Series:
             null
             null
         ]
-        '''
+        """
     def clone(self) -> Self:
-        '''
+        """
         Create a copy of this Series.
 
         This is a cheap operation that does not copy data.
@@ -2890,9 +2998,9 @@ class Series:
                 2
                 3
         ]
-        '''
+        """
     def fill_nan(self, value: int | float | Expr | None) -> Series:
-        '''
+        """
         Fill floating point NaN value with a fill value.
 
         Parameters
@@ -2912,9 +3020,14 @@ class Series:
                 3.0
                 0.0
         ]
-        '''
-    def fill_null(self, value: Any | None = ..., strategy: FillNullStrategy | None = ..., limit: int | None = ...) -> Series:
-        '''
+        """
+    def fill_null(
+        self,
+        value: Any | None = ...,
+        strategy: FillNullStrategy | None = ...,
+        limit: int | None = ...,
+    ) -> Series:
+        """
         Fill null values using the specified value or strategy.
 
         Parameters
@@ -2957,9 +3070,9 @@ class Series:
             ""
             "z"
         ]
-        '''
+        """
     def floor(self) -> Series:
-        '''
+        """
         Rounds down to the nearest integer value.
 
         Only works on floating point Series.
@@ -2975,9 +3088,9 @@ class Series:
                 2.0
                 3.0
         ]
-        '''
+        """
     def ceil(self) -> Series:
-        '''
+        """
         Rounds up to the nearest integer value.
 
         Only works on floating point Series.
@@ -2993,9 +3106,9 @@ class Series:
                 3.0
                 4.0
         ]
-        '''
+        """
     def round(self, decimals: int = ...) -> Series:
-        '''
+        """
         Round underlying floating point data by `decimals` digits.
 
         Examples
@@ -3014,7 +3127,7 @@ class Series:
         ----------
         decimals
             number of decimals to round by.
-        '''
+        """
     def round_sig_figs(self, digits: int) -> Series:
         """
         Round to a number of significant figures.
@@ -3037,7 +3150,7 @@ class Series:
         ]
         """
     def dot(self, other: Series | ArrayLike) -> float | None:
-        '''
+        """
         Compute the dot/inner product between two Series.
 
         Examples
@@ -3051,9 +3164,9 @@ class Series:
         ----------
         other
             Series (or array) to compute dot product with.
-        '''
+        """
     def mode(self) -> Series:
-        '''
+        """
         Compute the most occurring value(s).
 
         Can return multiple Values.
@@ -3067,9 +3180,9 @@ class Series:
         [
                 2
         ]
-        '''
+        """
     def sign(self) -> Series:
-        '''
+        """
         Compute the element-wise indication of the sign.
 
         The returned values can be -1, 0, or 1:
@@ -3093,9 +3206,9 @@ class Series:
                 1
                 null
         ]
-        '''
+        """
     def sin(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the sine.
 
         Examples
@@ -3110,9 +3223,9 @@ class Series:
             1.0
             1.2246e-16
         ]
-        '''
+        """
     def cos(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the cosine.
 
         Examples
@@ -3127,9 +3240,9 @@ class Series:
             6.1232e-17
             -1.0
         ]
-        '''
+        """
     def tan(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the tangent.
 
         Examples
@@ -3144,9 +3257,9 @@ class Series:
             1.6331e16
             -1.2246e-16
         ]
-        '''
+        """
     def cot(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the cotangent.
 
         Examples
@@ -3161,9 +3274,9 @@ class Series:
             6.1232e-17
             -8.1656e15
         ]
-        '''
+        """
     def arcsin(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the inverse sine.
 
         Examples
@@ -3177,9 +3290,9 @@ class Series:
             0.0
             -1.570796
         ]
-        '''
+        """
     def arccos(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the inverse cosine.
 
         Examples
@@ -3193,9 +3306,9 @@ class Series:
             1.570796
             3.141593
         ]
-        '''
+        """
     def arctan(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the inverse tangent.
 
         Examples
@@ -3209,9 +3322,9 @@ class Series:
             0.0
             -0.785398
         ]
-        '''
+        """
     def arcsinh(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the inverse hyperbolic sine.
 
         Examples
@@ -3225,9 +3338,9 @@ class Series:
             0.0
             -0.881374
         ]
-        '''
+        """
     def arccosh(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the inverse hyperbolic cosine.
 
         Examples
@@ -3242,9 +3355,9 @@ class Series:
             NaN
             NaN
         ]
-        '''
+        """
     def arctanh(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the inverse hyperbolic tangent.
 
         Examples
@@ -3262,9 +3375,9 @@ class Series:
             -inf
             NaN
         ]
-        '''
+        """
     def sinh(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the hyperbolic sine.
 
         Examples
@@ -3278,9 +3391,9 @@ class Series:
             0.0
             -1.175201
         ]
-        '''
+        """
     def cosh(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the hyperbolic cosine.
 
         Examples
@@ -3294,9 +3407,9 @@ class Series:
             1.0
             1.543081
         ]
-        '''
+        """
     def tanh(self) -> Series:
-        '''
+        """
         Compute the element-wise value for the hyperbolic tangent.
 
         Examples
@@ -3310,9 +3423,11 @@ class Series:
             0.0
             -0.761594
         ]
-        '''
-    def map_elements(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None = ...) -> Self:
-        '''
+        """
+    def map_elements(
+        self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None = ...
+    ) -> Self:
+        """
         Map a custom/user-defined function (UDF) over elements in this Series.
 
         .. warning::
@@ -3372,7 +3487,7 @@ class Series:
         Returns
         -------
         Series
-        '''
+        """
     def shift(self, n: int = ...) -> Series:
         """
         Shift values by the given number of indices.
@@ -3474,8 +3589,10 @@ class Series:
                 5
         ]
         """
-    def rolling_min(self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+    def rolling_min(
+        self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...
+    ) -> Series:
+        """
         Apply a rolling min (moving min) over the values in this array.
 
         .. warning::
@@ -3518,9 +3635,11 @@ class Series:
             200
             300
         ]
-        '''
-    def rolling_max(self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_max(
+        self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...
+    ) -> Series:
+        """
         Apply a rolling max (moving max) over the values in this array.
 
         .. warning::
@@ -3563,9 +3682,11 @@ class Series:
             400
             500
         ]
-        '''
-    def rolling_mean(self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_mean(
+        self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...
+    ) -> Series:
+        """
         Apply a rolling mean (moving mean) over the values in this array.
 
         .. warning::
@@ -3608,9 +3729,11 @@ class Series:
             350.0
             450.0
         ]
-        '''
-    def rolling_sum(self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_sum(
+        self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...
+    ) -> Series:
+        """
         Apply a rolling sum (moving sum) over the values in this array.
 
         .. warning::
@@ -3653,9 +3776,11 @@ class Series:
                 7
                 9
         ]
-        '''
-    def rolling_std(self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_std(
+        self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...
+    ) -> Series:
+        """
         Compute a rolling std dev.
 
         .. warning::
@@ -3701,9 +3826,11 @@ class Series:
                 1.527525
                 2.0
         ]
-        '''
-    def rolling_var(self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_var(
+        self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...
+    ) -> Series:
+        """
         Compute a rolling variance.
 
         .. warning::
@@ -3749,9 +3876,15 @@ class Series:
                 2.333333
                 4.0
         ]
-        '''
-    def rolling_map(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_map(
+        self,
+        function: Callable[[Series], Any],
+        window_size: int,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Series:
+        """
         Compute a custom rolling window function.
 
         .. warning::
@@ -3796,9 +3929,11 @@ class Series:
                 11.0
                 17.0
         ]
-        '''
-    def rolling_median(self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_median(
+        self, window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...
+    ) -> Series:
+        """
         Compute a rolling median.
 
         .. warning::
@@ -3838,9 +3973,16 @@ class Series:
                 4.0
                 6.0
         ]
-        '''
-    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod = ..., window_size: int = ..., weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
-        '''
+        """
+    def rolling_quantile(
+        self,
+        quantile: float,
+        interpolation: RollingInterpolationMethod = ...,
+        window_size: int = ...,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Series:
+        """
         Compute a rolling quantile.
 
         .. warning::
@@ -3895,7 +4037,7 @@ class Series:
                 3.66
                 5.32
         ]
-        '''
+        """
     def rolling_skew(self, window_size: int) -> Series:
         """
         Compute a rolling skew.
@@ -3932,7 +4074,7 @@ class Series:
         (0.38180177416060584, 0.47033046033698594)
         """
     def sample(self, n: int | None = ...) -> Series:
-        '''
+        """
         Sample from this Series.
 
         Parameters
@@ -3960,9 +4102,9 @@ class Series:
             1
             5
         ]
-        '''
+        """
     def peak_max(self) -> Self:
-        '''
+        """
         Get a boolean mask of the local maximum peaks.
 
         Examples
@@ -3978,9 +4120,9 @@ class Series:
                 false
                 true
         ]
-        '''
+        """
     def peak_min(self) -> Self:
-        '''
+        """
         Get a boolean mask of the local minimum peaks.
 
         Examples
@@ -3996,9 +4138,9 @@ class Series:
             true
             false
         ]
-        '''
+        """
     def n_unique(self) -> int:
-        '''
+        """
         Count the number of unique values in this Series.
 
         Examples
@@ -4006,7 +4148,7 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 2, 3])
         >>> s.n_unique()
         3
-        '''
+        """
     def shrink_to_fit(self) -> Series:
         """
         Shrink Series memory usage.
@@ -4014,8 +4156,14 @@ class Series:
         Shrinks the underlying array capacity to exactly fit the actual data.
         (Note that this function does not change the Series data type).
         """
-    def hash(self, seed: int = ..., seed_1: int | None = ..., seed_2: int | None = ..., seed_3: int | None = ...) -> Series:
-        '''
+    def hash(
+        self,
+        seed: int = ...,
+        seed_1: int | None = ...,
+        seed_2: int | None = ...,
+        seed_3: int | None = ...,
+    ) -> Series:
+        """
         Hash the Series.
 
         The hash value is of type `UInt64`.
@@ -4048,7 +4196,7 @@ class Series:
             3022416320763508302
             13756996518000038261
         ]
-        '''
+        """
     def reinterpret(self) -> Series:
         """
         Reinterpret the underlying bits as a signed/unsigned integer.
@@ -4062,7 +4210,7 @@ class Series:
             If True, reinterpret as `pl.Int64`. Otherwise, reinterpret as `pl.UInt64`.
         """
     def interpolate(self, method: InterpolationMethod = ...) -> Series:
-        '''
+        """
         Fill null values using interpolation.
 
         Parameters
@@ -4083,7 +4231,7 @@ class Series:
             4.0
             5.0
         ]
-        '''
+        """
     def abs(self) -> Series:
         """
         Compute absolute values.
@@ -4103,7 +4251,7 @@ class Series:
         ]
         """
     def rank(self, method: RankMethod = ...) -> Series:
-        '''
+        """
         Assign ranks to data, dealing with ties appropriately.
 
         Parameters
@@ -4160,9 +4308,9 @@ class Series:
             2
             5
         ]
-        '''
+        """
     def diff(self, n: int = ..., null_behavior: NullBehavior = ...) -> Series:
-        '''
+        """
         Calculate the first discrete difference between shifted items.
 
         Parameters
@@ -4205,7 +4353,7 @@ class Series:
             15
             5
         ]
-        '''
+        """
     def pct_change(self, n: int | IntoExprColumn = ...) -> Series:
         """
         Computes percentage change between values.
@@ -4318,7 +4466,11 @@ class Series:
         bias : bool, optional
             If False, the calculations are corrected for statistical bias.
         """
-    def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None = ..., upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None = ...) -> Series:
+    def clip(
+        self,
+        lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None = ...,
+        upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None = ...,
+    ) -> Series:
         """
         Set values outside the given boundaries to the boundary value.
 
@@ -4370,7 +4522,7 @@ class Series:
         ]
         """
     def lower_bound(self) -> Self:
-        '''
+        """
         Return the lower bound of this Series\' dtype as a unit Series.
 
         See Also
@@ -4394,9 +4546,9 @@ class Series:
         [
             -inf
         ]
-        '''
+        """
     def upper_bound(self) -> Self:
-        '''
+        """
         Return the upper bound of this Series\' dtype as a unit Series.
 
         See Also
@@ -4420,9 +4572,13 @@ class Series:
         [
             inf
         ]
-        '''
-    def replace(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault = ...) -> Self:
-        '''
+        """
+    def replace(
+        self,
+        old: IntoExpr | Sequence[Any] | Mapping[Any, Any],
+        new: IntoExpr | Sequence[Any] | NoDefault = ...,
+    ) -> Self:
+        """
         Replace values by different values.
 
         Parameters
@@ -4539,9 +4695,9 @@ class Series:
                 2
                 3
         ]
-        '''
+        """
     def reshape(self, dimensions: tuple[int, ...]) -> Series:
-        '''
+        """
         Reshape this Series to a flat Series or a Series of Lists.
 
         Parameters
@@ -4573,9 +4729,9 @@ class Series:
                 [4, 5, 6]
                 [7, 8, 9]
         ]
-        '''
+        """
     def shuffle(self, seed: int | None = ...) -> Series:
-        '''
+        """
         Shuffle the contents of this Series.
 
         Parameters
@@ -4595,8 +4751,14 @@ class Series:
                 1
                 3
         ]
-        '''
-    def ewm_mean(self, com: float | None = ..., span: float | None = ..., half_life: float | None = ..., alpha: float | None = ...) -> Series:
+        """
+    def ewm_mean(
+        self,
+        com: float | None = ...,
+        span: float | None = ...,
+        half_life: float | None = ...,
+        alpha: float | None = ...,
+    ) -> Series:
         """
         Exponentially-weighted moving average.
 
@@ -4664,8 +4826,14 @@ class Series:
                 2.428571
         ]
         """
-    def ewm_std(self, com: float | None = ..., span: float | None = ..., half_life: float | None = ..., alpha: float | None = ...) -> Series:
-        '''
+    def ewm_std(
+        self,
+        com: float | None = ...,
+        span: float | None = ...,
+        half_life: float | None = ...,
+        alpha: float | None = ...,
+    ) -> Series:
+        """
         Exponentially-weighted moving standard deviation.
 
         Parameters
@@ -4734,9 +4902,15 @@ class Series:
             0.707107
             0.963624
         ]
-        '''
-    def ewm_var(self, com: float | None = ..., span: float | None = ..., half_life: float | None = ..., alpha: float | None = ...) -> Series:
-        '''
+        """
+    def ewm_var(
+        self,
+        com: float | None = ...,
+        span: float | None = ...,
+        half_life: float | None = ...,
+        alpha: float | None = ...,
+    ) -> Series:
+        """
         Exponentially-weighted moving variance.
 
         Parameters
@@ -4805,7 +4979,7 @@ class Series:
             0.5
             0.928571
         ]
-        '''
+        """
     def extend_constant(self, value: PythonLiteral | None, n: int) -> Series:
         """
         Extremely fast method for extending the Series with 'n' copies of a value.
@@ -4833,7 +5007,7 @@ class Series:
         ]
         """
     def set_sorted(self) -> Self:
-        '''
+        """
         Flags the Series as \'sorted\'.
 
         Enables downstream code to user fast paths for sorted arrays.
@@ -4853,7 +5027,7 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.set_sorted().max()
         3
-        '''
+        """
     def new_from_index(self, index: int, length: int) -> Self:
         """Create a new Series filled with values from the given index."""
     def shrink_dtype(self) -> Series:
@@ -4866,7 +5040,7 @@ class Series:
     def get_chunks(self) -> list[Series]:
         """Get the chunks of this Series as a list of Series."""
     def implode(self) -> Self:
-        '''
+        """
         Aggregate values into a list.
 
         Examples
@@ -4878,8 +5052,10 @@ class Series:
         [
             [1, 2, 3]
         ]
-        '''
-    def apply(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None = ...) -> Self:
+        """
+    def apply(
+        self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None = ...
+    ) -> Self:
         """
         Apply a custom/user-defined function (UDF) over elements in this Series.
 
@@ -4898,7 +5074,13 @@ class Series:
             This is faster because python can be skipped and because we call
             more specialized functions.
         """
-    def rolling_apply(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None = ..., min_periods: int | None = ...) -> Series:
+    def rolling_apply(
+        self,
+        function: Callable[[Series], Any],
+        window_size: int,
+        weights: list[float] | None = ...,
+        min_periods: int | None = ...,
+    ) -> Series:
         """
         Apply a custom rolling window function.
 
@@ -4986,7 +5168,7 @@ class Series:
             Number of places to shift (may be negative).
         """
     def is_float(self) -> bool:
-        '''
+        """
         Check if this Series has floating point numbers.
 
         .. deprecated:: 0.19.13
@@ -4997,9 +5179,9 @@ class Series:
         >>> s = pl.Series("a", [1.0, 2.0, 3.0])
         >>> s.is_float()  # doctest: +SKIP
         True
-        '''
+        """
     def is_integer(self, signed: bool | None = ...) -> bool:
-        '''
+        """
         Check if this Series datatype is an integer (signed or unsigned).
 
         .. deprecated:: 0.19.13
@@ -5023,9 +5205,9 @@ class Series:
         True
         >>> s.is_integer(signed=True)  # doctest: +SKIP
         False
-        '''
+        """
     def is_numeric(self) -> bool:
-        '''
+        """
         Check if this Series datatype is numeric.
 
         .. deprecated:: 0.19.13
@@ -5036,7 +5218,7 @@ class Series:
         >>> s = pl.Series("a", [1, 2, 3])
         >>> s.is_numeric()  # doctest: +SKIP
         True
-        '''
+        """
     def is_temporal(self, excluding: OneOrMoreDataTypes | None = ...) -> bool:
         """
         Check if this Series datatype is temporal.
@@ -5059,7 +5241,7 @@ class Series:
         False
         """
     def is_boolean(self) -> bool:
-        '''
+        """
         Check if this Series is a Boolean.
 
         .. deprecated:: 0.19.14
@@ -5070,9 +5252,9 @@ class Series:
         >>> s = pl.Series("a", [True, False, True])
         >>> s.is_boolean()  # doctest: +SKIP
         True
-        '''
+        """
     def is_utf8(self) -> bool:
-        '''
+        """
         Check if this Series datatype is a String.
 
         .. deprecated:: 0.19.14
@@ -5083,7 +5265,7 @@ class Series:
         >>> s = pl.Series("x", ["a", "b", "c"])
         >>> s.is_utf8()  # doctest: +SKIP
         True
-        '''
+        """
     def take_every(self, n: int, offset: int = ...) -> Series:
         """
         Take every nth value in the Series and return as new Series.
@@ -5110,7 +5292,24 @@ class Series:
         indices
             Index location used for selection.
         """
-    def set_at_idx(self, indices: Series | np.ndarray[Any, Any] | Sequence[int] | int, values: int | float | str | bool | date | datetime | Sequence[int] | Sequence[float] | Sequence[bool] | Sequence[str] | Sequence[date] | Sequence[datetime] | Series | None) -> Series:
+    def set_at_idx(
+        self,
+        indices: Series | np.ndarray[Any, Any] | Sequence[int] | int,
+        values: int
+        | float
+        | str
+        | bool
+        | date
+        | datetime
+        | Sequence[int]
+        | Sequence[float]
+        | Sequence[bool]
+        | Sequence[str]
+        | Sequence[date]
+        | Sequence[datetime]
+        | Series
+        | None,
+    ) -> Series:
         """
         Set values at the index locations.
 
@@ -5250,5 +5449,8 @@ class Series:
     def struct(self): ...
     @property
     def plot(self): ...
-def _resolve_temporal_dtype(dtype: PolarsDataType | None, ndtype: np.dtype[np.datetime64] | np.dtype[np.timedelta64]) -> PolarsDataType | None:
+
+def _resolve_temporal_dtype(
+    dtype: PolarsDataType | None, ndtype: np.dtype[np.datetime64] | np.dtype[np.timedelta64]
+) -> PolarsDataType | None:
     """Given polars/numpy temporal dtypes, resolve to an explicit unit."""

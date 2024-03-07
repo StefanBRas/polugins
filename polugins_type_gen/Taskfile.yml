@@ -1,6 +1,9 @@
 version: '3'
 
 tasks:
+  gen:
+    cmds:
+      - poetry run python scripts/generate_polars_stubs.py
 
   test:
     deps: ['nox']
