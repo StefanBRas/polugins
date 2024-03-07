@@ -46,17 +46,6 @@ env = [
 extend = "../ruff.toml"
 src = ["src"]
 
-lint.select = [
-"E",
-"F",
-"I",
-"PTH", # use pathlib
-"RUF",
-"SIM", # simplify
-"A", # name shadowing builtin
-"C4", # comprehensions
-"EM" # Err msg, asign to var first.
-]
 lint.ignore = []
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 lint.fixable = ["ALL"]
