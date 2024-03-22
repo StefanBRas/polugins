@@ -1,4 +1,4 @@
-#: version 0.20.14
+#: version 0.20.16
 import P
 import np as np
 import pl
@@ -5002,7 +5002,7 @@ class Expr:
                 results will not be correct.
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         warn_if_unsorted
             Warn if data is not known to be sorted by `by` column (if passed).
 
@@ -5194,7 +5194,7 @@ class Expr:
             be of dtype Datetime or Date.
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         warn_if_unsorted
             Warn if data is not known to be sorted by `by` column (if passed).
 
@@ -5419,7 +5419,7 @@ class Expr:
                 results will not be correct.
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         warn_if_unsorted
             Warn if data is not known to be sorted by `by` column (if passed).
 
@@ -5640,7 +5640,7 @@ class Expr:
             of dtype `{Date, Datetime}`
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         warn_if_unsorted
             Warn if data is not known to be sorted by `by` column (if passed).
 
@@ -5862,7 +5862,7 @@ class Expr:
                 results will not be correct.
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         ddof
             "Delta Degrees of Freedom": The divisor for a length N window is N - ddof
         warn_if_unsorted
@@ -5976,7 +5976,7 @@ class Expr:
         │ u32   ┆ datetime[μs]        ┆ f64             │
         ╞═══════╪═════════════════════╪═════════════════╡
         │ 0     ┆ 2001-01-01 00:00:00 ┆ null            │
-        │ 1     ┆ 2001-01-01 01:00:00 ┆ 0.0             │
+        │ 1     ┆ 2001-01-01 01:00:00 ┆ null            │
         │ 2     ┆ 2001-01-01 02:00:00 ┆ 0.707107        │
         │ 3     ┆ 2001-01-01 03:00:00 ┆ 0.707107        │
         │ 4     ┆ 2001-01-01 04:00:00 ┆ 0.707107        │
@@ -6001,7 +6001,7 @@ class Expr:
         │ ---   ┆ ---                 ┆ ---             │
         │ u32   ┆ datetime[μs]        ┆ f64             │
         ╞═══════╪═════════════════════╪═════════════════╡
-        │ 0     ┆ 2001-01-01 00:00:00 ┆ 0.0             │
+        │ 0     ┆ 2001-01-01 00:00:00 ┆ null            │
         │ 1     ┆ 2001-01-01 01:00:00 ┆ 0.707107        │
         │ 2     ┆ 2001-01-01 02:00:00 ┆ 1.0             │
         │ 3     ┆ 2001-01-01 03:00:00 ┆ 1.0             │
@@ -6085,7 +6085,7 @@ class Expr:
                 results will not be correct.
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         ddof
             "Delta Degrees of Freedom": The divisor for a length N window is N - ddof
         warn_if_unsorted
@@ -6199,7 +6199,7 @@ class Expr:
         │ u32   ┆ datetime[μs]        ┆ f64             │
         ╞═══════╪═════════════════════╪═════════════════╡
         │ 0     ┆ 2001-01-01 00:00:00 ┆ null            │
-        │ 1     ┆ 2001-01-01 01:00:00 ┆ 0.0             │
+        │ 1     ┆ 2001-01-01 01:00:00 ┆ null            │
         │ 2     ┆ 2001-01-01 02:00:00 ┆ 0.5             │
         │ 3     ┆ 2001-01-01 03:00:00 ┆ 0.5             │
         │ 4     ┆ 2001-01-01 04:00:00 ┆ 0.5             │
@@ -6224,7 +6224,7 @@ class Expr:
         │ ---   ┆ ---                 ┆ ---             │
         │ u32   ┆ datetime[μs]        ┆ f64             │
         ╞═══════╪═════════════════════╪═════════════════╡
-        │ 0     ┆ 2001-01-01 00:00:00 ┆ 0.0             │
+        │ 0     ┆ 2001-01-01 00:00:00 ┆ null            │
         │ 1     ┆ 2001-01-01 01:00:00 ┆ 0.5             │
         │ 2     ┆ 2001-01-01 02:00:00 ┆ 1.0             │
         │ 3     ┆ 2001-01-01 03:00:00 ┆ 1.0             │
@@ -6309,7 +6309,7 @@ class Expr:
                 results will not be correct.
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         warn_if_unsorted
             Warn if data is not known to be sorted by `by` column (if passed).
 
@@ -6456,7 +6456,7 @@ class Expr:
                 results will not be correct.
         closed : {\'left\', \'right\', \'both\', \'none\'}
             Define which sides of the temporal interval are closed (inclusive); only
-            applicable if `by` has been set.
+            applicable if `by` has been set (in which case, it defaults to `\'right\'`).
         warn_if_unsorted
             Warn if data is not known to be sorted by `by` column (if passed).
 
@@ -8092,7 +8092,7 @@ class Expr:
             Accepts expression input. Sequences are parsed as Series,
             other non-expression inputs are parsed as literals.
             Also accepts a mapping of values to their replacement as syntactic sugar for
-            `replace(new=Series(mapping.keys()), old=Series(mapping.values()))`.
+            `replace(old=Series(mapping.keys()), new=Series(mapping.values()))`.
         new
             Value or sequence of values to replace by.
             Accepts expression input. Sequences are parsed as Series,
@@ -8379,20 +8379,26 @@ class Expr:
         n
             Number of places to shift (may be negative).
         """
-    def register_plugin(self) -> Self:
+    def register_plugin(self) -> Expr:
         """
-        Register a shared library as a plugin.
+        Register a plugin function.
 
-        .. warning::
-            This is highly unsafe as this will call the C function
-            loaded by `lib::symbol`.
+        .. deprecated:: 0.20.16
+            Use :func:`polars.plugins.register_plugin_function` instead.
 
-            The parameters you give dictate how polars will deal
-            with the function. Make sure they are correct!
+        See the `user guide <https://docs.pola.rs/user-guide/expressions/plugins/>`_
+        for more information about plugins.
 
-        .. note::
-            This functionality is unstable and may change without it
-            being considered breaking.
+        Warnings
+        --------
+        This method is deprecated. Use the new `polars.plugins.register_plugin_function`
+        function instead.
+
+        This is highly unsafe as this will call the C function loaded by
+        `lib::symbol`.
+
+        The parameters you set dictate how Polars will handle the function.
+        Make sure they are correct!
 
         Parameters
         ----------
@@ -8421,7 +8427,7 @@ class Expr:
         changes_length
             For example a `unique` or a `slice`
         """
-    def _register_plugin(self) -> Self: ...
+    def _register_plugin(self) -> Expr: ...
     def take_every(self, n: int, offset: int = ...) -> Self:
         """
         Take every nth value in the Series and return as a new Series.
