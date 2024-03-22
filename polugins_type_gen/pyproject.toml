@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "polugins_type_gen"
-version = "0.5.3"
+version = "0.5.4"
 description = "Type stub generator Polugins."
 authors = ["StefanBRas <opensource@bruhn.io>"]
 readme = "README.md"
