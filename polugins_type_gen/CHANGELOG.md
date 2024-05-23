@@ -1,5 +1,8 @@
 # Changelog
 ## Unreleased
+## 0.5.8
+
+- Added polars stubs for version 0.20.25, 0.20.26 and 0.20.28.
 ## 0.5.7
 
 - Added polars stubs for version 0.20.23.
