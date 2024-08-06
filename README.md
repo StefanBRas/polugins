@@ -1,5 +1,9 @@
 # Polugins
 
+> [!CAUTION]
+> The type generation part is not working for new versions until I implement https://github.com/StefanBRas/polugins/issues/80.
+> If you need this, feel free to comment on the issue or create a new one. This is kinda low on my priorities until it's actually needed by someone.
+
 Minimal "plugin" system for polars.
 
 With Polugins:
