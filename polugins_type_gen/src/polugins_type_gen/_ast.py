@@ -1,12 +1,8 @@
-import sys
-from pathlib import Path
+import ast
 import importlib
 import inspect
-from typing import TYPE_CHECKING
-from nox.registry import get
-from polars.expr.expr import PyExpr
-
-import ast
+import sys
+from pathlib import Path
 
 from polugins._types import ExtensionClass
 
@@ -19,9 +15,8 @@ _IMPORT_PATHS = {
 
 
 class RemoveBodies(ast.NodeTransformer):
-
     def visit_FunctionDef(self, node):
-        """ Remove function bodies """
+        """Remove function bodies"""
         if ast.get_docstring(node) is not None:
             # Assumption: If there is a docstring, it's the first element of the body
             node.body = [node.body[0], ast.Expr(value=ast.Constant(value=...))]
@@ -31,7 +26,7 @@ class RemoveBodies(ast.NodeTransformer):
         return node
 
     def visit_AnnAssign(self, node):
-        """ Remove value assignemnets
+        """Remove value assignemnets
         Turns x: int = 1 into x: int
 
         TODO: Reconsider this - it might remove type information.
@@ -42,14 +37,14 @@ class RemoveBodies(ast.NodeTransformer):
         return node
 
     def visit_If(self, node: ast.If):
-        """ Unnest TYPE_CHECKING if statements """
+        """Unnest TYPE_CHECKING if statements"""
         if isinstance(node.test, ast.Name) and node.test.id == "TYPE_CHECKING":
             return node.body
         return node
 
     def visit_With(self, node: ast.With):
-        """ Unnest contextlib.suppress(ImportError) 
-        
+        """Unnest contextlib.suppress(ImportError)
+
         Assumption is that these are only used to guard in doctests
         """
         if isinstance(node.items[0].context_expr, ast.Call):
@@ -76,6 +71,7 @@ def parse_from_current_env(extension_class: ExtensionClass) -> ast.Module:
     module_source = inspect.getsource(module)
     parsed = ast.parse(module_source, type_comments=False)
     return RemoveBodies().visit(parsed)
+
 
 if __name__ == "__main__":
     output_dir = sys.argv[1]

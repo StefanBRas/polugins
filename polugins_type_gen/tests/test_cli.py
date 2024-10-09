@@ -20,6 +20,7 @@ def typings_directory():
     if typings_dir.exists():
         shutil.rmtree(typings_dir)
 
+
 @pytest.mark.skip()
 def test_cli(typings_directory):
     create_stubs()
@@ -43,5 +44,3 @@ def test_exception_on_no_namespaces(mocker):
     )
     with pytest.raises(NoNamespaceRegisteredException):
         create_stubs()
-
-

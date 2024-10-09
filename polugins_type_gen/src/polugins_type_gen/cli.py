@@ -16,6 +16,7 @@ def has_version(version: str) -> bool:
     files = importlib_resources.files("polugins_type_gen")
     return (files / "_stubs" / version).is_dir()
 
+
 def create_stubs():
     output_dir = Path("typings")
     all_namespaces = _get_namespaces()
@@ -55,6 +56,7 @@ def create_stubs():
 def cli():
     if len(sys.argv) == 1:
         from polugins_type_gen._version import __version__
+
         print(f"Polugins Type Gen version: {__version__}")
     elif sys.argv[1] == "stubs":
         print("generating stubs at ./typings/")
