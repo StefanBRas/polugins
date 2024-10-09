@@ -21,10 +21,10 @@ def run_stubgen(
     venv_path = tempdir_path / f".venv{version}"
     bin_path = venv_path / "bin" / "python"
     subprocess.check_call([sys.executable, "-m", "venv", str(venv_path)])
-    subprocess.check_call([bin_path, "-m", "pip", "install", f"polars=={version}", "mypy"])
-    subprocess.check_call([bin_path, "scripts/stubgen.py", stub_path, "true"])
+    subprocess.check_call([bin_path, "-m", "pip", "install", f"polars=={version}"])
+    subprocess.check_call([bin_path, "scripts/stubgen_ast.py", stub_path, "true"])
     subprocess.check_call(
-        [bin_path, "scripts/stubgen.py", tempdir_path / no_docstring_stub_path, "false"]
+        [bin_path, "scripts/stubgen_ast.py", tempdir_path / no_docstring_stub_path, "false"]
     )
 
 

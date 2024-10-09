@@ -5,9 +5,7 @@ from pathlib import Path
 
 from polugins.main import _get_namespaces
 
-
-class MissingVersionException(Exception):
-    pass
+from polugins_type_gen._ast import parse_from_current_env
 
 
 class NoNamespaceRegisteredException(Exception):
@@ -19,16 +17,8 @@ def has_version(version: str) -> bool:
     return (files / "_stubs" / version).is_dir()
 
 
-def create_stubs(version: str):
+def create_stubs():
     output_dir = Path("typings")
-    if not has_version(version):
-        msg = (
-            f"Type stubs for version {version} does not exist."
-            " This is usually because the version has been yanked or because it's new."
-            " Feel free to create an issue if you want types for this version."
-        )
-        raise MissingVersionException(msg)
-
     all_namespaces = _get_namespaces()
 
     if all(namespace == {} for namespace in all_namespaces.values()):
@@ -37,11 +27,7 @@ def create_stubs(version: str):
 
     for extension_class, namespaces in all_namespaces.items():
         if namespaces:
-            files = importlib_resources.files("polugins_type_gen")
-            stub_path = (
-                Path(str(files)) / "_stubs" / version / extension_class.import_path
-            ).with_suffix(".pyi")
-            stub_ast = ast.parse(stub_path.read_text(), type_comments=True)
+            stub_ast = parse_from_current_env(extension_class)
             new_class_nodes = []
             modules_to_import = set()
             for node in stub_ast.body:
@@ -71,27 +57,10 @@ def cli():
     if len(sys.argv) == 1:
         from polugins_type_gen._version import __version__
 
-        print(f"Polugins version: {__version__}")
+        print(f"Polugins Type Gen version: {__version__}")
     elif sys.argv[1] == "stubs":
-        version = None
-        if len(sys.argv) >= 3:
-            version = sys.argv[2]
-        else:
-            print("No version given; trying to infer")
-            try:
-                import polars as pl
-
-                version = pl.__version__
-                print(f"Found polars version {version} in current python environment.")
-                print("Using this verison for type stubs.")
-            except Exception:
-                pass
-        if version is None:
-            msg = "No version was given or could be infered"
-            raise ValueError(msg)
         print("generating stubs at ./typings/")
-
-        create_stubs(version)
+        create_stubs()
     else:
         print("Use `polugins stubs` to generate type stubs.")
 

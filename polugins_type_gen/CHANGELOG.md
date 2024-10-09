@@ -1,5 +1,9 @@
 # Changelog
+
 ## Unreleased
+
+- Generate stubs from ast and note with mypy
+
 ## 0.5.8
 
 - Added polars stubs for version 0.20.25, 0.20.26 and 0.20.28.
