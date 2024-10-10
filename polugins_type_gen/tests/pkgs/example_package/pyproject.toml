@@ -17,3 +17,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.plugins."polugins.lazyframe"]
 "external" = "example_package:PackageNamespace"
+"external_nested" = "example_package.some_module.some_file:NestedPackageNamespace"
+"external_nested_init" = "example_package.some_module_from_init:NestedInitPackageNamespace"
+"external_nested_same_module_1" = "example_package.same_module.some_file_1:NestedSameModule1PackageNamespace"
+"external_nested_same_module_2" = "example_package.same_module.some_file_2:NestedSameModule2PackageNamespace"

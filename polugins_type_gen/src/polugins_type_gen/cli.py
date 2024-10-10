@@ -3,9 +3,9 @@ import importlib.resources as importlib_resources
 import sys
 from pathlib import Path
 
-from polugins.main import _get_namespaces
+from polugins.main import _get_namespaces  # TODO: makes this non private
 
-from polugins_type_gen._ast import parse_from_current_env
+from polugins_type_gen._ast import parse_from_current_env as _parse_from_current_env
 
 
 class NoNamespaceRegisteredException(Exception):
@@ -27,27 +27,30 @@ def create_stubs():
 
     for extension_class, namespaces in all_namespaces.items():
         if namespaces:
-            stub_ast = parse_from_current_env(extension_class)
+            stub_ast = _parse_from_current_env(extension_class)
             new_class_nodes = []
-            modules_to_import = set()
+            module_imports = set()
             for node in stub_ast.body:
-                if (
-                    isinstance(node, ast.ClassDef)
-                    and node.name.casefold() == extension_class.value.casefold()
-                ):
+                if isinstance(node, ast.ClassDef) and node.name.casefold() == extension_class.value.casefold():
                     for name, namespace in namespaces.items():
-                        annotation_name = namespace.replace(":", ".")
+                        module_path, class_name = namespace.split(":")
                         new_node = ast.AnnAssign(
                             target=ast.Name(id=name),
-                            annotation=ast.Name(id=annotation_name),
+                            annotation=ast.Name(id=f"{module_path}.{class_name}"),
                             simple=1,
                         )  # no idea what `simple` does, but it breaks without it
                         new_class_nodes.append(new_node)
-                        modules_to_import.add(annotation_name.split(".")[0])
+                        module_imports.add(module_path)
                     node.body.extend(new_class_nodes)
-            for name in modules_to_import:
-                # prepend to have imports first
-                stub_ast.body.insert(0, ast.Import(names=[ast.Name(id=name)]))
+
+            new_module_imports = [ast.Import(names=[ast.alias(name=module_name)]) for module_name in module_imports]
+            future_import_index = next(
+                i
+                for i, node in enumerate(stub_ast.body)
+                if isinstance(node, ast.ImportFrom) and node.module == "__future__"
+            )
+
+            stub_ast.body[(future_import_index + 1) : (future_import_index + 1)] = new_module_imports
             output_path = output_dir / extension_class.import_path
             output_path.parent.mkdir(exist_ok=True, parents=True)
             output_path.with_suffix(".pyi").write_text(ast.unparse(stub_ast))
