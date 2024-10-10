@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Generate stubs from ast and note with mypy
+- Fix nested module paths in stubs.
+- Generate stubs from ast and not with mypy
 
 ## 0.5.8
 
