@@ -105,6 +105,7 @@ def cli():
         )
     elif args.command == "version":
         from polugins_type_gen._version import __version__
+
         print(f"Polugins Type Gen version: {__version__}")
     else:
         msg = "Unknown command. Use `polugins stubs` to generate type stubs."
