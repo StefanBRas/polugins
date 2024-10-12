@@ -98,19 +98,17 @@ def get_argparser():
 def cli():
     parser = get_argparser()
     args = parser.parse_args()
-    match args.command:
-        case "stubs":
-            create_stubs(
-                venv_path=Path(args.input) if args.input else None,
-                output_dir=Path(args.output) if args.output else None,
-            )
-        case "version":
-            from polugins_type_gen._version import __version__
-
-            print(f"Polugins Type Gen version: {__version__}")
-        case _:
-            msg = "Unknown command. Use `polugins stubs` to generate type stubs."
-            raise ValueError(msg)
+    if args.command == "stubs":
+        create_stubs(
+            venv_path=Path(args.input) if args.input else None,
+            output_dir=Path(args.output) if args.output else None,
+        )
+    elif args.command == "version":
+        from polugins_type_gen._version import __version__
+        print(f"Polugins Type Gen version: {__version__}")
+    else:
+        msg = "Unknown command. Use `polugins stubs` to generate type stubs."
+        raise ValueError(msg)
 
 
 if __name__ == "__main__":
