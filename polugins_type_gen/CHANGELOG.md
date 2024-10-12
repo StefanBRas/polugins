@@ -2,8 +2,12 @@
 
 ## Unreleased
 
+## 6.0.0
+
+- Generate stubs from ast and not with mypy.
+- Allow setting output path
+- Allow finding polars in current venv or given path.
 - Fix nested module paths in stubs.
-- Generate stubs from ast and not with mypy
 
 ## 0.5.8
 
