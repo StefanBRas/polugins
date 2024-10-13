@@ -65,10 +65,23 @@ def parse(module_source: str):
     return ast.unparse(parsed)
 
 
+def parse_from_venv(venv_path: Path, extension_class: ExtensionClass) -> ast.Module:
+    venv_libs = list((venv_path / "lib").glob("python*"))
+    assert len(venv_libs) > 0, "No python versions in venv found."
+    if len(venv_libs) > 1:
+        print(f"Warning: Multiple python versions in venv found. Using the first one ({venv_libs[0].name})")
+    module_import_path = venv_libs[0] / "site-packages" / extension_class.import_path
+    return parse_polars_module(module_import_path.with_suffix(".py").read_text())
+
+
 def parse_from_current_env(extension_class: ExtensionClass) -> ast.Module:
     module_import_path = ".".join(_IMPORT_PATHS[extension_class].parts)
     module = importlib.import_module(module_import_path)
     module_source = inspect.getsource(module)
+    return parse_polars_module(module_source)
+
+
+def parse_polars_module(module_source: str) -> ast.Module:
     parsed = ast.parse(module_source, type_comments=False)
     return RemoveBodies().visit(parsed)
 

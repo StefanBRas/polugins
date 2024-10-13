@@ -5,10 +5,15 @@ tasks:
     cmds:
       - poetry run python scripts/generate_polars_stubs.py
 
-  test:
-    deps: ['nox']
+  install:
     cmds:
-      - poetry run nox -r -s test 
+      - poetry install --with dev
+
+  test:
+    deps:
+      - install
+    cmds:
+      - poetry run pytest
 
   format:
     cmds:
@@ -18,8 +23,3 @@ tasks:
   lint:
     cmds:
       - poetry run ruff check .
-
-  nox:
-    sources: ["pyproject.toml", "poetry.lock"]
-    cmds:
-      - poetry install --only=nox

@@ -4,9 +4,7 @@ from pathlib import Path
 from typing import Callable
 
 import polars as pl
-from typing_extensions import Self, TypeVar
-
-NS = TypeVar("NS")
+from typing_extensions import Self
 
 
 class ExtensionClass(Enum):
