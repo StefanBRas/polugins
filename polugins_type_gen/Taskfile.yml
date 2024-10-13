@@ -5,7 +5,13 @@ tasks:
     cmds:
       - poetry run python scripts/generate_polars_stubs.py
 
+  install:
+    cmds:
+      - poetry install
+
   test:
+    deps:
+      - install
     cmds:
       - poetry run pytest
 
