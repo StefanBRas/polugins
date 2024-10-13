@@ -15,7 +15,6 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
-nox = "^2023.4.22"
 coverage = "^7.2.7"
 pytest-env = "^0.8.2"
 pytest-cov = "^4.1.0"
