@@ -7,7 +7,7 @@ tasks:
 
   install:
     cmds:
-      - poetry install
+      - poetry install --with dev
 
   test:
     deps:
