@@ -46,7 +46,9 @@ def set_env(**environ):
 
 
 def test_suppress_warning(recwarn: pytest.WarningsRecorder):
-    with set_env(polugins_lazyframe_selfregister="polugins._testing.self_register:SelfRegisterNamespace"):
+    with set_env(
+        polugins_lazyframe_selfregister="polugins._testing.self_register:SelfRegisterNamespace"
+    ):
         register_namespaces(load_env=True, load_config=False, load_entrypoints=False)
         ldf = LazyFrame()
         ldf.selfregister.custom_method(x=1)

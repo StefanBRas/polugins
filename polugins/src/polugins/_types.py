@@ -37,11 +37,17 @@ class ExtensionClass(Enum):
                 return
             return pl.api.register_series_namespace(name)(namespace)  # type: ignore
         if self == ExtensionClass.LAZYFRAME:
-            if name in pl.LazyFrame._accessors and getattr(pl.LazyFrame, name) is namespace:
+            if (
+                name in pl.LazyFrame._accessors
+                and getattr(pl.LazyFrame, name) is namespace
+            ):
                 return
             return pl.api.register_lazyframe_namespace(name)(namespace)  # type: ignore
         if self == ExtensionClass.DATAFRAME:
-            if name in pl.DataFrame._accessors and getattr(pl.DataFrame, name) is namespace:
+            if (
+                name in pl.DataFrame._accessors
+                and getattr(pl.DataFrame, name) is namespace
+            ):
                 return
             return pl.api.register_dataframe_namespace(name)(namespace)  # type: ignore
         raise TypeError  # will never happen, poor mans pattern matching.

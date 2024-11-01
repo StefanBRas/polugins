@@ -15,13 +15,22 @@ IMPORT_PATHS = [
 ]
 
 
-def run_stubgen(version: str, no_docstring_stub_path: Path, stub_path: Path, tempdir_path: Path) -> None:
+def run_stubgen(
+    version: str, no_docstring_stub_path: Path, stub_path: Path, tempdir_path: Path
+) -> None:
     venv_path = tempdir_path / f".venv{version}"
     bin_path = venv_path / "bin" / "python"
     subprocess.check_call([sys.executable, "-m", "venv", str(venv_path)])
     subprocess.check_call([bin_path, "-m", "pip", "install", f"polars=={version}"])
     subprocess.check_call([bin_path, "scripts/stubgen_ast.py", stub_path, "true"])
-    subprocess.check_call([bin_path, "scripts/stubgen_ast.py", tempdir_path / no_docstring_stub_path, "false"])
+    subprocess.check_call(
+        [
+            bin_path,
+            "scripts/stubgen_ast.py",
+            tempdir_path / no_docstring_stub_path,
+            "false",
+        ]
+    )
 
 
 def get_current_versions() -> set[version.Version]:
@@ -48,7 +57,11 @@ def get_available_versions() -> set[version.Version]:
 def get_missing_versions() -> set[version.Version]:
     # 0.16.13 -> 0.16.14 changes location of imports
     oldest_version = version.Version("0.16.13")
-    return {v for v in (get_available_versions() - get_current_versions()) if v > oldest_version}
+    return {
+        v
+        for v in (get_available_versions() - get_current_versions())
+        if v > oldest_version
+    }
 
 
 def clean_types(path: Path, version):
@@ -56,31 +69,48 @@ def clean_types(path: Path, version):
     match path.parts[-2]:
         case "dataframe":
             if (txt := "P: Incomplete") in stub_content:
-                stub_content = "from typing_extensions import ParamSpec, Generic\n" + stub_content.replace(
-                    txt, "P = ParamSpec('P')"
-                ).replace("class DataFrame", "class DataFrame(Generic[P])")
+                stub_content = (
+                    "from typing_extensions import ParamSpec, Generic\n"
+                    + stub_content.replace(txt, "P = ParamSpec('P')").replace(
+                        "class DataFrame", "class DataFrame(Generic[P])"
+                    )
+                )
             stub_content = stub_content.replace("_df: Incomplete", "_df: PyDataFrame")
-            stub_content = stub_content.replace("columns: Incomplete", "columns: list[str]")
             stub_content = stub_content.replace(
-                "from builtins import PyDataFrame", "from polars.polars import PyDataFrame"
+                "columns: Incomplete", "columns: list[str]"
+            )
+            stub_content = stub_content.replace(
+                "from builtins import PyDataFrame",
+                "from polars.polars import PyDataFrame",
             )
 
         case "lazyframe":
             if (txt := "P: Incomplete") in stub_content:
-                stub_content = "from typing_extensions import ParamSpec, Generic\n" + stub_content.replace(
-                    txt, "P = ParamSpec('P')"
-                ).replace("class LazyFrame", "class LazyFrame(Generic[P])")
+                stub_content = (
+                    "from typing_extensions import ParamSpec, Generic\n"
+                    + stub_content.replace(txt, "P = ParamSpec('P')").replace(
+                        "class LazyFrame", "class LazyFrame(Generic[P])"
+                    )
+                )
             stub_content = stub_content.replace("_ldf: Incomplete", "_ldf: PyLazyFrame")
             stub_content = stub_content.replace(
-                "from builtins import PyLazyFrame", "from polars.polars import PyLazyFrame"
+                "from builtins import PyLazyFrame",
+                "from polars.polars import PyLazyFrame",
             )
         case "expr":
             if (txt := "P: Incomplete") in stub_content:
-                stub_content = "from typing_extensions import ParamSpec, Generic\n" + stub_content.replace(
-                    txt, "P = ParamSpec('P')"
-                ).replace("class Expr", "class Expr(Generic[P])")
-            stub_content = stub_content.replace("_pyexpr: Incomplete", "_pyexpr: PyExpr")
-            stub_content = stub_content.replace("from builtins import PyExpr", "from polars.polars import PyExpr")
+                stub_content = (
+                    "from typing_extensions import ParamSpec, Generic\n"
+                    + stub_content.replace(txt, "P = ParamSpec('P')").replace(
+                        "class Expr", "class Expr(Generic[P])"
+                    )
+                )
+            stub_content = stub_content.replace(
+                "_pyexpr: Incomplete", "_pyexpr: PyExpr"
+            )
+            stub_content = stub_content.replace(
+                "from builtins import PyExpr", "from polars.polars import PyExpr"
+            )
         case "series":
             array_like = (
                 'ArrayLike = Union[Sequence[Any], "Series", '
@@ -89,10 +119,16 @@ def clean_types(path: Path, version):
             if (incomplete_str := "ArrayLike: Incomplete") in stub_content:
                 stub_content = stub_content.replace(incomplete_str, array_like)
             if "class SeriesIter:" in stub_content:
-                stub_content = stub_content.replace("len: Incomplete", "len: int").replace("s: Incomplete", "s: Series")
-            stub_content = stub_content.replace("from builtins import PySeries", "from polars.polars import PySeries")
+                stub_content = stub_content.replace(
+                    "len: Incomplete", "len: int"
+                ).replace("s: Incomplete", "s: Series")
+            stub_content = stub_content.replace(
+                "from builtins import PySeries", "from polars.polars import PySeries"
+            )
             stub_content = stub_content.replace("_s: Incomplete", "_s: PySeries")
-            stub_content = stub_content.replace("_accessors: _ClassVar[set]", "_accessors: _ClassVar[set[str]]")
+            stub_content = stub_content.replace(
+                "_accessors: _ClassVar[set]", "_accessors: _ClassVar[set[str]]"
+            )
         case err:
             raise ValueError(err)
     stub_content = stub_content.replace("from _typeshed import Incomplete", "")
@@ -117,14 +153,22 @@ def main(tmp_dir: Path):
             cleaned_stub_content = clean_types(stub_path, version_)
             stub_path.with_suffix(".pyi").write_text(cleaned_stub_content)
             # run ruff on the cleaned stub
-            subprocess.check_call([sys.executable, "-m", "ruff", "format", str(stub_path)])
+            subprocess.check_call(
+                [sys.executable, "-m", "ruff", "format", str(stub_path)]
+            )
             if is_incomplete(stub_path):
                 msg = f"File {stub_path} could not be cleaned and has Incomplete types."
                 print(msg)
-            no_docstring_stub_path = tmp_dir / no_docstring_output_dir / import_path.with_suffix(".pyi")
-            cleaned_no_docstring_stub_content = clean_types(no_docstring_stub_path, version_)
+            no_docstring_stub_path = (
+                tmp_dir / no_docstring_output_dir / import_path.with_suffix(".pyi")
+            )
+            cleaned_no_docstring_stub_content = clean_types(
+                no_docstring_stub_path, version_
+            )
             no_docstring_stub_path.write_text(cleaned_no_docstring_stub_content)
-            subprocess.check_call([sys.executable, "-m", "ruff", "format", str(no_docstring_stub_path)])
+            subprocess.check_call(
+                [sys.executable, "-m", "ruff", "format", str(no_docstring_stub_path)]
+            )
 
     return versions
 
@@ -133,7 +177,11 @@ def diff_chunk(content: str):
     return f"```diff\n{content}\n```\n"
 
 
-def comparison_section(version_1: version.Version, version_2: version.Version, comparisons: list[tuple[str, str]]):
+def comparison_section(
+    version_1: version.Version,
+    version_2: version.Version,
+    comparisons: list[tuple[str, str]],
+):
     header = f"# Changes from {version_1} to {version_2}\n"
     body = ""
     for extension_class, diff in comparisons:
@@ -151,7 +199,9 @@ def create_pr_body(versions: set[version.Version], tempdir_path: Path):
 
     comparisons = {
         (version_1, version_2): compare_versions(version_1, version_2, tempdir_path)
-        for version_1, version_2 in pairwise(sorted(versions.union([newest_current_version])))
+        for version_1, version_2 in pairwise(
+            sorted(versions.union([newest_current_version]))
+        )
     }
     header = "# Automatic stub gen\n Changes between new versions and last:\n"
     body = "\n".join(
@@ -161,7 +211,9 @@ def create_pr_body(versions: set[version.Version], tempdir_path: Path):
     return header + body
 
 
-def compare_versions(version_1: version.Version, version_2, tempdir_path: Path) -> list[tuple[str, str]]:
+def compare_versions(
+    version_1: version.Version, version_2, tempdir_path: Path
+) -> list[tuple[str, str]]:
     results = []
     stub_dir_1 = tempdir_path / "no_docstring" / str(version_1)
     stub_dir_2 = tempdir_path / "no_docstring" / str(version_2)
@@ -186,7 +238,9 @@ if __name__ == "__main__":
         new_versions = main(tempdir_path)
         body_content = create_pr_body(new_versions, tempdir_path)
 
-        body_path = Path(sys.argv[1]) if len(sys.argv) > 1 else tempdir_path / "pr_body.md"
+        body_path = (
+            Path(sys.argv[1]) if len(sys.argv) > 1 else tempdir_path / "pr_body.md"
+        )
         print(f"Wrinting pr template to: {body_path}")
 
         body_path.write_text(body_content)

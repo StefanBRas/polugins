@@ -1,28 +1,26 @@
 from __future__ import annotations
-import contextlib
-import math
-import os
 from collections.abc import Iterable, Sequence
-from contextlib import nullcontext
-from datetime import date, datetime, time, timedelta
-from decimal import Decimal as PyDecimal
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Literal, NoReturn, Union, overload
-import polars._reexport as pl
-from polars import functions as F
-from polars._utils.construction import arrow_to_pyseries, dataframe_to_pyseries, iterable_to_pyseries, numpy_to_pyseries, pandas_to_pyseries, sequence_to_pyseries, series_to_pyseries
-from polars._utils.convert import date_to_int, datetime_to_int, time_to_int, timedelta_to_int
-from polars._utils.deprecation import deprecate_function, deprecate_renamed_parameter, issue_deprecation_warning
-from polars._utils.getitem import get_series_item_by_key
+from datetime import date, datetime, timedelta
+from typing import (
+    Any,
+    Callable,
+    ClassVar,
+    Literal,
+    NoReturn,
+    Union,
+    overload,
+)
+from polars._utils.deprecation import (
+    deprecate_function,
+    deprecate_renamed_parameter,
+)
 from polars._utils.unstable import unstable
-from polars._utils.various import BUILDING_SPHINX_DOCS, _is_generator, no_default, parse_version, scale_bytes, sphinx_accessor, warn_null_comparison
-from polars._utils.wrap import wrap_df
-from polars.datatypes import Array, Boolean, Categorical, Date, Datetime, Decimal, Duration, Enum, Float32, Float64, Int32, Int64, List, Null, Object, String, Time, UInt16, UInt32, UInt64, Unknown, is_polars_dtype, maybe_cast, numpy_char_code_to_dtype, parse_into_dtype, supported_numpy_char_code
-from polars.datatypes._utils import dtype_to_init_repr
-from polars.dependencies import _ALTAIR_AVAILABLE, _PYARROW_AVAILABLE, _check_for_numpy, _check_for_pandas, _check_for_pyarrow, altair, import_optional
+from polars._utils.various import (
+    no_default,
+)
 from polars.dependencies import numpy as np
 from polars.dependencies import pandas as pd
 from polars.dependencies import pyarrow as pa
-from polars.exceptions import ComputeError, ModuleUpgradeRequiredError, ShapeError
 from polars.interchange.protocol import CompatLevel
 from polars.series.array import ArrayNameSpace
 from polars.series.binary import BinaryNameSpace
@@ -32,21 +30,55 @@ from polars.series.list import ListNameSpace
 from polars.series.plotting import SeriesPlot
 from polars.series.string import StringNameSpace
 from polars.series.struct import StructNameSpace
-from polars.series.utils import expr_dispatch, get_ffi_func
-from polars.polars import PyDataFrame, PySeries
+from polars.series.utils import expr_dispatch
+from polars.polars import PySeries
 import sys
 from collections.abc import Collection, Generator, Mapping
 import jax
 import numpy.typing as npt
 import torch
 from polars import DataFrame, DataType, Expr
-from polars._typing import ArrowArrayExportable, ArrowStreamExportable, BufferInfo, ClosedInterval, ComparisonOperator, FillNullStrategy, InterpolationMethod, IntoExpr, IntoExprColumn, MultiIndexSelector, NonNestedLiteral, NullBehavior, NumericLiteral, PolarsDataType, PythonLiteral, RankMethod, RollingInterpolationMethod, SearchSortedSide, SeriesBuffers, SingleIndexSelector, SizeUnit, TemporalLiteral
+from polars._typing import (
+    ArrowArrayExportable,
+    ArrowStreamExportable,
+    BufferInfo,
+    ClosedInterval,
+    ComparisonOperator,
+    FillNullStrategy,
+    InterpolationMethod,
+    IntoExpr,
+    IntoExprColumn,
+    MultiIndexSelector,
+    NonNestedLiteral,
+    NullBehavior,
+    NumericLiteral,
+    PolarsDataType,
+    PythonLiteral,
+    RankMethod,
+    RollingInterpolationMethod,
+    SearchSortedSide,
+    SeriesBuffers,
+    SingleIndexSelector,
+    SizeUnit,
+    TemporalLiteral,
+)
 from polars._utils.various import NoDefault
+
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
-ArrayLike = Union[Sequence[Any], 'Series', 'pa.Array', 'pa.ChunkedArray', 'np.ndarray[Any, Any]', 'pd.Series[Any]', 'pd.DatetimeIndex', 'ArrowArrayExportable', 'ArrowStreamExportable']
+ArrayLike = Union[
+    Sequence[Any],
+    "Series",
+    "pa.Array",
+    "pa.ChunkedArray",
+    "np.ndarray[Any, Any]",
+    "pd.Series[Any]",
+    "pd.DatetimeIndex",
+    "ArrowArrayExportable",
+    "ArrowStreamExportable",
+]
 
 @expr_dispatch
 class Series:
@@ -126,21 +158,27 @@ class Series:
             3
     ]
     """
+
     _s: PySeries
     _accessors: ClassVar[set[str]]
 
-    def __init__(self, name: str | ArrayLike | None, values: ArrayLike | None, dtype: PolarsDataType | None, *, strict: bool=True, nan_to_null: bool=False) -> None:
-        ...
-
+    def __init__(
+        self,
+        name: str | ArrayLike | None,
+        values: ArrayLike | None,
+        dtype: PolarsDataType | None,
+        *,
+        strict: bool = True,
+        nan_to_null: bool = False,
+    ) -> None: ...
     @classmethod
-    def _from_pyseries(cls, pyseries: PySeries) -> Self:
-        ...
-
+    def _from_pyseries(cls, pyseries: PySeries) -> Self: ...
     @classmethod
-    @deprecate_function("use _import_arrow_from_c; if you are using an extension, please compile it with latest 'pyo3-polars'", version='1.3')
-    def _import_from_c(cls, name: str, pointers: list[tuple[int, int]]) -> Self:
-        ...
-
+    @deprecate_function(
+        "use _import_arrow_from_c; if you are using an extension, please compile it with latest 'pyo3-polars'",
+        version="1.3",
+    )
+    def _import_from_c(cls, name: str, pointers: list[tuple[int, int]]) -> Self: ...
     @classmethod
     def _import_arrow_from_c(cls, name: str, pointers: list[tuple[int, int]]) -> Self:
         """
@@ -239,7 +277,9 @@ class Series:
         ...
 
     @classmethod
-    def _from_buffer(cls, dtype: PolarsDataType, buffer_info: BufferInfo, owner: Any) -> Self:
+    def _from_buffer(
+        cls, dtype: PolarsDataType, buffer_info: BufferInfo, owner: Any
+    ) -> Self:
         """
         Construct a Series from information about its underlying buffer.
 
@@ -269,7 +309,12 @@ class Series:
         ...
 
     @classmethod
-    def _from_buffers(cls, dtype: PolarsDataType, data: Series | Sequence[Series], validity: Series | None) -> Self:
+    def _from_buffers(
+        cls,
+        dtype: PolarsDataType,
+        data: Series | Sequence[Series],
+        validity: Series | None,
+    ) -> Self:
         """
         Construct a Series from information about its underlying buffers.
 
@@ -371,155 +416,77 @@ class Series:
         """
         ...
 
-    def __bool__(self) -> NoReturn:
-        ...
-
-    def __getstate__(self) -> bytes:
-        ...
-
-    def __setstate__(self, state: bytes) -> None:
-        ...
-
-    def __str__(self) -> str:
-        ...
-
-    def __repr__(self) -> str:
-        ...
-
-    def __len__(self) -> int:
-        ...
-
-    def __and__(self, other: Any) -> Self:
-        ...
-
-    def __rand__(self, other: Any) -> Series:
-        ...
-
-    def __or__(self, other: Any) -> Self:
-        ...
-
-    def __ror__(self, other: Any) -> Series:
-        ...
-
-    def __xor__(self, other: Any) -> Self:
-        ...
-
-    def __rxor__(self, other: Any) -> Series:
-        ...
-
-    def _comp(self, other: Any, op: ComparisonOperator) -> Series:
-        ...
-
+    def __bool__(self) -> NoReturn: ...
+    def __getstate__(self) -> bytes: ...
+    def __setstate__(self, state: bytes) -> None: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __len__(self) -> int: ...
+    def __and__(self, other: Any) -> Self: ...
+    def __rand__(self, other: Any) -> Series: ...
+    def __or__(self, other: Any) -> Self: ...
+    def __ror__(self, other: Any) -> Series: ...
+    def __xor__(self, other: Any) -> Self: ...
+    def __rxor__(self, other: Any) -> Series: ...
+    def _comp(self, other: Any, op: ComparisonOperator) -> Series: ...
     @overload
-    def __eq__(self, other: Expr) -> Expr:
-        ...
-
+    def __eq__(self, other: Expr) -> Expr: ...
     @overload
-    def __eq__(self, other: object) -> Series:
-        ...
-
-    def __eq__(self, other: object) -> Series | Expr:
-        ...
-
+    def __eq__(self, other: object) -> Series: ...
+    def __eq__(self, other: object) -> Series | Expr: ...
     @overload
-    def __ne__(self, other: Expr) -> Expr:
-        ...
-
+    def __ne__(self, other: Expr) -> Expr: ...
     @overload
-    def __ne__(self, other: object) -> Series:
-        ...
-
-    def __ne__(self, other: object) -> Series | Expr:
-        ...
-
+    def __ne__(self, other: object) -> Series: ...
+    def __ne__(self, other: object) -> Series | Expr: ...
     @overload
-    def __gt__(self, other: Expr) -> Expr:
-        ...
-
+    def __gt__(self, other: Expr) -> Expr: ...
     @overload
-    def __gt__(self, other: Any) -> Series:
-        ...
-
-    def __gt__(self, other: Any) -> Series | Expr:
-        ...
-
+    def __gt__(self, other: Any) -> Series: ...
+    def __gt__(self, other: Any) -> Series | Expr: ...
     @overload
-    def __lt__(self, other: Expr) -> Expr:
-        ...
-
+    def __lt__(self, other: Expr) -> Expr: ...
     @overload
-    def __lt__(self, other: Any) -> Series:
-        ...
-
-    def __lt__(self, other: Any) -> Series | Expr:
-        ...
-
+    def __lt__(self, other: Any) -> Series: ...
+    def __lt__(self, other: Any) -> Series | Expr: ...
     @overload
-    def __ge__(self, other: Expr) -> Expr:
-        ...
-
+    def __ge__(self, other: Expr) -> Expr: ...
     @overload
-    def __ge__(self, other: Any) -> Series:
-        ...
-
-    def __ge__(self, other: Any) -> Series | Expr:
-        ...
-
+    def __ge__(self, other: Any) -> Series: ...
+    def __ge__(self, other: Any) -> Series | Expr: ...
     @overload
-    def __le__(self, other: Expr) -> Expr:
-        ...
-
+    def __le__(self, other: Expr) -> Expr: ...
     @overload
-    def __le__(self, other: Any) -> Series:
-        ...
-
-    def __le__(self, other: Any) -> Series | Expr:
-        ...
-
+    def __le__(self, other: Any) -> Series: ...
+    def __le__(self, other: Any) -> Series | Expr: ...
     @overload
-    def le(self, other: Expr) -> Expr:
-        ...
-
+    def le(self, other: Expr) -> Expr: ...
     @overload
-    def le(self, other: Any) -> Series:
-        ...
-
+    def le(self, other: Any) -> Series: ...
     def le(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series <= other`."""
         ...
 
     @overload
-    def lt(self, other: Expr) -> Expr:
-        ...
-
+    def lt(self, other: Expr) -> Expr: ...
     @overload
-    def lt(self, other: Any) -> Series:
-        ...
-
+    def lt(self, other: Any) -> Series: ...
     def lt(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series < other`."""
         ...
 
     @overload
-    def eq(self, other: Expr) -> Expr:
-        ...
-
+    def eq(self, other: Expr) -> Expr: ...
     @overload
-    def eq(self, other: Any) -> Series:
-        ...
-
+    def eq(self, other: Any) -> Series: ...
     def eq(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series == other`."""
         ...
 
     @overload
-    def eq_missing(self, other: Expr) -> Expr:
-        ...
-
+    def eq_missing(self, other: Expr) -> Expr: ...
     @overload
-    def eq_missing(self, other: Any) -> Series:
-        ...
-
+    def eq_missing(self, other: Any) -> Series: ...
     def eq_missing(self, other: Any) -> Series | Expr:
         """
         Method equivalent of equality operator `series == other` where `None == None`.
@@ -560,25 +527,17 @@ class Series:
         ...
 
     @overload
-    def ne(self, other: Expr) -> Expr:
-        ...
-
+    def ne(self, other: Expr) -> Expr: ...
     @overload
-    def ne(self, other: Any) -> Series:
-        ...
-
+    def ne(self, other: Any) -> Series: ...
     def ne(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series != other`."""
         ...
 
     @overload
-    def ne_missing(self, other: Expr) -> Expr:
-        ...
-
+    def ne_missing(self, other: Expr) -> Expr: ...
     @overload
-    def ne_missing(self, other: Any) -> Series:
-        ...
-
+    def ne_missing(self, other: Any) -> Series: ...
     def ne_missing(self, other: Any) -> Series | Expr:
         """
         Method equivalent of equality operator `series != other` where `None == None`.
@@ -619,58 +578,34 @@ class Series:
         ...
 
     @overload
-    def ge(self, other: Expr) -> Expr:
-        ...
-
+    def ge(self, other: Expr) -> Expr: ...
     @overload
-    def ge(self, other: Any) -> Series:
-        ...
-
+    def ge(self, other: Any) -> Series: ...
     def ge(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series >= other`."""
         ...
 
     @overload
-    def gt(self, other: Expr) -> Expr:
-        ...
-
+    def gt(self, other: Expr) -> Expr: ...
     @overload
-    def gt(self, other: Any) -> Series:
-        ...
-
+    def gt(self, other: Any) -> Series: ...
     def gt(self, other: Any) -> Series | Expr:
         """Method equivalent of operator expression `series > other`."""
         ...
 
-    def _arithmetic(self, other: Any, op_s: str, op_ffi: str) -> Self:
-        ...
-
+    def _arithmetic(self, other: Any, op_s: str, op_ffi: str) -> Self: ...
     @overload
-    def __add__(self, other: DataFrame) -> DataFrame:
-        ...
-
+    def __add__(self, other: DataFrame) -> DataFrame: ...
     @overload
-    def __add__(self, other: Expr) -> Expr:
-        ...
-
+    def __add__(self, other: Expr) -> Expr: ...
     @overload
-    def __add__(self, other: Any) -> Self:
-        ...
-
-    def __add__(self, other: Any) -> Self | DataFrame | Expr:
-        ...
-
+    def __add__(self, other: Any) -> Self: ...
+    def __add__(self, other: Any) -> Self | DataFrame | Expr: ...
     @overload
-    def __sub__(self, other: Expr) -> Expr:
-        ...
-
+    def __sub__(self, other: Expr) -> Expr: ...
     @overload
-    def __sub__(self, other: Any) -> Self:
-        ...
-
-    def __sub__(self, other: Any) -> Self | Expr:
-        ...
-
+    def __sub__(self, other: Any) -> Self: ...
+    def __sub__(self, other: Any) -> Self | Expr: ...
     def _recursive_cast_to_dtype(self, leaf_dtype: PolarsDataType) -> Series:
         """
         Convert leaf dtype the to given primitive datatype.
@@ -680,116 +615,52 @@ class Series:
         ...
 
     @overload
-    def __truediv__(self, other: Expr) -> Expr:
-        ...
-
+    def __truediv__(self, other: Expr) -> Expr: ...
     @overload
-    def __truediv__(self, other: Any) -> Series:
-        ...
-
-    def __truediv__(self, other: Any) -> Series | Expr:
-        ...
-
+    def __truediv__(self, other: Any) -> Series: ...
+    def __truediv__(self, other: Any) -> Series | Expr: ...
     @overload
-    def __floordiv__(self, other: Expr) -> Expr:
-        ...
-
+    def __floordiv__(self, other: Expr) -> Expr: ...
     @overload
-    def __floordiv__(self, other: Any) -> Series:
-        ...
-
-    def __floordiv__(self, other: Any) -> Series | Expr:
-        ...
-
-    def __invert__(self) -> Series:
-        ...
-
+    def __floordiv__(self, other: Any) -> Series: ...
+    def __floordiv__(self, other: Any) -> Series | Expr: ...
+    def __invert__(self) -> Series: ...
     @overload
-    def __mul__(self, other: Expr) -> Expr:
-        ...
-
+    def __mul__(self, other: Expr) -> Expr: ...
     @overload
-    def __mul__(self, other: DataFrame) -> DataFrame:
-        ...
-
+    def __mul__(self, other: DataFrame) -> DataFrame: ...
     @overload
-    def __mul__(self, other: Any) -> Series:
-        ...
-
-    def __mul__(self, other: Any) -> Series | DataFrame | Expr:
-        ...
-
+    def __mul__(self, other: Any) -> Series: ...
+    def __mul__(self, other: Any) -> Series | DataFrame | Expr: ...
     @overload
-    def __mod__(self, other: Expr) -> Expr:
-        ...
-
+    def __mod__(self, other: Expr) -> Expr: ...
     @overload
-    def __mod__(self, other: Any) -> Series:
-        ...
-
-    def __mod__(self, other: Any) -> Series | Expr:
-        ...
-
-    def __rmod__(self, other: Any) -> Series:
-        ...
-
-    def __radd__(self, other: Any) -> Series:
-        ...
-
-    def __rsub__(self, other: Any) -> Series:
-        ...
-
-    def __rtruediv__(self, other: Any) -> Series:
-        ...
-
-    def __rfloordiv__(self, other: Any) -> Series:
-        ...
-
-    def __rmul__(self, other: Any) -> Series:
-        ...
-
-    def __pow__(self, exponent: int | float | Series) -> Series:
-        ...
-
-    def __rpow__(self, other: Any) -> Series:
-        ...
-
-    def __matmul__(self, other: Any) -> float | Series | None:
-        ...
-
-    def __rmatmul__(self, other: Any) -> float | Series | None:
-        ...
-
-    def __neg__(self) -> Series:
-        ...
-
-    def __pos__(self) -> Series:
-        ...
-
-    def __abs__(self) -> Series:
-        ...
-
-    def __copy__(self) -> Self:
-        ...
-
-    def __deepcopy__(self, memo: None) -> Self:
-        ...
-
-    def __contains__(self, item: Any) -> bool:
-        ...
-
-    def __iter__(self) -> Generator[Any, None, None]:
-        ...
-
+    def __mod__(self, other: Any) -> Series: ...
+    def __mod__(self, other: Any) -> Series | Expr: ...
+    def __rmod__(self, other: Any) -> Series: ...
+    def __radd__(self, other: Any) -> Series: ...
+    def __rsub__(self, other: Any) -> Series: ...
+    def __rtruediv__(self, other: Any) -> Series: ...
+    def __rfloordiv__(self, other: Any) -> Series: ...
+    def __rmul__(self, other: Any) -> Series: ...
+    def __pow__(self, exponent: int | float | Series) -> Series: ...
+    def __rpow__(self, other: Any) -> Series: ...
+    def __matmul__(self, other: Any) -> float | Series | None: ...
+    def __rmatmul__(self, other: Any) -> float | Series | None: ...
+    def __neg__(self) -> Series: ...
+    def __pos__(self) -> Series: ...
+    def __abs__(self) -> Series: ...
+    def __copy__(self) -> Self: ...
+    def __deepcopy__(self, memo: None) -> Self: ...
+    def __contains__(self, item: Any) -> bool: ...
+    def __iter__(self) -> Generator[Any, None, None]: ...
     @overload
-    def __getitem__(self, key: SingleIndexSelector) -> Any:
-        ...
-
+    def __getitem__(self, key: SingleIndexSelector) -> Any: ...
     @overload
-    def __getitem__(self, key: MultiIndexSelector) -> Series:
-        ...
-
-    def __getitem__(self, key: SingleIndexSelector | MultiIndexSelector) -> Any | Series:
+    def __getitem__(self, key: MultiIndexSelector) -> Series: ...
+    def __getitem__(
+        self, key: SingleIndexSelector | MultiIndexSelector
+    ) -> Any | Series:
         """
         Get part of the Series as a new Series or scalar.
 
@@ -817,10 +688,14 @@ class Series:
         """
         ...
 
-    def __setitem__(self, key: int | Series | np.ndarray[Any, Any] | Sequence[object] | tuple[object], value: Any) -> None:
-        ...
-
-    def __array__(self, dtype: npt.DTypeLike | None, copy: bool | None) -> np.ndarray[Any, Any]:
+    def __setitem__(
+        self,
+        key: int | Series | np.ndarray[Any, Any] | Sequence[object] | tuple[object],
+        value: Any,
+    ) -> None: ...
+    def __array__(
+        self, dtype: npt.DTypeLike | None, copy: bool | None
+    ) -> np.ndarray[Any, Any]:
         """
         Return a NumPy ndarray with the given data type.
 
@@ -836,7 +711,9 @@ class Series:
         """
         ...
 
-    def __array_ufunc__(self, ufunc: np.ufunc, method: str, *inputs: Any, **kwargs: Any) -> Series:
+    def __array_ufunc__(
+        self, ufunc: np.ufunc, method: str, *inputs: Any, **kwargs: Any
+    ) -> Series:
         """Numpy universal functions."""
         ...
 
@@ -959,14 +836,10 @@ class Series:
         ...
 
     @overload
-    def any(self, *, ignore_nulls: Literal[True]=...) -> bool:
-        ...
-
+    def any(self, *, ignore_nulls: Literal[True] = ...) -> bool: ...
     @overload
-    def any(self, *, ignore_nulls: bool) -> bool | None:
-        ...
-
-    def any(self, *, ignore_nulls: bool=True) -> bool | None:
+    def any(self, *, ignore_nulls: bool) -> bool | None: ...
+    def any(self, *, ignore_nulls: bool = True) -> bool | None:
         """
         Return whether any of the values in the column are `True`.
 
@@ -1003,14 +876,10 @@ class Series:
         ...
 
     @overload
-    def all(self, *, ignore_nulls: Literal[True]=...) -> bool:
-        ...
-
+    def all(self, *, ignore_nulls: Literal[True] = ...) -> bool: ...
     @overload
-    def all(self, *, ignore_nulls: bool) -> bool | None:
-        ...
-
-    def all(self, *, ignore_nulls: bool=True) -> bool | None:
+    def all(self, *, ignore_nulls: bool) -> bool | None: ...
+    def all(self, *, ignore_nulls: bool = True) -> bool | None:
         """
         Return whether all values in the column are `True`.
 
@@ -1214,7 +1083,11 @@ class Series:
         """
         ...
 
-    def describe(self, percentiles: Sequence[float] | float | None, interpolation: RollingInterpolationMethod) -> DataFrame:
+    def describe(
+        self,
+        percentiles: Sequence[float] | float | None,
+        interpolation: RollingInterpolationMethod,
+    ) -> DataFrame:
         """
         Quick summary statistics of a Series.
 
@@ -1472,7 +1345,9 @@ class Series:
         """
         ...
 
-    def quantile(self, quantile: float, interpolation: RollingInterpolationMethod) -> float | None:
+    def quantile(
+        self, quantile: float, interpolation: RollingInterpolationMethod
+    ) -> float | None:
         """
         Get the quantile value of this Series.
 
@@ -1491,7 +1366,9 @@ class Series:
         """
         ...
 
-    def to_dummies(self, *, separator: str='_', drop_first: bool=False) -> DataFrame:
+    def to_dummies(
+        self, *, separator: str = "_", drop_first: bool = False
+    ) -> DataFrame:
         """
         Get dummy/indicator variables.
 
@@ -1532,7 +1409,14 @@ class Series:
         ...
 
     @unstable()
-    def cut(self, breaks: Sequence[float], *, labels: Sequence[str] | None=None, left_closed: bool=False, include_breaks: bool=False) -> Series:
+    def cut(
+        self,
+        breaks: Sequence[float],
+        *,
+        labels: Sequence[str] | None = None,
+        left_closed: bool = False,
+        include_breaks: bool = False,
+    ) -> Series:
         """
         Bin continuous values into discrete categories.
 
@@ -1600,7 +1484,15 @@ class Series:
         ...
 
     @unstable()
-    def qcut(self, quantiles: Sequence[float] | int, *, labels: Sequence[str] | None=None, left_closed: bool=False, allow_duplicates: bool=False, include_breaks: bool=False) -> Series:
+    def qcut(
+        self,
+        quantiles: Sequence[float] | int,
+        *,
+        labels: Sequence[str] | None = None,
+        left_closed: bool = False,
+        allow_duplicates: bool = False,
+        include_breaks: bool = False,
+    ) -> Series:
         """
         Bin continuous values into discrete categories based on their quantiles.
 
@@ -1760,7 +1652,14 @@ class Series:
         ...
 
     @unstable()
-    def hist(self, bins: list[float] | None, *, bin_count: int | None=None, include_category: bool=True, include_breakpoint: bool=True) -> DataFrame:
+    def hist(
+        self,
+        bins: list[float] | None,
+        *,
+        bin_count: int | None = None,
+        include_category: bool = True,
+        include_breakpoint: bool = True,
+    ) -> DataFrame:
         """
         Bin values into buckets and count their occurrences.
 
@@ -1803,7 +1702,14 @@ class Series:
         """
         ...
 
-    def value_counts(self, *, sort: bool=False, parallel: bool=False, name: str | None=None, normalize: bool=False) -> DataFrame:
+    def value_counts(
+        self,
+        *,
+        sort: bool = False,
+        parallel: bool = False,
+        name: str | None = None,
+        normalize: bool = False,
+    ) -> DataFrame:
         """
         Count the occurrences of unique values.
 
@@ -1879,7 +1785,7 @@ class Series:
         """
         ...
 
-    def entropy(self, base: float, *, normalize: bool=True) -> float | None:
+    def entropy(self, base: float, *, normalize: bool = True) -> float | None:
         """
         Computes the entropy.
 
@@ -1904,7 +1810,9 @@ class Series:
         ...
 
     @unstable()
-    def cumulative_eval(self, expr: Expr, *, min_periods: int=1, parallel: bool=False) -> Series:
+    def cumulative_eval(
+        self, expr: Expr, *, min_periods: int = 1, parallel: bool = False
+    ) -> Series:
         """
         Run an expression over a sliding window that increases `1` slot every iteration.
 
@@ -2036,7 +1944,7 @@ class Series:
         """
         ...
 
-    def cum_max(self, *, reverse: bool=False) -> Series:
+    def cum_max(self, *, reverse: bool = False) -> Series:
         """
         Get an array with the cumulative max computed at every element.
 
@@ -2059,7 +1967,7 @@ class Series:
         """
         ...
 
-    def cum_min(self, *, reverse: bool=False) -> Series:
+    def cum_min(self, *, reverse: bool = False) -> Series:
         """
         Get an array with the cumulative min computed at every element.
 
@@ -2082,7 +1990,7 @@ class Series:
         """
         ...
 
-    def cum_prod(self, *, reverse: bool=False) -> Series:
+    def cum_prod(self, *, reverse: bool = False) -> Series:
         """
         Get an array with the cumulative product computed at every element.
 
@@ -2110,7 +2018,7 @@ class Series:
         """
         ...
 
-    def cum_sum(self, *, reverse: bool=False) -> Series:
+    def cum_sum(self, *, reverse: bool = False) -> Series:
         """
         Get an array with the cumulative sum computed at every element.
 
@@ -2138,7 +2046,7 @@ class Series:
         """
         ...
 
-    def cum_count(self, *, reverse: bool=False) -> Self:
+    def cum_count(self, *, reverse: bool = False) -> Self:
         """
         Return the cumulative count of the non-null values in the column.
 
@@ -2460,7 +2368,14 @@ class Series:
         """
         ...
 
-    def sort(self, *, descending: bool=False, nulls_last: bool=False, multithreaded: bool=True, in_place: bool=False) -> Self:
+    def sort(
+        self,
+        *,
+        descending: bool = False,
+        nulls_last: bool = False,
+        multithreaded: bool = True,
+        in_place: bool = False,
+    ) -> Self:
         """
         Sort this Series.
 
@@ -2570,7 +2485,7 @@ class Series:
         """
         ...
 
-    def arg_sort(self, *, descending: bool=False, nulls_last: bool=False) -> Series:
+    def arg_sort(self, *, descending: bool = False, nulls_last: bool = False) -> Series:
         """
         Get the index values that would sort this Series.
 
@@ -2657,14 +2572,18 @@ class Series:
         ...
 
     @overload
-    def search_sorted(self, element: NonNestedLiteral | None, side: SearchSortedSide) -> int:
-        ...
-
+    def search_sorted(
+        self, element: NonNestedLiteral | None, side: SearchSortedSide
+    ) -> int: ...
     @overload
-    def search_sorted(self, element: list[NonNestedLiteral | None] | np.ndarray[Any, Any] | Expr | Series, side: SearchSortedSide) -> Series:
-        ...
-
-    def search_sorted(self, element: IntoExpr | np.ndarray[Any, Any] | None, side: SearchSortedSide) -> int | Series:
+    def search_sorted(
+        self,
+        element: list[NonNestedLiteral | None] | np.ndarray[Any, Any] | Expr | Series,
+        side: SearchSortedSide,
+    ) -> Series: ...
+    def search_sorted(
+        self, element: IntoExpr | np.ndarray[Any, Any] | None, side: SearchSortedSide
+    ) -> int | Series:
         """
         Find indices where elements should be inserted to maintain order.
 
@@ -2715,7 +2634,7 @@ class Series:
         """
         ...
 
-    def unique(self, *, maintain_order: bool=False) -> Series:
+    def unique(self, *, maintain_order: bool = False) -> Series:
         """
         Get unique elements in series.
 
@@ -2738,7 +2657,9 @@ class Series:
         """
         ...
 
-    def gather(self, indices: int | list[int] | Expr | Series | np.ndarray[Any, Any]) -> Series:
+    def gather(
+        self, indices: int | list[int] | Expr | Series | np.ndarray[Any, Any]
+    ) -> Series:
         """
         Take values by index.
 
@@ -2786,7 +2707,10 @@ class Series:
         """
         ...
 
-    @deprecate_function('Use `has_nulls` instead to check for the presence of null values.', version='0.20.30')
+    @deprecate_function(
+        "Use `has_nulls` instead to check for the presence of null values.",
+        version="0.20.30",
+    )
     def has_validity(self) -> bool:
         """
         Check whether the Series contains one or more null values.
@@ -2808,7 +2732,7 @@ class Series:
         """
         ...
 
-    def is_sorted(self, *, descending: bool=False, nulls_last: bool=False) -> bool:
+    def is_sorted(self, *, descending: bool = False, nulls_last: bool = False) -> bool:
         """
         Check if the Series is sorted.
 
@@ -3209,8 +3133,15 @@ class Series:
         """
         ...
 
-    @deprecate_renamed_parameter('strict', 'check_dtypes', version='0.20.31')
-    def equals(self, other: Series, *, check_dtypes: bool=False, check_names: bool=False, null_equal: bool=True) -> bool:
+    @deprecate_renamed_parameter("strict", "check_dtypes", version="0.20.31")
+    def equals(
+        self,
+        other: Series,
+        *,
+        check_dtypes: bool = False,
+        check_names: bool = False,
+        null_equal: bool = True,
+    ) -> bool:
         """
         Check whether the Series is equal to another Series.
 
@@ -3240,7 +3171,13 @@ class Series:
         """
         ...
 
-    def cast(self, dtype: type[int | float | str | bool] | PolarsDataType, *, strict: bool=True, wrap_numerical: bool=False) -> Self:
+    def cast(
+        self,
+        dtype: type[int | float | str | bool] | PolarsDataType,
+        *,
+        strict: bool = True,
+        wrap_numerical: bool = False,
+    ) -> Self:
         """
         Cast between data types.
 
@@ -3325,7 +3262,7 @@ class Series:
         """
         ...
 
-    def rechunk(self, *, in_place: bool=False) -> Self:
+    def rechunk(self, *, in_place: bool = False) -> Self:
         """
         Create a single chunk of memory for this Series.
 
@@ -3377,7 +3314,9 @@ class Series:
         """
         ...
 
-    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval) -> Series:
+    def is_between(
+        self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval
+    ) -> Series:
         """
         Get a boolean mask of the values that are between the given lower/upper bounds.
 
@@ -3440,7 +3379,14 @@ class Series:
         """
         ...
 
-    def to_numpy(self, *, writable: bool=False, allow_copy: bool=True, use_pyarrow: bool | None=None, zero_copy_only: bool | None=None) -> np.ndarray[Any, Any]:
+    def to_numpy(
+        self,
+        *,
+        writable: bool = False,
+        allow_copy: bool = True,
+        use_pyarrow: bool | None = None,
+        zero_copy_only: bool | None = None,
+    ) -> np.ndarray[Any, Any]:
         """
         Convert this Series to a NumPy ndarray.
 
@@ -3577,8 +3523,8 @@ class Series:
         """
         ...
 
-    @deprecate_renamed_parameter('future', 'compat_level', version='1.1')
-    def to_arrow(self, *, compat_level: CompatLevel | None=None) -> pa.Array:
+    @deprecate_renamed_parameter("future", "compat_level", version="1.1")
+    def to_arrow(self, *, compat_level: CompatLevel | None = None) -> pa.Array:
         """
         Return the underlying Arrow array.
 
@@ -3604,7 +3550,9 @@ class Series:
         """
         ...
 
-    def to_pandas(self, *, use_pyarrow_extension_array: bool=False, **kwargs: Any) -> pd.Series[Any]:
+    def to_pandas(
+        self, *, use_pyarrow_extension_array: bool = False, **kwargs: Any
+    ) -> pd.Series[Any]:
         """
         Convert this Series to a pandas Series.
 
@@ -3772,7 +3720,11 @@ class Series:
         """
         ...
 
-    def scatter(self, indices: Series | Iterable[int] | int | np.ndarray[Any, Any], values: Series | Iterable[PythonLiteral] | PythonLiteral | None) -> Series:
+    def scatter(
+        self,
+        indices: Series | Iterable[int] | int | np.ndarray[Any, Any],
+        values: Series | Iterable[PythonLiteral] | PythonLiteral | None,
+    ) -> Series:
         """
         Set values at the index locations.
 
@@ -3911,7 +3863,12 @@ class Series:
         """
         ...
 
-    def fill_null(self, value: Any | Expr | None, strategy: FillNullStrategy | None, limit: int | None) -> Series:
+    def fill_null(
+        self,
+        value: Any | Expr | None,
+        strategy: FillNullStrategy | None,
+        limit: int | None,
+    ) -> Series:
         """
         Fill null values using the specified value or strategy.
 
@@ -4356,7 +4313,13 @@ class Series:
         """
         ...
 
-    def map_elements(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None, *, skip_nulls: bool=True) -> Self:
+    def map_elements(
+        self,
+        function: Callable[[Any], Any],
+        return_dtype: PolarsDataType | None,
+        *,
+        skip_nulls: bool = True,
+    ) -> Self:
         """
         Map a custom/user-defined function (UDF) over elements in this Series.
 
@@ -4429,7 +4392,7 @@ class Series:
         """
         ...
 
-    def shift(self, n: int, *, fill_value: IntoExpr | None=None) -> Series:
+    def shift(self, n: int, *, fill_value: IntoExpr | None = None) -> Series:
         """
         Shift values by the given number of indices.
 
@@ -4535,7 +4498,14 @@ class Series:
         ...
 
     @unstable()
-    def rolling_min(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_min(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Series:
         """
         Apply a rolling min (moving min) over the values in this array.
 
@@ -4580,7 +4550,14 @@ class Series:
         ...
 
     @unstable()
-    def rolling_max(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_max(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Series:
         """
         Apply a rolling max (moving max) over the values in this array.
 
@@ -4625,7 +4602,14 @@ class Series:
         ...
 
     @unstable()
-    def rolling_mean(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_mean(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Series:
         """
         Apply a rolling mean (moving mean) over the values in this array.
 
@@ -4670,7 +4654,14 @@ class Series:
         ...
 
     @unstable()
-    def rolling_sum(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_sum(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Series:
         """
         Apply a rolling sum (moving sum) over the values in this array.
 
@@ -4715,7 +4706,15 @@ class Series:
         ...
 
     @unstable()
-    def rolling_std(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Series:
+    def rolling_std(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+        ddof: int = 1,
+    ) -> Series:
         """
         Compute a rolling std dev.
 
@@ -4763,7 +4762,15 @@ class Series:
         ...
 
     @unstable()
-    def rolling_var(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Series:
+    def rolling_var(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+        ddof: int = 1,
+    ) -> Series:
         """
         Compute a rolling variance.
 
@@ -4811,7 +4818,15 @@ class Series:
         ...
 
     @unstable()
-    def rolling_map(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_map(
+        self,
+        function: Callable[[Series], Any],
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Series:
         """
         Compute a custom rolling window function.
 
@@ -4857,7 +4872,14 @@ class Series:
         ...
 
     @unstable()
-    def rolling_median(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_median(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Series:
         """
         Compute a rolling median.
 
@@ -4899,7 +4921,16 @@ class Series:
         ...
 
     @unstable()
-    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_quantile(
+        self,
+        quantile: float,
+        interpolation: RollingInterpolationMethod,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Series:
         """
         Compute a rolling quantile.
 
@@ -4956,7 +4987,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_skew(self, window_size: int, *, bias: bool=True) -> Series:
+    def rolling_skew(self, window_size: int, *, bias: bool = True) -> Series:
         """
         Compute a rolling skew.
 
@@ -4993,7 +5024,15 @@ class Series:
         """
         ...
 
-    def sample(self, n: int | None, *, fraction: float | None=None, with_replacement: bool=False, shuffle: bool=False, seed: int | None=None) -> Series:
+    def sample(
+        self,
+        n: int | None,
+        *,
+        fraction: float | None = None,
+        with_replacement: bool = False,
+        shuffle: bool = False,
+        seed: int | None = None,
+    ) -> Series:
         """
         Sample from this Series.
 
@@ -5077,7 +5116,7 @@ class Series:
         """
         ...
 
-    def shrink_to_fit(self, *, in_place: bool=False) -> Series:
+    def shrink_to_fit(self, *, in_place: bool = False) -> Series:
         """
         Shrink Series memory usage.
 
@@ -5086,7 +5125,9 @@ class Series:
         """
         ...
 
-    def hash(self, seed: int, seed_1: int | None, seed_2: int | None, seed_3: int | None) -> Series:
+    def hash(
+        self, seed: int, seed_1: int | None, seed_2: int | None, seed_3: int | None
+    ) -> Series:
         """
         Hash the Series.
 
@@ -5123,7 +5164,7 @@ class Series:
         """
         ...
 
-    def reinterpret(self, *, signed: bool=True) -> Series:
+    def reinterpret(self, *, signed: bool = True) -> Series:
         """
         Reinterpret the underlying bits as a signed/unsigned integer.
 
@@ -5229,7 +5270,9 @@ class Series:
         """
         ...
 
-    def rank(self, method: RankMethod, *, descending: bool=False, seed: int | None=None) -> Series:
+    def rank(
+        self, method: RankMethod, *, descending: bool = False, seed: int | None = None
+    ) -> Series:
         """
         Assign ranks to data, dealing with ties appropriately.
 
@@ -5387,7 +5430,7 @@ class Series:
         """
         ...
 
-    def skew(self, *, bias: bool=True) -> float | None:
+    def skew(self, *, bias: bool = True) -> float | None:
         """
         Compute the sample skewness of a data set.
 
@@ -5433,7 +5476,7 @@ class Series:
         """
         ...
 
-    def kurtosis(self, *, fisher: bool=True, bias: bool=True) -> float | None:
+    def kurtosis(self, *, fisher: bool = True, bias: bool = True) -> float | None:
         """
         Compute the kurtosis (Fisher or Pearson) of a dataset.
 
@@ -5465,7 +5508,11 @@ class Series:
         """
         ...
 
-    def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None, upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None) -> Series:
+    def clip(
+        self,
+        lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None,
+        upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None,
+    ) -> Series:
         """
         Set values outside the given boundaries to the boundary value.
 
@@ -5574,7 +5621,14 @@ class Series:
         """
         ...
 
-    def replace(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Self:
+    def replace(
+        self,
+        old: IntoExpr | Sequence[Any] | Mapping[Any, Any],
+        new: IntoExpr | Sequence[Any] | NoDefault,
+        *,
+        default: IntoExpr | NoDefault = no_default,
+        return_dtype: PolarsDataType | None = None,
+    ) -> Self:
         """
         Replace values by different values of the same data type.
 
@@ -5672,7 +5726,14 @@ class Series:
         """
         ...
 
-    def replace_strict(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Self:
+    def replace_strict(
+        self,
+        old: IntoExpr | Sequence[Any] | Mapping[Any, Any],
+        new: IntoExpr | Sequence[Any] | NoDefault,
+        *,
+        default: IntoExpr | NoDefault = no_default,
+        return_dtype: PolarsDataType | None = None,
+    ) -> Self:
         """
         Replace all values by different values.
 
@@ -5877,7 +5938,17 @@ class Series:
         """
         ...
 
-    def ewm_mean(self, *, com: float | None=None, span: float | None=None, half_life: float | None=None, alpha: float | None=None, adjust: bool=True, min_periods: int=1, ignore_nulls: bool=False) -> Series:
+    def ewm_mean(
+        self,
+        *,
+        com: float | None = None,
+        span: float | None = None,
+        half_life: float | None = None,
+        alpha: float | None = None,
+        adjust: bool = True,
+        min_periods: int = 1,
+        ignore_nulls: bool = False,
+    ) -> Series:
         """
         Compute exponentially-weighted moving average.
 
@@ -6028,7 +6099,18 @@ class Series:
         """
         ...
 
-    def ewm_std(self, *, com: float | None=None, span: float | None=None, half_life: float | None=None, alpha: float | None=None, adjust: bool=True, bias: bool=False, min_periods: int=1, ignore_nulls: bool=False) -> Series:
+    def ewm_std(
+        self,
+        *,
+        com: float | None = None,
+        span: float | None = None,
+        half_life: float | None = None,
+        alpha: float | None = None,
+        adjust: bool = True,
+        bias: bool = False,
+        min_periods: int = 1,
+        ignore_nulls: bool = False,
+    ) -> Series:
         """
         Compute exponentially-weighted moving standard deviation.
 
@@ -6102,7 +6184,18 @@ class Series:
         """
         ...
 
-    def ewm_var(self, *, com: float | None=None, span: float | None=None, half_life: float | None=None, alpha: float | None=None, adjust: bool=True, bias: bool=False, min_periods: int=1, ignore_nulls: bool=False) -> Series:
+    def ewm_var(
+        self,
+        *,
+        com: float | None = None,
+        span: float | None = None,
+        half_life: float | None = None,
+        alpha: float | None = None,
+        adjust: bool = True,
+        bias: bool = False,
+        min_periods: int = 1,
+        ignore_nulls: bool = False,
+    ) -> Series:
         """
         Compute exponentially-weighted moving variance.
 
@@ -6204,7 +6297,7 @@ class Series:
         """
         ...
 
-    def set_sorted(self, *, descending: bool=False) -> Self:
+    def set_sorted(self, *, descending: bool = False) -> Self:
         """
         Flags the Series as 'sorted'.
 
@@ -6440,6 +6533,9 @@ class Series:
         """
         ...
 
-def _resolve_temporal_dtype(dtype: PolarsDataType | None, ndtype: np.dtype[np.datetime64] | np.dtype[np.timedelta64]) -> PolarsDataType | None:
+def _resolve_temporal_dtype(
+    dtype: PolarsDataType | None,
+    ndtype: np.dtype[np.datetime64] | np.dtype[np.timedelta64],
+) -> PolarsDataType | None:
     """Given polars/numpy temporal dtypes, resolve to an explicit unit."""
     ...

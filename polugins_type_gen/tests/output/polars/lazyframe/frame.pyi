@@ -1,34 +1,20 @@
 from __future__ import annotations
-import contextlib
-import os
-import warnings
 from collections.abc import Collection, Mapping
-from datetime import date, datetime, time, timedelta
-from functools import lru_cache, partial, reduce
-from io import BytesIO, StringIO
-from operator import and_
+from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, NoReturn, TypeVar, overload
-import polars._reexport as pl
-from polars import functions as F
-from polars._utils.async_ import _AioDataFrameResult, _GeventDataFrameResult
-from polars._utils.convert import negate_duration_string, parse_as_duration_string
-from polars._utils.deprecation import deprecate_function, deprecate_renamed_parameter, issue_deprecation_warning
-from polars._utils.parse import parse_into_expression, parse_into_list_of_expressions
-from polars._utils.serde import serialize_polars_object
-from polars._utils.slice import LazyPolarsSlice
-from polars._utils.unstable import issue_unstable_warning, unstable
-from polars._utils.various import _in_notebook, _is_generator, extend_bool, find_stacklevel, is_bool_sequence, is_sequence, issue_warning, normalize_filepath, parse_percentiles
-from polars._utils.wrap import wrap_df, wrap_expr
-from polars.datatypes import DTYPE_TEMPORAL_UNITS, N_INFER_DEFAULT, Boolean, Categorical, Date, Datetime, Duration, Enum, Float32, Float64, Int8, Int16, Int32, Int64, Null, Object, String, Time, UInt8, UInt16, UInt32, UInt64, Unknown, is_polars_dtype, parse_into_dtype
-from polars.datatypes.group import DataTypeGroup
-from polars.dependencies import import_optional, subprocess
-from polars.exceptions import PerformanceWarning
-from polars.lazyframe.engine_config import GPUEngine
+from typing import Any, Callable, ClassVar, NoReturn, TypeVar, overload
+from polars._utils.async_ import _GeventDataFrameResult
+from polars._utils.deprecation import (
+    deprecate_function,
+    deprecate_renamed_parameter,
+)
+from polars._utils.unstable import unstable
+from polars.datatypes import (
+    N_INFER_DEFAULT,
+)
 from polars.lazyframe.group_by import LazyGroupBy
 from polars.lazyframe.in_process import InProcessQuery
 from polars.schema import Schema
-from polars.selectors import by_dtype, expand_selector
 from polars.polars import PyLazyFrame
 import sys
 from collections.abc import Awaitable, Iterable, Sequence
@@ -36,8 +22,31 @@ from io import IOBase
 from typing import Literal
 import pyarrow as pa
 from polars import DataFrame, DataType, Expr
-from polars._typing import AsofJoinStrategy, ClosedInterval, ColumnNameOrSelector, CsvQuoteStyle, EngineType, ExplainFormat, FillNullStrategy, FrameInitTypes, IntoExpr, IntoExprColumn, JoinStrategy, JoinValidation, Label, Orientation, PolarsDataType, RollingInterpolationMethod, SchemaDefinition, SchemaDict, SerializationFormat, StartBy, UniqueKeepStrategy
+from polars._typing import (
+    AsofJoinStrategy,
+    ClosedInterval,
+    ColumnNameOrSelector,
+    CsvQuoteStyle,
+    EngineType,
+    ExplainFormat,
+    FillNullStrategy,
+    FrameInitTypes,
+    IntoExpr,
+    IntoExprColumn,
+    JoinStrategy,
+    JoinValidation,
+    Label,
+    Orientation,
+    PolarsDataType,
+    RollingInterpolationMethod,
+    SchemaDefinition,
+    SchemaDict,
+    SerializationFormat,
+    StartBy,
+    UniqueKeepStrategy,
+)
 from polars.dependencies import numpy as np
+
 if sys.version_info >= (3, 10):
     from typing import Concatenate, ParamSpec
 else:
@@ -46,8 +55,8 @@ if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
-T = TypeVar('T')
-P = ParamSpec('P')
+T = TypeVar("T")
+P = ParamSpec("P")
 
 class LazyFrame:
     """
@@ -201,28 +210,37 @@ class LazyFrame:
     │ 4   ┆ 5   ┆ 6   │
     └─────┴─────┴─────┘
     """
+
     _ldf: PyLazyFrame
     _accessors: ClassVar[set[str]]
 
-    def __init__(self, data: FrameInitTypes | None, schema: SchemaDefinition | None, *, schema_overrides: SchemaDict | None=None, strict: bool=True, orient: Orientation | None=None, infer_schema_length: int | None=N_INFER_DEFAULT, nan_to_null: bool=False) -> None:
-        ...
-
+    def __init__(
+        self,
+        data: FrameInitTypes | None,
+        schema: SchemaDefinition | None,
+        *,
+        schema_overrides: SchemaDict | None = None,
+        strict: bool = True,
+        orient: Orientation | None = None,
+        infer_schema_length: int | None = N_INFER_DEFAULT,
+        nan_to_null: bool = False,
+    ) -> None: ...
     @classmethod
-    def _from_pyldf(cls, ldf: PyLazyFrame) -> LazyFrame:
-        ...
-
-    def __getstate__(self) -> bytes:
-        ...
-
-    def __setstate__(self, state: bytes) -> None:
-        ...
-
+    def _from_pyldf(cls, ldf: PyLazyFrame) -> LazyFrame: ...
+    def __getstate__(self) -> bytes: ...
+    def __setstate__(self, state: bytes) -> None: ...
     @classmethod
-    def _scan_python_function(cls, schema: pa.schema | Mapping[str, PolarsDataType], scan_fn: Any, *, pyarrow: bool=False) -> LazyFrame:
-        ...
-
+    def _scan_python_function(
+        cls,
+        schema: pa.schema | Mapping[str, PolarsDataType],
+        scan_fn: Any,
+        *,
+        pyarrow: bool = False,
+    ) -> LazyFrame: ...
     @classmethod
-    def deserialize(cls, source: str | Path | IOBase, *, format: SerializationFormat='binary') -> LazyFrame:
+    def deserialize(
+        cls, source: str | Path | IOBase, *, format: SerializationFormat = "binary"
+    ) -> LazyFrame:
         """
         Read a logical plan from a file to construct a LazyFrame.
 
@@ -406,64 +424,35 @@ class LazyFrame:
         """
         ...
 
-    def __bool__(self) -> NoReturn:
-        ...
-
-    def _comparison_error(self, operator: str) -> NoReturn:
-        ...
-
-    def __eq__(self, other: object) -> NoReturn:
-        ...
-
-    def __ne__(self, other: object) -> NoReturn:
-        ...
-
-    def __gt__(self, other: Any) -> NoReturn:
-        ...
-
-    def __lt__(self, other: Any) -> NoReturn:
-        ...
-
-    def __ge__(self, other: Any) -> NoReturn:
-        ...
-
-    def __le__(self, other: Any) -> NoReturn:
-        ...
-
-    def __contains__(self, key: str) -> bool:
-        ...
-
-    def __copy__(self) -> LazyFrame:
-        ...
-
-    def __deepcopy__(self, memo: None) -> LazyFrame:
-        ...
-
-    def __getitem__(self, item: int | range | slice) -> LazyFrame:
-        ...
-
-    def __str__(self) -> str:
-        ...
-
-    def __repr__(self) -> str:
-        ...
-
-    def _repr_html_(self) -> str:
-        ...
-
+    def __bool__(self) -> NoReturn: ...
+    def _comparison_error(self, operator: str) -> NoReturn: ...
+    def __eq__(self, other: object) -> NoReturn: ...
+    def __ne__(self, other: object) -> NoReturn: ...
+    def __gt__(self, other: Any) -> NoReturn: ...
+    def __lt__(self, other: Any) -> NoReturn: ...
+    def __ge__(self, other: Any) -> NoReturn: ...
+    def __le__(self, other: Any) -> NoReturn: ...
+    def __contains__(self, key: str) -> bool: ...
+    def __copy__(self) -> LazyFrame: ...
+    def __deepcopy__(self, memo: None) -> LazyFrame: ...
+    def __getitem__(self, item: int | range | slice) -> LazyFrame: ...
+    def __str__(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def _repr_html_(self) -> str: ...
     @overload
-    def serialize(self, file: None, *, format: Literal['binary']=...) -> bytes:
-        ...
-
+    def serialize(self, file: None, *, format: Literal["binary"] = ...) -> bytes: ...
     @overload
-    def serialize(self, file: None, *, format: Literal['json']) -> str:
-        ...
-
+    def serialize(self, file: None, *, format: Literal["json"]) -> str: ...
     @overload
-    def serialize(self, file: IOBase | str | Path, *, format: SerializationFormat=...) -> None:
-        ...
-
-    def serialize(self, file: IOBase | str | Path | None, *, format: SerializationFormat='binary') -> bytes | str | None:
+    def serialize(
+        self, file: IOBase | str | Path, *, format: SerializationFormat = ...
+    ) -> None: ...
+    def serialize(
+        self,
+        file: IOBase | str | Path | None,
+        *,
+        format: SerializationFormat = "binary",
+    ) -> bytes | str | None:
         """
         Serialize the logical plan of this LazyFrame to a file or string in JSON format.
 
@@ -509,7 +498,12 @@ class LazyFrame:
         """
         ...
 
-    def pipe(self, function: Callable[Concatenate[LazyFrame, P], T], *args: P.args, **kwargs: P.kwargs) -> T:
+    def pipe(
+        self,
+        function: Callable[Concatenate[LazyFrame, P], T],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> T:
         """
         Offers a structured way to apply a sequence of user-defined functions (UDFs).
 
@@ -575,7 +569,12 @@ class LazyFrame:
         """
         ...
 
-    def describe(self, percentiles: Sequence[float] | float | None, *, interpolation: RollingInterpolationMethod='nearest') -> DataFrame:
+    def describe(
+        self,
+        percentiles: Sequence[float] | float | None,
+        *,
+        interpolation: RollingInterpolationMethod = "nearest",
+    ) -> DataFrame:
         """
         Creates a summary of statistics for a LazyFrame, returning a DataFrame.
 
@@ -667,7 +666,23 @@ class LazyFrame:
         """
         ...
 
-    def explain(self, *, format: ExplainFormat='plain', optimized: bool=True, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False, tree_format: bool | None=None) -> str:
+    def explain(
+        self,
+        *,
+        format: ExplainFormat = "plain",
+        optimized: bool = True,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        streaming: bool = False,
+        tree_format: bool | None = None,
+    ) -> str:
         """
         Create a string representation of the query plan.
 
@@ -728,7 +743,25 @@ class LazyFrame:
         """
         ...
 
-    def show_graph(self, *, optimized: bool=True, show: bool=True, output_path: str | Path | None=None, raw_output: bool=False, figsize: tuple[float, float]=(16.0, 12.0), type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> str | None:
+    def show_graph(
+        self,
+        *,
+        optimized: bool = True,
+        show: bool = True,
+        output_path: str | Path | None = None,
+        raw_output: bool = False,
+        figsize: tuple[float, float] = (16.0, 12.0),
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        streaming: bool = False,
+    ) -> str | None:
         """
         Show a plot of the query plan.
 
@@ -802,7 +835,15 @@ class LazyFrame:
         """
         ...
 
-    def sort(self, by: IntoExpr | Iterable[IntoExpr], *more_by: IntoExpr, descending: bool | Sequence[bool]=False, nulls_last: bool | Sequence[bool]=False, maintain_order: bool=False, multithreaded: bool=True) -> LazyFrame:
+    def sort(
+        self,
+        by: IntoExpr | Iterable[IntoExpr],
+        *more_by: IntoExpr,
+        descending: bool | Sequence[bool] = False,
+        nulls_last: bool | Sequence[bool] = False,
+        maintain_order: bool = False,
+        multithreaded: bool = True,
+    ) -> LazyFrame:
         """
         Sort the LazyFrame by the given columns.
 
@@ -893,7 +934,7 @@ class LazyFrame:
         """
         ...
 
-    def sql(self, query: str, *, table_name: str='self') -> LazyFrame:
+    def sql(self, query: str, *, table_name: str = "self") -> LazyFrame:
         """
         Execute a SQL query against the LazyFrame.
 
@@ -969,8 +1010,14 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_renamed_parameter('descending', 'reverse', version='1.0.0')
-    def top_k(self, k: int, *, by: IntoExpr | Iterable[IntoExpr], reverse: bool | Sequence[bool]=False) -> LazyFrame:
+    @deprecate_renamed_parameter("descending", "reverse", version="1.0.0")
+    def top_k(
+        self,
+        k: int,
+        *,
+        by: IntoExpr | Iterable[IntoExpr],
+        reverse: bool | Sequence[bool] = False,
+    ) -> LazyFrame:
         """
         Return the `k` largest rows.
 
@@ -1036,8 +1083,14 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_renamed_parameter('descending', 'reverse', version='1.0.0')
-    def bottom_k(self, k: int, *, by: IntoExpr | Iterable[IntoExpr], reverse: bool | Sequence[bool]=False) -> LazyFrame:
+    @deprecate_renamed_parameter("descending", "reverse", version="1.0.0")
+    def bottom_k(
+        self,
+        k: int,
+        *,
+        by: IntoExpr | Iterable[IntoExpr],
+        reverse: bool | Sequence[bool] = False,
+    ) -> LazyFrame:
         """
         Return the `k` smallest rows.
 
@@ -1103,7 +1156,24 @@ class LazyFrame:
         """
         ...
 
-    def profile(self, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, show_plot: bool=False, truncate_nodes: int=0, figsize: tuple[int, int]=(18, 8), streaming: bool=False) -> tuple[DataFrame, DataFrame]:
+    def profile(
+        self,
+        *,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        no_optimization: bool = False,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        show_plot: bool = False,
+        truncate_nodes: int = 0,
+        figsize: tuple[int, int] = (18, 8),
+        streaming: bool = False,
+    ) -> tuple[DataFrame, DataFrame]:
         """
         Profile a LazyFrame.
 
@@ -1181,14 +1251,62 @@ class LazyFrame:
         ...
 
     @overload
-    def collect(self, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, no_optimization: bool=False, streaming: bool=False, engine: EngineType='cpu', background: Literal[True], _eager: bool=False) -> InProcessQuery:
-        ...
-
+    def collect(
+        self,
+        *,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+        streaming: bool = False,
+        engine: EngineType = "cpu",
+        background: Literal[True],
+        _eager: bool = False,
+    ) -> InProcessQuery: ...
     @overload
-    def collect(self, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, no_optimization: bool=False, streaming: bool=False, engine: EngineType='cpu', background: Literal[False]=False, _eager: bool=False) -> DataFrame:
-        ...
-
-    def collect(self, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, no_optimization: bool=False, streaming: bool=False, engine: EngineType='cpu', background: bool=False, _eager: bool=False, **_kwargs: Any) -> DataFrame | InProcessQuery:
+    def collect(
+        self,
+        *,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+        streaming: bool = False,
+        engine: EngineType = "cpu",
+        background: Literal[False] = False,
+        _eager: bool = False,
+    ) -> DataFrame: ...
+    def collect(
+        self,
+        *,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+        streaming: bool = False,
+        engine: EngineType = "cpu",
+        background: bool = False,
+        _eager: bool = False,
+        **_kwargs: Any,
+    ) -> DataFrame | InProcessQuery:
         """
         Materialize this LazyFrame into a DataFrame.
 
@@ -1339,14 +1457,55 @@ class LazyFrame:
         ...
 
     @overload
-    def collect_async(self, *, gevent: Literal[True], type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=True, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=True) -> _GeventDataFrameResult[DataFrame]:
-        ...
-
+    def collect_async(
+        self,
+        *,
+        gevent: Literal[True],
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        no_optimization: bool = True,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        streaming: bool = True,
+    ) -> _GeventDataFrameResult[DataFrame]: ...
     @overload
-    def collect_async(self, *, gevent: Literal[False]=False, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=True, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=True) -> Awaitable[DataFrame]:
-        ...
-
-    def collect_async(self, *, gevent: bool=False, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> Awaitable[DataFrame] | _GeventDataFrameResult[DataFrame]:
+    def collect_async(
+        self,
+        *,
+        gevent: Literal[False] = False,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        no_optimization: bool = True,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        streaming: bool = True,
+    ) -> Awaitable[DataFrame]: ...
+    def collect_async(
+        self,
+        *,
+        gevent: bool = False,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        no_optimization: bool = False,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        streaming: bool = False,
+    ) -> Awaitable[DataFrame] | _GeventDataFrameResult[DataFrame]:
         """
         Collect DataFrame asynchronously in thread pool.
 
@@ -1478,7 +1637,24 @@ class LazyFrame:
         ...
 
     @unstable()
-    def sink_parquet(self, path: str | Path, *, compression: str='zstd', compression_level: int | None=None, statistics: bool | str | dict[str, bool]=True, row_group_size: int | None=None, data_page_size: int | None=None, maintain_order: bool=True, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, collapse_joins: bool=True, no_optimization: bool=False) -> None:
+    def sink_parquet(
+        self,
+        path: str | Path,
+        *,
+        compression: str = "zstd",
+        compression_level: int | None = None,
+        statistics: bool | str | dict[str, bool] = True,
+        row_group_size: int | None = None,
+        data_page_size: int | None = None,
+        maintain_order: bool = True,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+    ) -> None:
         """
         Evaluate the query in streaming mode and write to a Parquet file.
 
@@ -1558,7 +1734,20 @@ class LazyFrame:
         ...
 
     @unstable()
-    def sink_ipc(self, path: str | Path, *, compression: str | None='zstd', maintain_order: bool=True, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, collapse_joins: bool=True, no_optimization: bool=False) -> None:
+    def sink_ipc(
+        self,
+        path: str | Path,
+        *,
+        compression: str | None = "zstd",
+        maintain_order: bool = True,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+    ) -> None:
         """
         Evaluate the query in streaming mode and write to an IPC file.
 
@@ -1605,7 +1794,32 @@ class LazyFrame:
         ...
 
     @unstable()
-    def sink_csv(self, path: str | Path, *, include_bom: bool=False, include_header: bool=True, separator: str=',', line_terminator: str='\n', quote_char: str='"', batch_size: int=1024, datetime_format: str | None=None, date_format: str | None=None, time_format: str | None=None, float_scientific: bool | None=None, float_precision: int | None=None, null_value: str | None=None, quote_style: CsvQuoteStyle | None=None, maintain_order: bool=True, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, collapse_joins: bool=True, no_optimization: bool=False) -> None:
+    def sink_csv(
+        self,
+        path: str | Path,
+        *,
+        include_bom: bool = False,
+        include_header: bool = True,
+        separator: str = ",",
+        line_terminator: str = "\n",
+        quote_char: str = '"',
+        batch_size: int = 1024,
+        datetime_format: str | None = None,
+        date_format: str | None = None,
+        time_format: str | None = None,
+        float_scientific: bool | None = None,
+        float_precision: int | None = None,
+        null_value: str | None = None,
+        quote_style: CsvQuoteStyle | None = None,
+        maintain_order: bool = True,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+    ) -> None:
         """
         Evaluate the query in streaming mode and write to a CSV file.
 
@@ -1700,7 +1914,19 @@ class LazyFrame:
         ...
 
     @unstable()
-    def sink_ndjson(self, path: str | Path, *, maintain_order: bool=True, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, collapse_joins: bool=True, no_optimization: bool=False) -> None:
+    def sink_ndjson(
+        self,
+        path: str | Path,
+        *,
+        maintain_order: bool = True,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+    ) -> None:
         """
         Evaluate the query in streaming mode and write to an NDJSON file.
 
@@ -1743,11 +1969,37 @@ class LazyFrame:
         """
         ...
 
-    def _set_sink_optimizations(self, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, slice_pushdown: bool=True, collapse_joins: bool=True, no_optimization: bool=False) -> PyLazyFrame:
-        ...
-
-    @deprecate_function('`LazyFrame.fetch` is deprecated; use `LazyFrame.collect` instead, in conjunction with a call to `head`.', version='1.0')
-    def fetch(self, n_rows: int, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> DataFrame:
+    def _set_sink_optimizations(
+        self,
+        *,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        slice_pushdown: bool = True,
+        collapse_joins: bool = True,
+        no_optimization: bool = False,
+    ) -> PyLazyFrame: ...
+    @deprecate_function(
+        "`LazyFrame.fetch` is deprecated; use `LazyFrame.collect` instead, in conjunction with a call to `head`.",
+        version="1.0",
+    )
+    def fetch(
+        self,
+        n_rows: int,
+        *,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        no_optimization: bool = False,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        streaming: bool = False,
+    ) -> DataFrame:
         """
         Collect a small number of rows for debugging purposes.
 
@@ -1770,7 +2022,22 @@ class LazyFrame:
         """
         ...
 
-    def _fetch(self, n_rows: int, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> DataFrame:
+    def _fetch(
+        self,
+        n_rows: int,
+        *,
+        type_coercion: bool = True,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        simplify_expression: bool = True,
+        no_optimization: bool = False,
+        slice_pushdown: bool = True,
+        comm_subplan_elim: bool = True,
+        comm_subexpr_elim: bool = True,
+        cluster_with_columns: bool = True,
+        collapse_joins: bool = True,
+        streaming: bool = False,
+    ) -> DataFrame:
         """
         Collect a small number of rows for debugging purposes.
 
@@ -1881,7 +2148,13 @@ class LazyFrame:
         """
         ...
 
-    def cast(self, dtypes: Mapping[ColumnNameOrSelector | PolarsDataType, PolarsDataType] | PolarsDataType, *, strict: bool=True) -> LazyFrame:
+    def cast(
+        self,
+        dtypes: Mapping[ColumnNameOrSelector | PolarsDataType, PolarsDataType]
+        | PolarsDataType,
+        *,
+        strict: bool = True,
+    ) -> LazyFrame:
         """
         Cast LazyFrame column(s) to the specified dtype(s).
 
@@ -2028,7 +2301,15 @@ class LazyFrame:
         """
         ...
 
-    def filter(self, *predicates: IntoExprColumn | Iterable[IntoExprColumn] | bool | list[bool] | np.ndarray[Any, Any], **constraints: Any) -> LazyFrame:
+    def filter(
+        self,
+        *predicates: IntoExprColumn
+        | Iterable[IntoExprColumn]
+        | bool
+        | list[bool]
+        | np.ndarray[Any, Any],
+        **constraints: Any,
+    ) -> LazyFrame:
         """
         Filter the rows in the LazyFrame based on a predicate expression.
 
@@ -2173,7 +2454,9 @@ class LazyFrame:
         """
         ...
 
-    def select(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> LazyFrame:
+    def select(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> LazyFrame:
         """
         Select columns from this LazyFrame.
 
@@ -2275,7 +2558,9 @@ class LazyFrame:
         """
         ...
 
-    def select_seq(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> LazyFrame:
+    def select_seq(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> LazyFrame:
         """
         Select columns from this LazyFrame.
 
@@ -2298,7 +2583,12 @@ class LazyFrame:
         """
         ...
 
-    def group_by(self, *by: IntoExpr | Iterable[IntoExpr], maintain_order: bool=False, **named_by: IntoExpr) -> LazyGroupBy:
+    def group_by(
+        self,
+        *by: IntoExpr | Iterable[IntoExpr],
+        maintain_order: bool = False,
+        **named_by: IntoExpr,
+    ) -> LazyGroupBy:
         """
         Start a group by operation.
 
@@ -2389,8 +2679,16 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_renamed_parameter('by', 'group_by', version='0.20.14')
-    def rolling(self, index_column: IntoExpr, *, period: str | timedelta, offset: str | timedelta | None=None, closed: ClosedInterval='right', group_by: IntoExpr | Iterable[IntoExpr] | None=None) -> LazyGroupBy:
+    @deprecate_renamed_parameter("by", "group_by", version="0.20.14")
+    def rolling(
+        self,
+        index_column: IntoExpr,
+        *,
+        period: str | timedelta,
+        offset: str | timedelta | None = None,
+        closed: ClosedInterval = "right",
+        group_by: IntoExpr | Iterable[IntoExpr] | None = None,
+    ) -> LazyGroupBy:
         """
         Create rolling groups based on a temporal or integer column.
 
@@ -2506,8 +2804,20 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_renamed_parameter('by', 'group_by', version='0.20.14')
-    def group_by_dynamic(self, index_column: IntoExpr, *, every: str | timedelta, period: str | timedelta | None=None, offset: str | timedelta | None=None, include_boundaries: bool=False, closed: ClosedInterval='left', label: Label='left', group_by: IntoExpr | Iterable[IntoExpr] | None=None, start_by: StartBy='window') -> LazyGroupBy:
+    @deprecate_renamed_parameter("by", "group_by", version="0.20.14")
+    def group_by_dynamic(
+        self,
+        index_column: IntoExpr,
+        *,
+        every: str | timedelta,
+        period: str | timedelta | None = None,
+        offset: str | timedelta | None = None,
+        include_boundaries: bool = False,
+        closed: ClosedInterval = "left",
+        label: Label = "left",
+        group_by: IntoExpr | Iterable[IntoExpr] | None = None,
+        start_by: StartBy = "window",
+    ) -> LazyGroupBy:
         """
         Group based on a time value (or index value of type Int32, Int64).
 
@@ -2804,7 +3114,23 @@ class LazyFrame:
         """
         ...
 
-    def join_asof(self, other: LazyFrame, *, left_on: str | None | Expr=None, right_on: str | None | Expr=None, on: str | None | Expr=None, by_left: str | Sequence[str] | None=None, by_right: str | Sequence[str] | None=None, by: str | Sequence[str] | None=None, strategy: AsofJoinStrategy='backward', suffix: str='_right', tolerance: str | int | float | timedelta | None=None, allow_parallel: bool=True, force_parallel: bool=False, coalesce: bool=True) -> LazyFrame:
+    def join_asof(
+        self,
+        other: LazyFrame,
+        *,
+        left_on: str | None | Expr = None,
+        right_on: str | None | Expr = None,
+        on: str | None | Expr = None,
+        by_left: str | Sequence[str] | None = None,
+        by_right: str | Sequence[str] | None = None,
+        by: str | Sequence[str] | None = None,
+        strategy: AsofJoinStrategy = "backward",
+        suffix: str = "_right",
+        tolerance: str | int | float | timedelta | None = None,
+        allow_parallel: bool = True,
+        force_parallel: bool = False,
+        coalesce: bool = True,
+    ) -> LazyFrame:
         """
         Perform an asof join.
 
@@ -3092,7 +3418,21 @@ class LazyFrame:
         """
         ...
 
-    def join(self, other: LazyFrame, on: str | Expr | Sequence[str | Expr] | None, how: JoinStrategy, *, left_on: str | Expr | Sequence[str | Expr] | None=None, right_on: str | Expr | Sequence[str | Expr] | None=None, suffix: str='_right', validate: JoinValidation='m:m', join_nulls: bool=False, coalesce: bool | None=None, allow_parallel: bool=True, force_parallel: bool=False) -> LazyFrame:
+    def join(
+        self,
+        other: LazyFrame,
+        on: str | Expr | Sequence[str | Expr] | None,
+        how: JoinStrategy,
+        *,
+        left_on: str | Expr | Sequence[str | Expr] | None = None,
+        right_on: str | Expr | Sequence[str | Expr] | None = None,
+        suffix: str = "_right",
+        validate: JoinValidation = "m:m",
+        join_nulls: bool = False,
+        coalesce: bool | None = None,
+        allow_parallel: bool = True,
+        force_parallel: bool = False,
+    ) -> LazyFrame:
         """
         Add a join operation to the Logical Plan.
 
@@ -3239,7 +3579,12 @@ class LazyFrame:
         ...
 
     @unstable()
-    def join_where(self, other: LazyFrame, *predicates: Expr | Iterable[Expr], suffix: str='_right') -> LazyFrame:
+    def join_where(
+        self,
+        other: LazyFrame,
+        *predicates: Expr | Iterable[Expr],
+        suffix: str = "_right",
+    ) -> LazyFrame:
         """
         Perform a join based on one or multiple (in)equality predicates.
 
@@ -3304,7 +3649,9 @@ class LazyFrame:
         """
         ...
 
-    def with_columns(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> LazyFrame:
+    def with_columns(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> LazyFrame:
         """
         Add columns to this LazyFrame.
 
@@ -3448,7 +3795,9 @@ class LazyFrame:
         """
         ...
 
-    def with_columns_seq(self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr) -> LazyFrame:
+    def with_columns_seq(
+        self, *exprs: IntoExpr | Iterable[IntoExpr], **named_exprs: IntoExpr
+    ) -> LazyFrame:
         """
         Add columns to this LazyFrame.
 
@@ -3478,7 +3827,9 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_function("Use `pl.concat(..., how='horizontal')` instead.", version='1.0.0')
+    @deprecate_function(
+        "Use `pl.concat(..., how='horizontal')` instead.", version="1.0.0"
+    )
     def with_context(self, other: Self | list[Self]) -> LazyFrame:
         """
         Add an external context to the computation graph.
@@ -3538,7 +3889,11 @@ class LazyFrame:
         """
         ...
 
-    def drop(self, *columns: ColumnNameOrSelector | Iterable[ColumnNameOrSelector], strict: bool=True) -> LazyFrame:
+    def drop(
+        self,
+        *columns: ColumnNameOrSelector | Iterable[ColumnNameOrSelector],
+        strict: bool = True,
+    ) -> LazyFrame:
         """
         Remove columns from the DataFrame.
 
@@ -3605,7 +3960,9 @@ class LazyFrame:
         """
         ...
 
-    def rename(self, mapping: dict[str, str] | Callable[[str], str], *, strict: bool=True) -> LazyFrame:
+    def rename(
+        self, mapping: dict[str, str] | Callable[[str], str], *, strict: bool = True
+    ) -> LazyFrame:
         """
         Rename column names.
 
@@ -3684,7 +4041,9 @@ class LazyFrame:
         """
         ...
 
-    def shift(self, n: int | IntoExprColumn, *, fill_value: IntoExpr | None=None) -> LazyFrame:
+    def shift(
+        self, n: int | IntoExprColumn, *, fill_value: IntoExpr | None = None
+    ) -> LazyFrame:
         """
         Shift values by the given number of indices.
 
@@ -3970,7 +4329,9 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_function('Use `select(pl.all().approx_n_unique())` instead.', version='0.20.11')
+    @deprecate_function(
+        "Use `select(pl.all().approx_n_unique())` instead.", version="0.20.11"
+    )
     def approx_n_unique(self) -> LazyFrame:
         """
         Approximate count of unique values.
@@ -4072,7 +4433,10 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_function("Use `with_row_index` instead. Note that the default column name has changed from 'row_nr' to 'index'.", version='0.20.4')
+    @deprecate_function(
+        "Use `with_row_index` instead. Note that the default column name has changed from 'row_nr' to 'index'.",
+        version="0.20.4",
+    )
     def with_row_count(self, name: str, offset: int) -> LazyFrame:
         """
         Add a column at index 0 that counts the rows.
@@ -4157,7 +4521,14 @@ class LazyFrame:
         """
         ...
 
-    def fill_null(self, value: Any | Expr | None, strategy: FillNullStrategy | None, limit: int | None, *, matches_supertype: bool=True) -> LazyFrame:
+    def fill_null(
+        self,
+        value: Any | Expr | None,
+        strategy: FillNullStrategy | None,
+        limit: int | None,
+        *,
+        matches_supertype: bool = True,
+    ) -> LazyFrame:
         """
         Fill null values using the specified value or strategy.
 
@@ -4504,7 +4875,9 @@ class LazyFrame:
         """
         ...
 
-    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod) -> LazyFrame:
+    def quantile(
+        self, quantile: float | Expr, interpolation: RollingInterpolationMethod
+    ) -> LazyFrame:
         """
         Aggregate the columns in the LazyFrame to their quantile value.
 
@@ -4535,7 +4908,9 @@ class LazyFrame:
         """
         ...
 
-    def explode(self, columns: str | Expr | Sequence[str | Expr], *more_columns: str | Expr) -> LazyFrame:
+    def explode(
+        self, columns: str | Expr | Sequence[str | Expr], *more_columns: str | Expr
+    ) -> LazyFrame:
         """
         Explode the DataFrame to long format by exploding the given columns.
 
@@ -4574,7 +4949,13 @@ class LazyFrame:
         """
         ...
 
-    def unique(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None, *, keep: UniqueKeepStrategy='any', maintain_order: bool=False) -> LazyFrame:
+    def unique(
+        self,
+        subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None,
+        *,
+        keep: UniqueKeepStrategy = "any",
+        maintain_order: bool = False,
+    ) -> LazyFrame:
         """
         Drop duplicate rows from this DataFrame.
 
@@ -4655,7 +5036,9 @@ class LazyFrame:
         """
         ...
 
-    def drop_nulls(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None) -> LazyFrame:
+    def drop_nulls(
+        self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None
+    ) -> LazyFrame:
         """
         Drop all rows that contain null values.
 
@@ -4747,7 +5130,15 @@ class LazyFrame:
         """
         ...
 
-    def unpivot(self, on: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, *, index: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None=None, variable_name: str | None=None, value_name: str | None=None, streamable: bool=True) -> LazyFrame:
+    def unpivot(
+        self,
+        on: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None,
+        *,
+        index: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None = None,
+        variable_name: str | None = None,
+        value_name: str | None = None,
+        streamable: bool = True,
+    ) -> LazyFrame:
         """
         Unpivot a DataFrame from wide to long format.
 
@@ -4805,7 +5196,18 @@ class LazyFrame:
         """
         ...
 
-    def map_batches(self, function: Callable[[DataFrame], DataFrame], *, predicate_pushdown: bool=True, projection_pushdown: bool=True, slice_pushdown: bool=True, no_optimizations: bool=False, schema: None | SchemaDict=None, validate_output_schema: bool=True, streamable: bool=False) -> LazyFrame:
+    def map_batches(
+        self,
+        function: Callable[[DataFrame], DataFrame],
+        *,
+        predicate_pushdown: bool = True,
+        projection_pushdown: bool = True,
+        slice_pushdown: bool = True,
+        no_optimizations: bool = False,
+        schema: None | SchemaDict = None,
+        validate_output_schema: bool = True,
+        streamable: bool = False,
+    ) -> LazyFrame:
         """
         Apply a custom function.
 
@@ -4905,7 +5307,11 @@ class LazyFrame:
         """
         ...
 
-    def unnest(self, columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector], *more_columns: ColumnNameOrSelector) -> LazyFrame:
+    def unnest(
+        self,
+        columns: ColumnNameOrSelector | Collection[ColumnNameOrSelector],
+        *more_columns: ColumnNameOrSelector,
+    ) -> LazyFrame:
         """
         Decompose struct columns into separate columns for each of their fields.
 
@@ -5020,7 +5426,7 @@ class LazyFrame:
         """
         ...
 
-    def set_sorted(self, column: str, *, descending: bool=False) -> LazyFrame:
+    def set_sorted(self, column: str, *, descending: bool = False) -> LazyFrame:
         """
         Indicate that one or multiple columns are sorted.
 
@@ -5042,7 +5448,16 @@ class LazyFrame:
         ...
 
     @unstable()
-    def update(self, other: LazyFrame, on: str | Sequence[str] | None, how: Literal['left', 'inner', 'full'], *, left_on: str | Sequence[str] | None=None, right_on: str | Sequence[str] | None=None, include_nulls: bool=False) -> LazyFrame:
+    def update(
+        self,
+        other: LazyFrame,
+        on: str | Sequence[str] | None,
+        how: Literal["left", "inner", "full"],
+        *,
+        left_on: str | Sequence[str] | None = None,
+        right_on: str | Sequence[str] | None = None,
+        include_nulls: bool = False,
+    ) -> LazyFrame:
         """
         Update the values in this `LazyFrame` with the values in `other`.
 
@@ -5192,8 +5607,19 @@ class LazyFrame:
         """
         ...
 
-    @deprecate_function('Use `unpivot` instead, with `index` instead of `id_vars` and `on` instead of `value_vars`', version='1.0.0')
-    def melt(self, id_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, value_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, variable_name: str | None, value_name: str | None, *, streamable: bool=True) -> LazyFrame:
+    @deprecate_function(
+        "Use `unpivot` instead, with `index` instead of `id_vars` and `on` instead of `value_vars`",
+        version="1.0.0",
+    )
+    def melt(
+        self,
+        id_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None,
+        value_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None,
+        variable_name: str | None,
+        value_name: str | None,
+        *,
+        streamable: bool = True,
+    ) -> LazyFrame:
         """
         Unpivot a DataFrame from wide to long format.
 
@@ -5225,7 +5651,9 @@ class LazyFrame:
         """
         ...
 
-    def _to_metadata(self, columns: None | str | list[str], stats: None | str | list[str]) -> DataFrame:
+    def _to_metadata(
+        self, columns: None | str | list[str], stats: None | str | list[str]
+    ) -> DataFrame:
         """
         Get all runtime metadata for each column.
 

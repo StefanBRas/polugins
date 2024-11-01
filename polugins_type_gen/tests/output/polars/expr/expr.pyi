@@ -1,25 +1,18 @@
 from __future__ import annotations
-import contextlib
-import math
-import operator
-import warnings
 from collections.abc import Collection, Mapping, Sequence
 from datetime import timedelta
-from functools import reduce
-from io import BytesIO, StringIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, NoReturn, TypeVar
+from typing import Any, Callable, ClassVar, NoReturn, TypeVar
 import polars._reexport as pl
-from polars import functions as F
-from polars._utils.convert import negate_duration_string, parse_as_duration_string
-from polars._utils.deprecation import deprecate_function, deprecate_renamed_parameter, issue_deprecation_warning
-from polars._utils.parse import parse_into_expression, parse_into_list_of_expressions, parse_predicates_constraints_into_expression
-from polars._utils.unstable import issue_unstable_warning, unstable
-from polars._utils.various import BUILDING_SPHINX_DOCS, extend_bool, find_stacklevel, no_default, normalize_filepath, sphinx_accessor, warn_null_comparison
-from polars.datatypes import Int64, is_polars_dtype, parse_into_dtype
-from polars.dependencies import _check_for_numpy
+from polars._utils.deprecation import (
+    deprecate_function,
+    deprecate_renamed_parameter,
+)
+from polars._utils.unstable import unstable
+from polars._utils.various import (
+    no_default,
+)
 from polars.dependencies import numpy as np
-from polars.exceptions import CustomUFuncWarning, PolarsInefficientMapWarning
 from polars.expr.array import ExprArrayNameSpace
 from polars.expr.binary import ExprBinaryNameSpace
 from polars.expr.categorical import ExprCatNameSpace
@@ -29,145 +22,94 @@ from polars.expr.meta import ExprMetaNameSpace
 from polars.expr.name import ExprNameNameSpace
 from polars.expr.string import ExprStringNameSpace
 from polars.expr.struct import ExprStructNameSpace
-from polars.meta import thread_pool_size
-from polars.polars import arg_where as py_arg_where
 from polars.polars import PyExpr
 import sys
 from collections.abc import Iterable
 from io import IOBase
-from polars import DataFrame, LazyFrame, Series
-from polars._typing import ClosedInterval, FillNullStrategy, InterpolationMethod, IntoExpr, IntoExprColumn, MapElementsStrategy, NullBehavior, NumericLiteral, PolarsDataType, RankMethod, RollingInterpolationMethod, SearchSortedSide, SerializationFormat, TemporalLiteral, WindowMappingStrategy
+from polars import Series
+from polars._typing import (
+    ClosedInterval,
+    FillNullStrategy,
+    InterpolationMethod,
+    IntoExpr,
+    IntoExprColumn,
+    MapElementsStrategy,
+    NullBehavior,
+    NumericLiteral,
+    PolarsDataType,
+    RankMethod,
+    RollingInterpolationMethod,
+    SearchSortedSide,
+    SerializationFormat,
+    TemporalLiteral,
+    WindowMappingStrategy,
+)
 from polars._utils.various import NoDefault
+
 if sys.version_info >= (3, 11):
     from typing import Concatenate, ParamSpec
 else:
     from typing_extensions import Concatenate, ParamSpec
-T = TypeVar('T')
-P = ParamSpec('P')
+T = TypeVar("T")
+P = ParamSpec("P")
 
 class Expr:
     """Expressions that can be used in various contexts."""
+
     _pyexpr: PyExpr
     _accessors: ClassVar[set[str]]
 
     @classmethod
-    def _from_pyexpr(cls, pyexpr: PyExpr) -> Expr:
-        ...
-
-    def _repr_html_(self) -> str:
-        ...
-
-    def __repr__(self) -> str:
-        ...
-
-    def __str__(self) -> str:
-        ...
-
-    def __bool__(self) -> NoReturn:
-        ...
-
-    def __abs__(self) -> Expr:
-        ...
-
-    def __add__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __radd__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __and__(self, other: IntoExprColumn | int | bool) -> Expr:
-        ...
-
-    def __rand__(self, other: IntoExprColumn | int | bool) -> Expr:
-        ...
-
-    def __eq__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __floordiv__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __rfloordiv__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __ge__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __gt__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __invert__(self) -> Expr:
-        ...
-
-    def __le__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __lt__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __mod__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __rmod__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __mul__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __rmul__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __ne__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __neg__(self) -> Expr:
-        ...
-
-    def __or__(self, other: IntoExprColumn | int | bool) -> Expr:
-        ...
-
-    def __ror__(self, other: IntoExprColumn | int | bool) -> Expr:
-        ...
-
-    def __pos__(self) -> Expr:
-        ...
-
-    def __pow__(self, exponent: IntoExprColumn | int | float) -> Expr:
-        ...
-
-    def __rpow__(self, base: IntoExprColumn | int | float) -> Expr:
-        ...
-
-    def __sub__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __rsub__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __truediv__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __rtruediv__(self, other: IntoExpr) -> Expr:
-        ...
-
-    def __xor__(self, other: IntoExprColumn | int | bool) -> Expr:
-        ...
-
-    def __rxor__(self, other: IntoExprColumn | int | bool) -> Expr:
-        ...
-
-    def __getstate__(self) -> bytes:
-        ...
-
-    def __setstate__(self, state: bytes) -> None:
-        ...
-
-    def __array_ufunc__(self, ufunc: Callable[..., Any], method: str, *inputs: Any, **kwargs: Any) -> Expr:
+    def _from_pyexpr(cls, pyexpr: PyExpr) -> Expr: ...
+    def _repr_html_(self) -> str: ...
+    def __repr__(self) -> str: ...
+    def __str__(self) -> str: ...
+    def __bool__(self) -> NoReturn: ...
+    def __abs__(self) -> Expr: ...
+    def __add__(self, other: IntoExpr) -> Expr: ...
+    def __radd__(self, other: IntoExpr) -> Expr: ...
+    def __and__(self, other: IntoExprColumn | int | bool) -> Expr: ...
+    def __rand__(self, other: IntoExprColumn | int | bool) -> Expr: ...
+    def __eq__(self, other: IntoExpr) -> Expr: ...
+    def __floordiv__(self, other: IntoExpr) -> Expr: ...
+    def __rfloordiv__(self, other: IntoExpr) -> Expr: ...
+    def __ge__(self, other: IntoExpr) -> Expr: ...
+    def __gt__(self, other: IntoExpr) -> Expr: ...
+    def __invert__(self) -> Expr: ...
+    def __le__(self, other: IntoExpr) -> Expr: ...
+    def __lt__(self, other: IntoExpr) -> Expr: ...
+    def __mod__(self, other: IntoExpr) -> Expr: ...
+    def __rmod__(self, other: IntoExpr) -> Expr: ...
+    def __mul__(self, other: IntoExpr) -> Expr: ...
+    def __rmul__(self, other: IntoExpr) -> Expr: ...
+    def __ne__(self, other: IntoExpr) -> Expr: ...
+    def __neg__(self) -> Expr: ...
+    def __or__(self, other: IntoExprColumn | int | bool) -> Expr: ...
+    def __ror__(self, other: IntoExprColumn | int | bool) -> Expr: ...
+    def __pos__(self) -> Expr: ...
+    def __pow__(self, exponent: IntoExprColumn | int | float) -> Expr: ...
+    def __rpow__(self, base: IntoExprColumn | int | float) -> Expr: ...
+    def __sub__(self, other: IntoExpr) -> Expr: ...
+    def __rsub__(self, other: IntoExpr) -> Expr: ...
+    def __truediv__(self, other: IntoExpr) -> Expr: ...
+    def __rtruediv__(self, other: IntoExpr) -> Expr: ...
+    def __xor__(self, other: IntoExprColumn | int | bool) -> Expr: ...
+    def __rxor__(self, other: IntoExprColumn | int | bool) -> Expr: ...
+    def __getstate__(self) -> bytes: ...
+    def __setstate__(self, state: bytes) -> None: ...
+    def __array_ufunc__(
+        self, ufunc: Callable[..., Any], method: str, *inputs: Any, **kwargs: Any
+    ) -> Expr:
         """Numpy universal functions."""
         ...
 
     @classmethod
-    def deserialize(cls, source: str | Path | IOBase | bytes, *, format: SerializationFormat='binary') -> Expr:
+    def deserialize(
+        cls,
+        source: str | Path | IOBase | bytes,
+        *,
+        format: SerializationFormat = "binary",
+    ) -> Expr:
         """
         Read a serialized expression from a file.
 
@@ -249,7 +191,7 @@ class Expr:
         """
         ...
 
-    def any(self, *, ignore_nulls: bool=True) -> Expr:
+    def any(self, *, ignore_nulls: bool = True) -> Expr:
         """
         Return whether any of the values in the column are `True`.
 
@@ -304,7 +246,7 @@ class Expr:
         """
         ...
 
-    def all(self, *, ignore_nulls: bool=True) -> Expr:
+    def all(self, *, ignore_nulls: bool = True) -> Expr:
         """
         Return whether all values in the column are `True`.
 
@@ -537,7 +479,11 @@ class Expr:
         """
         ...
 
-    def exclude(self, columns: str | PolarsDataType | Collection[str] | Collection[PolarsDataType], *more_columns: str | PolarsDataType) -> Expr:
+    def exclude(
+        self,
+        columns: str | PolarsDataType | Collection[str] | Collection[PolarsDataType],
+        *more_columns: str | PolarsDataType,
+    ) -> Expr:
         """
         Exclude columns from a multi-column expression.
 
@@ -618,7 +564,12 @@ class Expr:
         """
         ...
 
-    def pipe(self, function: Callable[Concatenate[Expr, P], T], *args: P.args, **kwargs: P.kwargs) -> T:
+    def pipe(
+        self,
+        function: Callable[Concatenate[Expr, P], T],
+        *args: P.args,
+        **kwargs: P.kwargs,
+    ) -> T:
         '''
         Offers a structured way to apply a sequence of user-defined functions (UDFs).
 
@@ -1010,7 +961,7 @@ class Expr:
         """
         ...
 
-    def append(self, other: IntoExpr, *, upcast: bool=True) -> Expr:
+    def append(self, other: IntoExpr, *, upcast: bool = True) -> Expr:
         """
         Append expressions.
 
@@ -1135,7 +1086,7 @@ class Expr:
         """
         ...
 
-    def cum_sum(self, *, reverse: bool=False) -> Expr:
+    def cum_sum(self, *, reverse: bool = False) -> Expr:
         """
         Get an array with the cumulative sum computed at every element.
 
@@ -1196,7 +1147,7 @@ class Expr:
         """
         ...
 
-    def cum_prod(self, *, reverse: bool=False) -> Expr:
+    def cum_prod(self, *, reverse: bool = False) -> Expr:
         """
         Get an array with the cumulative product computed at every element.
 
@@ -1231,7 +1182,7 @@ class Expr:
         """
         ...
 
-    def cum_min(self, *, reverse: bool=False) -> Expr:
+    def cum_min(self, *, reverse: bool = False) -> Expr:
         """
         Get an array with the cumulative min computed at every element.
 
@@ -1261,7 +1212,7 @@ class Expr:
         """
         ...
 
-    def cum_max(self, *, reverse: bool=False) -> Expr:
+    def cum_max(self, *, reverse: bool = False) -> Expr:
         """
         Get an array with the cumulative max computed at every element.
 
@@ -1314,7 +1265,7 @@ class Expr:
         """
         ...
 
-    def cum_count(self, *, reverse: bool=False) -> Expr:
+    def cum_count(self, *, reverse: bool = False) -> Expr:
         """
         Return the cumulative count of the non-null values in the column.
 
@@ -1500,7 +1451,13 @@ class Expr:
         """
         ...
 
-    def cast(self, dtype: PolarsDataType | type[Any], *, strict: bool=True, wrap_numerical: bool=False) -> Expr:
+    def cast(
+        self,
+        dtype: PolarsDataType | type[Any],
+        *,
+        strict: bool = True,
+        wrap_numerical: bool = False,
+    ) -> Expr:
         """
         Cast between data types.
 
@@ -1539,7 +1496,7 @@ class Expr:
         """
         ...
 
-    def sort(self, *, descending: bool=False, nulls_last: bool=False) -> Expr:
+    def sort(self, *, descending: bool = False, nulls_last: bool = False) -> Expr:
         """
         Sort this column.
 
@@ -1665,8 +1622,14 @@ class Expr:
         """
         ...
 
-    @deprecate_renamed_parameter('descending', 'reverse', version='1.0.0')
-    def top_k_by(self, by: IntoExpr | Iterable[IntoExpr], k: int | IntoExprColumn, *, reverse: bool | Sequence[bool]=False) -> Expr:
+    @deprecate_renamed_parameter("descending", "reverse", version="1.0.0")
+    def top_k_by(
+        self,
+        by: IntoExpr | Iterable[IntoExpr],
+        k: int | IntoExprColumn,
+        *,
+        reverse: bool | Sequence[bool] = False,
+    ) -> Expr:
         """
         Return the elements corresponding to the `k` largest elements of the `by` column(s).
 
@@ -1828,8 +1791,14 @@ class Expr:
         """
         ...
 
-    @deprecate_renamed_parameter('descending', 'reverse', version='1.0.0')
-    def bottom_k_by(self, by: IntoExpr | Iterable[IntoExpr], k: int | IntoExprColumn, *, reverse: bool | Sequence[bool]=False) -> Expr:
+    @deprecate_renamed_parameter("descending", "reverse", version="1.0.0")
+    def bottom_k_by(
+        self,
+        by: IntoExpr | Iterable[IntoExpr],
+        k: int | IntoExprColumn,
+        *,
+        reverse: bool | Sequence[bool] = False,
+    ) -> Expr:
         """
         Return the elements corresponding to the `k` smallest elements of the `by` column(s).
 
@@ -1942,7 +1911,7 @@ class Expr:
         """
         ...
 
-    def arg_sort(self, *, descending: bool=False, nulls_last: bool=False) -> Expr:
+    def arg_sort(self, *, descending: bool = False, nulls_last: bool = False) -> Expr:
         """
         Get the index values that would sort this column.
 
@@ -2045,7 +2014,9 @@ class Expr:
         """
         ...
 
-    def search_sorted(self, element: IntoExpr | np.ndarray[Any, Any], side: SearchSortedSide) -> Expr:
+    def search_sorted(
+        self, element: IntoExpr | np.ndarray[Any, Any], side: SearchSortedSide
+    ) -> Expr:
         """
         Find indices where elements should be inserted to maintain order.
 
@@ -2085,7 +2056,15 @@ class Expr:
         """
         ...
 
-    def sort_by(self, by: IntoExpr | Iterable[IntoExpr], *more_by: IntoExpr, descending: bool | Sequence[bool]=False, nulls_last: bool | Sequence[bool]=False, multithreaded: bool=True, maintain_order: bool=False) -> Expr:
+    def sort_by(
+        self,
+        by: IntoExpr | Iterable[IntoExpr],
+        *more_by: IntoExpr,
+        descending: bool | Sequence[bool] = False,
+        nulls_last: bool | Sequence[bool] = False,
+        multithreaded: bool = True,
+        maintain_order: bool = False,
+    ) -> Expr:
         """
         Sort this column by the ordering of other columns.
 
@@ -2212,7 +2191,9 @@ class Expr:
         """
         ...
 
-    def gather(self, indices: int | Sequence[int] | IntoExpr | Series | np.ndarray[Any, Any]) -> Expr:
+    def gather(
+        self, indices: int | Sequence[int] | IntoExpr | Series | np.ndarray[Any, Any]
+    ) -> Expr:
         """
         Take values by index.
 
@@ -2302,7 +2283,9 @@ class Expr:
         """
         ...
 
-    def shift(self, n: int | IntoExprColumn, *, fill_value: IntoExpr | None=None) -> Expr:
+    def shift(
+        self, n: int | IntoExprColumn, *, fill_value: IntoExpr | None = None
+    ) -> Expr:
         """
         Shift values by the given number of indices.
 
@@ -2374,7 +2357,12 @@ class Expr:
         """
         ...
 
-    def fill_null(self, value: Any | Expr | None, strategy: FillNullStrategy | None, limit: int | None) -> Expr:
+    def fill_null(
+        self,
+        value: Any | Expr | None,
+        strategy: FillNullStrategy | None,
+        limit: int | None,
+    ) -> Expr:
         """
         Fill null values using the specified value or strategy.
 
@@ -2981,7 +2969,7 @@ class Expr:
         """
         ...
 
-    def unique(self, *, maintain_order: bool=False) -> Expr:
+    def unique(self, *, maintain_order: bool = False) -> Expr:
         """
         Get unique values of this expression.
 
@@ -3054,7 +3042,13 @@ class Expr:
         """
         ...
 
-    def over(self, partition_by: IntoExpr | Iterable[IntoExpr], *more_exprs: IntoExpr, order_by: IntoExpr | Iterable[IntoExpr] | None=None, mapping_strategy: WindowMappingStrategy='group_to_rows') -> Expr:
+    def over(
+        self,
+        partition_by: IntoExpr | Iterable[IntoExpr],
+        *more_exprs: IntoExpr,
+        order_by: IntoExpr | Iterable[IntoExpr] | None = None,
+        mapping_strategy: WindowMappingStrategy = "group_to_rows",
+    ) -> Expr:
         """
         Compute expressions over the given groups.
 
@@ -3207,7 +3201,14 @@ class Expr:
         """
         ...
 
-    def rolling(self, index_column: str, *, period: str | timedelta, offset: str | timedelta | None=None, closed: ClosedInterval='right') -> Expr:
+    def rolling(
+        self,
+        index_column: str,
+        *,
+        period: str | timedelta,
+        offset: str | timedelta | None = None,
+        closed: ClosedInterval = "right",
+    ) -> Expr:
         """
         Create rolling groups based on a temporal or integer column.
 
@@ -3448,7 +3449,9 @@ class Expr:
         """
         ...
 
-    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod) -> Expr:
+    def quantile(
+        self, quantile: float | Expr, interpolation: RollingInterpolationMethod
+    ) -> Expr:
         """
         Get quantile value.
 
@@ -3511,7 +3514,14 @@ class Expr:
         ...
 
     @unstable()
-    def cut(self, breaks: Sequence[float], *, labels: Sequence[str] | None=None, left_closed: bool=False, include_breaks: bool=False) -> Expr:
+    def cut(
+        self,
+        breaks: Sequence[float],
+        *,
+        labels: Sequence[str] | None = None,
+        left_closed: bool = False,
+        include_breaks: bool = False,
+    ) -> Expr:
         """
         Bin continuous values into discrete categories.
 
@@ -3585,7 +3595,15 @@ class Expr:
         ...
 
     @unstable()
-    def qcut(self, quantiles: Sequence[float] | int, *, labels: Sequence[str] | None=None, left_closed: bool=False, allow_duplicates: bool=False, include_breaks: bool=False) -> Expr:
+    def qcut(
+        self,
+        quantiles: Sequence[float] | int,
+        *,
+        labels: Sequence[str] | None = None,
+        left_closed: bool = False,
+        allow_duplicates: bool = False,
+        include_breaks: bool = False,
+    ) -> Expr:
         """
         Bin continuous values into discrete categories based on their quantiles.
 
@@ -3769,7 +3787,9 @@ class Expr:
         """
         ...
 
-    def filter(self, *predicates: IntoExprColumn | Iterable[IntoExprColumn], **constraints: Any) -> Expr:
+    def filter(
+        self, *predicates: IntoExprColumn | Iterable[IntoExprColumn], **constraints: Any
+    ) -> Expr:
         """
         Filter the expression based on one or more predicate expressions.
 
@@ -3838,7 +3858,7 @@ class Expr:
         """
         ...
 
-    @deprecate_function('Use `filter` instead.', version='0.20.4')
+    @deprecate_function("Use `filter` instead.", version="0.20.4")
     def where(self, predicate: Expr) -> Expr:
         """
         Filter a single column.
@@ -3880,14 +3900,22 @@ class Expr:
         ...
 
     class _map_batches_wrapper:
+        def __init__(
+            self,
+            function: Callable[[Series], Series | Any],
+            return_dtype: PolarsDataType | None,
+        ) -> None: ...
+        def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
 
-        def __init__(self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None) -> None:
-            ...
-
-        def __call__(self, *args: Any, **kwargs: Any) -> Any:
-            ...
-
-    def map_batches(self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None, *, agg_list: bool=False, is_elementwise: bool=False, returns_scalar: bool=False) -> Expr:
+    def map_batches(
+        self,
+        function: Callable[[Series], Series | Any],
+        return_dtype: PolarsDataType | None,
+        *,
+        agg_list: bool = False,
+        is_elementwise: bool = False,
+        returns_scalar: bool = False,
+    ) -> Expr:
         """
         Apply a custom python function to a whole Series or sequence of Series.
 
@@ -4043,7 +4071,16 @@ class Expr:
         """
         ...
 
-    def map_elements(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None, *, skip_nulls: bool=True, pass_name: bool=False, strategy: MapElementsStrategy='thread_local', returns_scalar: bool=False) -> Expr:
+    def map_elements(
+        self,
+        function: Callable[[Any], Any],
+        return_dtype: PolarsDataType | None,
+        *,
+        skip_nulls: bool = True,
+        pass_name: bool = False,
+        strategy: MapElementsStrategy = "thread_local",
+        returns_scalar: bool = False,
+    ) -> Expr:
         """
         Map a custom/user-defined function (UDF) to each element of a column.
 
@@ -5293,7 +5330,9 @@ class Expr:
         """
         ...
 
-    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval) -> Expr:
+    def is_between(
+        self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval
+    ) -> Expr:
         """
         Check if this expression is between the given lower and upper bounds.
 
@@ -5397,7 +5436,9 @@ class Expr:
         """
         ...
 
-    def hash(self, seed: int, seed_1: int | None, seed_2: int | None, seed_3: int | None) -> Expr:
+    def hash(
+        self, seed: int, seed_1: int | None, seed_2: int | None, seed_3: int | None
+    ) -> Expr:
         """
         Hash the elements in the selection.
 
@@ -5442,7 +5483,7 @@ class Expr:
         """
         ...
 
-    def reinterpret(self, *, signed: bool=True) -> Expr:
+    def reinterpret(self, *, signed: bool = True) -> Expr:
         """
         Reinterpret the underlying bits as a signed/unsigned integer.
 
@@ -5617,7 +5658,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_min_by(self, by: IntoExpr, window_size: timedelta | str, *, min_periods: int=1, closed: ClosedInterval='right') -> Expr:
+    def rolling_min_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+    ) -> Expr:
         """
         Apply a rolling min based on another column.
 
@@ -5727,7 +5775,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_max_by(self, by: IntoExpr, window_size: timedelta | str, *, min_periods: int=1, closed: ClosedInterval='right') -> Expr:
+    def rolling_max_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+    ) -> Expr:
         """
         Apply a rolling max based on another column.
 
@@ -5863,7 +5918,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_mean_by(self, by: IntoExpr, window_size: timedelta | str, *, min_periods: int=1, closed: ClosedInterval='right') -> Expr:
+    def rolling_mean_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+    ) -> Expr:
         """
         Apply a rolling mean based on another column.
 
@@ -6001,7 +6063,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_sum_by(self, by: IntoExpr, window_size: timedelta | str, *, min_periods: int=1, closed: ClosedInterval='right') -> Expr:
+    def rolling_sum_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+    ) -> Expr:
         """
         Apply a rolling sum based on another column.
 
@@ -6137,7 +6206,15 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_std_by(self, by: IntoExpr, window_size: timedelta | str, *, min_periods: int=1, closed: ClosedInterval='right', ddof: int=1) -> Expr:
+    def rolling_std_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+        ddof: int = 1,
+    ) -> Expr:
         """
         Compute a rolling standard deviation based on another column.
 
@@ -6275,7 +6352,15 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_var_by(self, by: IntoExpr, window_size: timedelta | str, *, min_periods: int=1, closed: ClosedInterval='right', ddof: int=1) -> Expr:
+    def rolling_var_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+        ddof: int = 1,
+    ) -> Expr:
         """
         Compute a rolling variance based on another column.
 
@@ -6413,7 +6498,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_median_by(self, by: IntoExpr, window_size: timedelta | str, *, min_periods: int=1, closed: ClosedInterval='right') -> Expr:
+    def rolling_median_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+    ) -> Expr:
         """
         Compute a rolling median based on another column.
 
@@ -6525,7 +6617,16 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_quantile_by(self, by: IntoExpr, window_size: timedelta | str, *, quantile: float, interpolation: RollingInterpolationMethod='nearest', min_periods: int=1, closed: ClosedInterval='right') -> Expr:
+    def rolling_quantile_by(
+        self,
+        by: IntoExpr,
+        window_size: timedelta | str,
+        *,
+        quantile: float,
+        interpolation: RollingInterpolationMethod = "nearest",
+        min_periods: int = 1,
+        closed: ClosedInterval = "right",
+    ) -> Expr:
         """
         Compute a rolling quantile based on another column.
 
@@ -6641,7 +6742,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_min(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_min(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Expr:
         """
         Apply a rolling min (moving min) over the values in this array.
 
@@ -6738,7 +6846,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_max(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_max(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Expr:
         """
         Apply a rolling max (moving max) over the values in this array.
 
@@ -6835,7 +6950,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_mean(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_mean(
+        self,
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Expr:
         """
         Apply a rolling mean (moving mean) over the values in this array.
 
@@ -6932,7 +7054,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_sum(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_sum(
+        self,
+        window_size: int | timedelta,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Expr:
         """
         Apply a rolling sum (moving sum) over the values in this array.
 
@@ -7029,7 +7158,15 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_std(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Expr:
+    def rolling_std(
+        self,
+        window_size: int | timedelta,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+        ddof: int = 1,
+    ) -> Expr:
         """
         Compute a rolling standard deviation.
 
@@ -7128,7 +7265,15 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_var(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Expr:
+    def rolling_var(
+        self,
+        window_size: int | timedelta,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+        ddof: int = 1,
+    ) -> Expr:
         """
         Compute a rolling variance.
 
@@ -7227,7 +7372,14 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_median(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_median(
+        self,
+        window_size: int | timedelta,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Expr:
         """
         Compute a rolling median.
 
@@ -7324,7 +7476,16 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_quantile(
+        self,
+        quantile: float,
+        interpolation: RollingInterpolationMethod,
+        window_size: int | timedelta,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Expr:
         """
         Compute a rolling quantile.
 
@@ -7453,7 +7614,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_skew(self, window_size: int, *, bias: bool=True) -> Expr:
+    def rolling_skew(self, window_size: int, *, bias: bool = True) -> Expr:
         """
         Compute a rolling skew.
 
@@ -7495,7 +7656,15 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_map(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_map(
+        self,
+        function: Callable[[Series], Any],
+        window_size: int,
+        weights: list[float] | None,
+        *,
+        min_periods: int | None = None,
+        center: bool = False,
+    ) -> Expr:
         """
         Compute a custom rolling window function.
 
@@ -7571,7 +7740,9 @@ class Expr:
         """
         ...
 
-    def rank(self, method: RankMethod, *, descending: bool=False, seed: int | None=None) -> Expr:
+    def rank(
+        self, method: RankMethod, *, descending: bool = False, seed: int | None = None
+    ) -> Expr:
         """
         Assign ranks to data, dealing with ties appropriately.
 
@@ -7748,7 +7919,7 @@ class Expr:
         """
         ...
 
-    def skew(self, *, bias: bool=True) -> Expr:
+    def skew(self, *, bias: bool = True) -> Expr:
         """
         Compute the sample skewness of a data set.
 
@@ -7801,7 +7972,7 @@ class Expr:
         """
         ...
 
-    def kurtosis(self, *, fisher: bool=True, bias: bool=True) -> Expr:
+    def kurtosis(self, *, fisher: bool = True, bias: bool = True) -> Expr:
         """
         Compute the kurtosis (Fisher or Pearson) of a dataset.
 
@@ -7836,7 +8007,11 @@ class Expr:
         """
         ...
 
-    def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None, upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None) -> Expr:
+    def clip(
+        self,
+        lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None,
+        upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None,
+    ) -> Expr:
         """
         Set values outside the given boundaries to the boundary value.
 
@@ -8433,7 +8608,15 @@ class Expr:
         """
         ...
 
-    def sample(self, n: int | IntoExprColumn | None, *, fraction: float | IntoExprColumn | None=None, with_replacement: bool=False, shuffle: bool=False, seed: int | None=None) -> Expr:
+    def sample(
+        self,
+        n: int | IntoExprColumn | None,
+        *,
+        fraction: float | IntoExprColumn | None = None,
+        with_replacement: bool = False,
+        shuffle: bool = False,
+        seed: int | None = None,
+    ) -> Expr:
         """
         Sample from this expression.
 
@@ -8469,7 +8652,17 @@ class Expr:
         """
         ...
 
-    def ewm_mean(self, *, com: float | None=None, span: float | None=None, half_life: float | None=None, alpha: float | None=None, adjust: bool=True, min_periods: int=1, ignore_nulls: bool=False) -> Expr:
+    def ewm_mean(
+        self,
+        *,
+        com: float | None = None,
+        span: float | None = None,
+        half_life: float | None = None,
+        alpha: float | None = None,
+        adjust: bool = True,
+        min_periods: int = 1,
+        ignore_nulls: bool = False,
+    ) -> Expr:
         """
         Compute exponentially-weighted moving average.
 
@@ -8628,7 +8821,18 @@ class Expr:
         """
         ...
 
-    def ewm_std(self, *, com: float | None=None, span: float | None=None, half_life: float | None=None, alpha: float | None=None, adjust: bool=True, bias: bool=False, min_periods: int=1, ignore_nulls: bool=False) -> Expr:
+    def ewm_std(
+        self,
+        *,
+        com: float | None = None,
+        span: float | None = None,
+        half_life: float | None = None,
+        alpha: float | None = None,
+        adjust: bool = True,
+        bias: bool = False,
+        min_periods: int = 1,
+        ignore_nulls: bool = False,
+    ) -> Expr:
         """
         Compute exponentially-weighted moving standard deviation.
 
@@ -8705,7 +8909,18 @@ class Expr:
         """
         ...
 
-    def ewm_var(self, *, com: float | None=None, span: float | None=None, half_life: float | None=None, alpha: float | None=None, adjust: bool=True, bias: bool=False, min_periods: int=1, ignore_nulls: bool=False) -> Expr:
+    def ewm_var(
+        self,
+        *,
+        com: float | None = None,
+        span: float | None = None,
+        half_life: float | None = None,
+        alpha: float | None = None,
+        adjust: bool = True,
+        bias: bool = False,
+        min_periods: int = 1,
+        ignore_nulls: bool = False,
+    ) -> Expr:
         """
         Compute exponentially-weighted moving variance.
 
@@ -8813,7 +9028,14 @@ class Expr:
         """
         ...
 
-    def value_counts(self, *, sort: bool=False, parallel: bool=False, name: str | None=None, normalize: bool=False) -> Expr:
+    def value_counts(
+        self,
+        *,
+        sort: bool = False,
+        parallel: bool = False,
+        name: str | None = None,
+        normalize: bool = False,
+    ) -> Expr:
         """
         Count the occurrences of unique values.
 
@@ -8968,7 +9190,7 @@ class Expr:
         """
         ...
 
-    def entropy(self, base: float, *, normalize: bool=True) -> Expr:
+    def entropy(self, base: float, *, normalize: bool = True) -> Expr:
         """
         Computes the entropy.
 
@@ -9006,7 +9228,9 @@ class Expr:
         ...
 
     @unstable()
-    def cumulative_eval(self, expr: Expr, *, min_periods: int=1, parallel: bool=False) -> Expr:
+    def cumulative_eval(
+        self, expr: Expr, *, min_periods: int = 1, parallel: bool = False
+    ) -> Expr:
         """
         Run an expression over a sliding window that increases `1` slot every iteration.
 
@@ -9055,7 +9279,7 @@ class Expr:
         """
         ...
 
-    def set_sorted(self, *, descending: bool=False) -> Expr:
+    def set_sorted(self, *, descending: bool = False) -> Expr:
         """
         Flags the expression as 'sorted'.
 
@@ -9121,7 +9345,14 @@ class Expr:
         ...
 
     @unstable()
-    def hist(self, bins: IntoExpr | None, *, bin_count: int | None=None, include_category: bool=False, include_breakpoint: bool=False) -> Expr:
+    def hist(
+        self,
+        bins: IntoExpr | None,
+        *,
+        bin_count: int | None = None,
+        include_category: bool = False,
+        include_breakpoint: bool = False,
+    ) -> Expr:
         """
         Bin values into buckets and count their occurrences.
 
@@ -9180,7 +9411,14 @@ class Expr:
         """
         ...
 
-    def replace(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Expr:
+    def replace(
+        self,
+        old: IntoExpr | Sequence[Any] | Mapping[Any, Any],
+        new: IntoExpr | Sequence[Any] | NoDefault,
+        *,
+        default: IntoExpr | NoDefault = no_default,
+        return_dtype: PolarsDataType | None = None,
+    ) -> Expr:
         """
         Replace the given values by different values of the same data type.
 
@@ -9315,7 +9553,14 @@ class Expr:
         """
         ...
 
-    def replace_strict(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Expr:
+    def replace_strict(
+        self,
+        old: IntoExpr | Sequence[Any] | Mapping[Any, Any],
+        new: IntoExpr | Sequence[Any] | NoDefault,
+        *,
+        default: IntoExpr | NoDefault = no_default,
+        return_dtype: PolarsDataType | None = None,
+    ) -> Expr:
         """
         Replace all values by different values.
 
@@ -9518,8 +9763,23 @@ class Expr:
         """Perform an aggregation of bitwise XORs."""
         ...
 
-    @deprecate_function('Use `polars.plugins.register_plugin_function` instead.', version='0.20.16')
-    def register_plugin(self, *, lib: str, symbol: str, args: list[IntoExpr] | None=None, kwargs: dict[Any, Any] | None=None, is_elementwise: bool=False, input_wildcard_expansion: bool=False, returns_scalar: bool=False, cast_to_supertypes: bool=False, pass_name_to_apply: bool=False, changes_length: bool=False) -> Expr:
+    @deprecate_function(
+        "Use `polars.plugins.register_plugin_function` instead.", version="0.20.16"
+    )
+    def register_plugin(
+        self,
+        *,
+        lib: str,
+        symbol: str,
+        args: list[IntoExpr] | None = None,
+        kwargs: dict[Any, Any] | None = None,
+        is_elementwise: bool = False,
+        input_wildcard_expansion: bool = False,
+        returns_scalar: bool = False,
+        cast_to_supertypes: bool = False,
+        pass_name_to_apply: bool = False,
+        changes_length: bool = False,
+    ) -> Expr:
         """
         Register a plugin function.
 
@@ -9718,9 +9978,13 @@ class Expr:
         """
         ...
 
-def _prepare_alpha(com: float | int | None, span: float | int | None, half_life: float | int | None, alpha: float | int | None) -> float:
+def _prepare_alpha(
+    com: float | int | None,
+    span: float | int | None,
+    half_life: float | int | None,
+    alpha: float | int | None,
+) -> float:
     """Normalise EWM decay specification in terms of smoothing factor 'alpha'."""
     ...
 
-def _prepare_rolling_by_window_args(window_size: timedelta | str) -> str:
-    ...
+def _prepare_rolling_by_window_args(window_size: timedelta | str) -> str: ...
