@@ -13,6 +13,11 @@ tasks:
       - task: polugins:test
       - task: polugins_type_gen:test
 
+  test-all:
+    deps:
+      - task: polugins:test-all
+      - task: polugins_type_gen:test-all
+
   format:
     cmds:
       - uv run ruff format .

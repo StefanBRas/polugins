@@ -1,9 +1,29 @@
 version: "3"
 
+vars:
+  PACKAGE: "polugins_type_gen"
+
 tasks:
   test:
     cmds:
-      - uv run pytest
+      - >
+        uv run 
+        --frozen
+        --python {{.PYTHON_VERSION | default 3.12}}
+        {{ .EXTRA_UV_ARGS}}
+        pytest tests
+        {{ .EXTRA_PYTEST_ARGS}}
+      # Test that we can import it when installed as a package
+      - uv run --with {{.PACKAGE}} --refresh-package {{.PACKAGE}} --no-project -- python -c "import {{.PACKAGE}}"
+
+  test-all:
+    cmds:
+      - for:
+          matrix:
+            PYTHON_VERSION: ["3.12", "3.11", "3.10", "3.9"]
+        task: test
+        vars:
+          PYTHON_VERSION: "{{.ITEM.PYTHON_VERSION}}"
 
   format:
     cmds:
