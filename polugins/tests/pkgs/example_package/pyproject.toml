@@ -1,19 +1,21 @@
-[tool.poetry]
+[project]
 name = "example-package"
 version = "0.1.4"
 description = ""
-authors = ["StefanBRas <gitcommits@bruhn.io>"]
+authors = [
+    {name = "StefanBRas", email = "gitcommits@bruhn.io"},
+]
 readme = "README.md"
-packages = [{include = "example_package", from = "src"}]
+requires-python = ">=3.8"
+dependencies = [
+    "polars",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8"
-polars = "*"
+[project.entry-points."polugins.lazyframe"]
+"external" = "example_package:PackageNamespace"
 
+[tool.uv]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.plugins."polugins.lazyframe"]
-"external" = "example_package:PackageNamespace"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

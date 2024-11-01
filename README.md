@@ -139,6 +139,17 @@ To generate types install the python package `polugins_type_gen` and then run `p
 ## Third party Package example
 
 Packages can expose namespace through entry points called `polugins.<class>`, for example `polugins.lazyframe`.
+Here's an example of how to expose a namespace from a package using `pyproject.toml`.
+
+```toml
+[project.entry-points."polugins.<class>"]
+"<accessor_name>" = "<path.to.module:NameSpace>"
+
+# Concrete example:
+
+[project.entry-points."polugins.lazyframe"]
+"external" = "example_package:PackageNamespace"
+```
 
 If building with poetry you should add this to your `pyproject.toml`:
 
@@ -153,8 +164,6 @@ If building with poetry you should add this to your `pyproject.toml`:
 ```
 
 See `tests/pkgs/example_package` for a example.
-
-If using another tool than `poetry`, use their equivalent way of exposing endpoints.
 
 Don't use the `pl.api.register_x` in your package. This will make the extension be registered on import which we specifically want to avoid.
 

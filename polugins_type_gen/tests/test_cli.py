@@ -15,7 +15,10 @@ typings_dir = Path("typings")
     "venv_path",
     [
         None,
-        pytest.param(Path(".venv"), marks=[pytest.mark.skip(reason="Fails in CI. Should fix after changing to uv.")]),
+        pytest.param(
+            Path(".venv"),
+            marks=[pytest.mark.skip(reason="Fails in CI. Should fix after changing to uv.")],
+        ),
     ],
 )
 def test_cli(venv_path: Path):
