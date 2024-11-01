@@ -1,46 +1,22 @@
-[tool.poetry]
+[project]
 name = "polugins"
 version = "0.5.1"
 description = "Plugin system for Polars."
-authors = ["StefanBRas <opensource@bruhn.io>"]
+authors = [{ name = "StefanBRas", email = "opensource@bruhn.io" }]
 readme = "README.md"
-packages = [{include = "polugins", from = "src"}]
+requires-python = ">=3.8"
+dependencies = ["polars>0.16.13", "typing-extensions>=4.4.0", "tomli>=0.2.0"]
 
-[tool.poetry.dependencies]
-python = ">=3.8"
-polars = ">0.16.13"
-typing-extensions = ">=4.4.0"
-tomli = ">=0.2.0"
+[project.scripts]
+polugins = 'polugins.cli:cli'
 
-[tool.poetry.group.dev.dependencies]
-example-package = {path = "tests/pkgs/example_package"}
-nox = "^2023.4.22"
-pytest = "^8.0.0"
-pytest-env = "^0.8.2"
-pytest-cov = "^4.1.0"
-coverage = "^7.2.7"
-ruff = "0.3.1"
 
-[tool.poetry.group.nox]
-optional = true
-
-[tool.poetry.group.nox.dependencies]
-nox = "^2023.4.22"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.pytest.ini_options]
+env = ["polugins_lazyframe_env=polugins._testing.namespaces:EnvNameSpace"]
 
 [tool.polugins.lazyframe]
 "pyproject" = "polugins._testing.namespaces:PyProjectNameSpace"
 
-[tool.poetry.scripts]
-polugins = 'polugins.cli:cli'
-
-[tool.pytest.ini_options]
-env = [
- "polugins_lazyframe_env=polugins._testing.namespaces:EnvNameSpace"
-]
 
 [tool.ruff]
 extend = "../ruff.toml"
@@ -51,3 +27,19 @@ lint.ignore = []
 lint.fixable = ["ALL"]
 lint.unfixable = []
 
+[tool.uv]
+dev-dependencies = [
+  "example-package",
+  "pytest>=8.0.0,<9.0.0",
+  "pytest-env>=0.8.2,<0.9",
+  "pytest-cov>=4.1.0,<5.0.0",
+  "coverage>=7.2.7,<8.0.0",
+  "ruff==0.3.1",
+]
+
+[tool.uv.sources]
+example-package = { path = "tests/pkgs/example_package" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

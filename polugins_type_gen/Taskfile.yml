@@ -1,25 +1,15 @@
-version: '3'
+version: "3"
 
 tasks:
-  gen:
-    cmds:
-      - poetry run python scripts/generate_polars_stubs.py
-
-  install:
-    cmds:
-      - poetry install --with dev
-
   test:
-    deps:
-      - install
     cmds:
-      - poetry run pytest
+      - uv run pytest
 
   format:
     cmds:
-      - poetry run ruff format .
-      - poetry run ruff check . --fix
+      - uv run ruff format .
+      - uv run ruff check . --fix
 
   lint:
     cmds:
-      - poetry run ruff check .
+      - uv run ruff check .
