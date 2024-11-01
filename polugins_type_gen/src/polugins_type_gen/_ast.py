@@ -69,9 +69,7 @@ def parse_from_venv(venv_path: Path, extension_class: ExtensionClass) -> ast.Mod
     venv_libs = list((venv_path / "lib").glob("python*"))
     assert len(venv_libs) > 0, "No python versions in venv found."
     if len(venv_libs) > 1:
-        print(
-            f"Warning: Multiple python versions in venv found. Using the first one ({venv_libs[0].name})"
-        )
+        print(f"Warning: Multiple python versions in venv found. Using the first one ({venv_libs[0].name})")
     module_import_path = venv_libs[0] / "site-packages" / extension_class.import_path
     return parse_polars_module(module_import_path.with_suffix(".py").read_text())
 

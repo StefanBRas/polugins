@@ -43,10 +43,7 @@ def create_stubs(venv_path: Optional[Path] = None, output_dir: Optional[Path] = 
             new_class_nodes = []
             module_imports = set()
             for node in stub_ast.body:
-                if (
-                    isinstance(node, ast.ClassDef)
-                    and node.name.casefold() == extension_class.value.casefold()
-                ):
+                if isinstance(node, ast.ClassDef) and node.name.casefold() == extension_class.value.casefold():
                     for name, namespace in namespaces.items():
                         module_path, class_name = namespace.split(":")
                         new_node = ast.AnnAssign(
@@ -58,25 +55,18 @@ def create_stubs(venv_path: Optional[Path] = None, output_dir: Optional[Path] = 
                         module_imports.add(module_path)
                     node.body.extend(new_class_nodes)
 
-            new_module_imports = [
-                ast.Import(names=[ast.alias(name=module_name)])
-                for module_name in module_imports
-            ]
+            new_module_imports = [ast.Import(names=[ast.alias(name=module_name)]) for module_name in module_imports]
             future_import_index = next(
                 i
                 for i, node in enumerate(stub_ast.body)
                 if isinstance(node, ast.ImportFrom) and node.module == "__future__"
             )
 
-            stub_ast.body[(future_import_index + 1) : (future_import_index + 1)] = (
-                new_module_imports
-            )
+            stub_ast.body[(future_import_index + 1) : (future_import_index + 1)] = new_module_imports
             output_path = output_dir / extension_class.import_path
             output_path.parent.mkdir(exist_ok=True, parents=True)
             output_path.with_suffix(".pyi").write_text(ast.unparse(stub_ast))
-            print(
-                f"Generated stubs for {extension_class.value} in {output_path.with_suffix('.pyi')}"
-            )
+            print(f"Generated stubs for {extension_class.value} in {output_path.with_suffix('.pyi')}")
 
 
 def get_argparser():

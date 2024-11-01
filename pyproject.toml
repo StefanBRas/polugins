@@ -7,3 +7,23 @@ requires-python = ">=3.8"
 dependencies = [
     "ruff==0.7.2",
 ]
+
+[tool.ruff]
+include = ["*.py"]
+line-length = 120
+
+lint.select = [
+"E",
+"F",
+"I",
+"PTH", # use pathlib
+"RUF",
+"SIM", # simplify
+"A", # name shadowing builtin
+"C4", # comprehensions
+"EM" # Err msg, asign to var first.
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+lint.fixable = ["ALL"]
+
