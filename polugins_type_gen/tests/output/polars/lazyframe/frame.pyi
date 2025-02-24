@@ -204,7 +204,7 @@ class LazyFrame:
     _ldf: PyLazyFrame
     _accessors: ClassVar[set[str]]
 
-    def __init__(self, data: FrameInitTypes | None, schema: SchemaDefinition | None, *, schema_overrides: SchemaDict | None=None, strict: bool=True, orient: Orientation | None=None, infer_schema_length: int | None=N_INFER_DEFAULT, nan_to_null: bool=False) -> None:
+    def __init__(self, data: FrameInitTypes | None=None, schema: SchemaDefinition | None=None, *, schema_overrides: SchemaDict | None=None, strict: bool=True, orient: Orientation | None=None, infer_schema_length: int | None=N_INFER_DEFAULT, nan_to_null: bool=False) -> None:
         ...
 
     @classmethod
@@ -436,7 +436,7 @@ class LazyFrame:
     def __copy__(self) -> LazyFrame:
         ...
 
-    def __deepcopy__(self, memo: None) -> LazyFrame:
+    def __deepcopy__(self, memo: None=None) -> LazyFrame:
         ...
 
     def __getitem__(self, item: int | range | slice) -> LazyFrame:
@@ -452,18 +452,18 @@ class LazyFrame:
         ...
 
     @overload
-    def serialize(self, file: None, *, format: Literal['binary']=...) -> bytes:
+    def serialize(self, file: None=..., *, format: Literal['binary']=...) -> bytes:
         ...
 
     @overload
-    def serialize(self, file: None, *, format: Literal['json']) -> str:
+    def serialize(self, file: None=..., *, format: Literal['json']) -> str:
         ...
 
     @overload
     def serialize(self, file: IOBase | str | Path, *, format: SerializationFormat=...) -> None:
         ...
 
-    def serialize(self, file: IOBase | str | Path | None, *, format: SerializationFormat='binary') -> bytes | str | None:
+    def serialize(self, file: IOBase | str | Path | None=None, *, format: SerializationFormat='binary') -> bytes | str | None:
         """
         Serialize the logical plan of this LazyFrame to a file or string in JSON format.
 
@@ -575,7 +575,7 @@ class LazyFrame:
         """
         ...
 
-    def describe(self, percentiles: Sequence[float] | float | None, *, interpolation: RollingInterpolationMethod='nearest') -> DataFrame:
+    def describe(self, percentiles: Sequence[float] | float | None=(0.25, 0.5, 0.75), *, interpolation: RollingInterpolationMethod='nearest') -> DataFrame:
         """
         Creates a summary of statistics for a LazyFrame, returning a DataFrame.
 
@@ -783,7 +783,7 @@ class LazyFrame:
         """
         ...
 
-    def inspect(self, fmt: str) -> LazyFrame:
+    def inspect(self, fmt: str='{}') -> LazyFrame:
         """
         Inspect a node in the computation graph.
 
@@ -1747,7 +1747,7 @@ class LazyFrame:
         ...
 
     @deprecate_function('`LazyFrame.fetch` is deprecated; use `LazyFrame.collect` instead, in conjunction with a call to `head`.', version='1.0')
-    def fetch(self, n_rows: int, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> DataFrame:
+    def fetch(self, n_rows: int=500, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> DataFrame:
         """
         Collect a small number of rows for debugging purposes.
 
@@ -1770,7 +1770,7 @@ class LazyFrame:
         """
         ...
 
-    def _fetch(self, n_rows: int, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> DataFrame:
+    def _fetch(self, n_rows: int=500, *, type_coercion: bool=True, predicate_pushdown: bool=True, projection_pushdown: bool=True, simplify_expression: bool=True, no_optimization: bool=False, slice_pushdown: bool=True, comm_subplan_elim: bool=True, comm_subexpr_elim: bool=True, cluster_with_columns: bool=True, collapse_joins: bool=True, streaming: bool=False) -> DataFrame:
         """
         Collect a small number of rows for debugging purposes.
 
@@ -1957,7 +1957,7 @@ class LazyFrame:
         """
         ...
 
-    def clear(self, n: int) -> LazyFrame:
+    def clear(self, n: int=0) -> LazyFrame:
         """
         Create an empty copy of the current LazyFrame, with zero to 'n' rows.
 
@@ -3092,7 +3092,7 @@ class LazyFrame:
         """
         ...
 
-    def join(self, other: LazyFrame, on: str | Expr | Sequence[str | Expr] | None, how: JoinStrategy, *, left_on: str | Expr | Sequence[str | Expr] | None=None, right_on: str | Expr | Sequence[str | Expr] | None=None, suffix: str='_right', validate: JoinValidation='m:m', join_nulls: bool=False, coalesce: bool | None=None, allow_parallel: bool=True, force_parallel: bool=False) -> LazyFrame:
+    def join(self, other: LazyFrame, on: str | Expr | Sequence[str | Expr] | None=None, how: JoinStrategy='inner', *, left_on: str | Expr | Sequence[str | Expr] | None=None, right_on: str | Expr | Sequence[str | Expr] | None=None, suffix: str='_right', validate: JoinValidation='m:m', join_nulls: bool=False, coalesce: bool | None=None, allow_parallel: bool=True, force_parallel: bool=False) -> LazyFrame:
         """
         Add a join operation to the Logical Plan.
 
@@ -3684,7 +3684,7 @@ class LazyFrame:
         """
         ...
 
-    def shift(self, n: int | IntoExprColumn, *, fill_value: IntoExpr | None=None) -> LazyFrame:
+    def shift(self, n: int | IntoExprColumn=1, *, fill_value: IntoExpr | None=None) -> LazyFrame:
         """
         Shift values by the given number of indices.
 
@@ -3757,7 +3757,7 @@ class LazyFrame:
         """
         ...
 
-    def slice(self, offset: int, length: int | None) -> LazyFrame:
+    def slice(self, offset: int, length: int | None=None) -> LazyFrame:
         """
         Get a slice of this DataFrame.
 
@@ -3791,7 +3791,7 @@ class LazyFrame:
         """
         ...
 
-    def limit(self, n: int) -> LazyFrame:
+    def limit(self, n: int=5) -> LazyFrame:
         """
         Get the first `n` rows.
 
@@ -3836,7 +3836,7 @@ class LazyFrame:
         """
         ...
 
-    def head(self, n: int) -> LazyFrame:
+    def head(self, n: int=5) -> LazyFrame:
         """
         Get the first `n` rows.
 
@@ -3879,7 +3879,7 @@ class LazyFrame:
         """
         ...
 
-    def tail(self, n: int) -> LazyFrame:
+    def tail(self, n: int=5) -> LazyFrame:
         """
         Get the last `n` rows.
 
@@ -4000,7 +4000,7 @@ class LazyFrame:
         """
         ...
 
-    def with_row_index(self, name: str, offset: int) -> LazyFrame:
+    def with_row_index(self, name: str='index', offset: int=0) -> LazyFrame:
         """
         Add a row index as the first column in the LazyFrame.
 
@@ -4073,7 +4073,7 @@ class LazyFrame:
         ...
 
     @deprecate_function("Use `with_row_index` instead. Note that the default column name has changed from 'row_nr' to 'index'.", version='0.20.4')
-    def with_row_count(self, name: str, offset: int) -> LazyFrame:
+    def with_row_count(self, name: str='row_nr', offset: int=0) -> LazyFrame:
         """
         Add a column at index 0 that counts the rows.
 
@@ -4115,7 +4115,7 @@ class LazyFrame:
         """
         ...
 
-    def gather_every(self, n: int, offset: int) -> LazyFrame:
+    def gather_every(self, n: int, offset: int=0) -> LazyFrame:
         """
         Take every nth row in the LazyFrame and return as a new LazyFrame.
 
@@ -4157,7 +4157,7 @@ class LazyFrame:
         """
         ...
 
-    def fill_null(self, value: Any | Expr | None, strategy: FillNullStrategy | None, limit: int | None, *, matches_supertype: bool=True) -> LazyFrame:
+    def fill_null(self, value: Any | Expr | None=None, strategy: FillNullStrategy | None=None, limit: int | None=None, *, matches_supertype: bool=True) -> LazyFrame:
         """
         Fill null values using the specified value or strategy.
 
@@ -4279,7 +4279,7 @@ class LazyFrame:
         """
         ...
 
-    def std(self, ddof: int) -> LazyFrame:
+    def std(self, ddof: int=1) -> LazyFrame:
         """
         Aggregate the columns in the LazyFrame to their standard deviation value.
 
@@ -4319,7 +4319,7 @@ class LazyFrame:
         """
         ...
 
-    def var(self, ddof: int) -> LazyFrame:
+    def var(self, ddof: int=1) -> LazyFrame:
         """
         Aggregate the columns in the LazyFrame to their variance value.
 
@@ -4504,7 +4504,7 @@ class LazyFrame:
         """
         ...
 
-    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod) -> LazyFrame:
+    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod='nearest') -> LazyFrame:
         """
         Aggregate the columns in the LazyFrame to their quantile value.
 
@@ -4574,7 +4574,7 @@ class LazyFrame:
         """
         ...
 
-    def unique(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None, *, keep: UniqueKeepStrategy='any', maintain_order: bool=False) -> LazyFrame:
+    def unique(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None=None, *, keep: UniqueKeepStrategy='any', maintain_order: bool=False) -> LazyFrame:
         """
         Drop duplicate rows from this DataFrame.
 
@@ -4655,7 +4655,7 @@ class LazyFrame:
         """
         ...
 
-    def drop_nulls(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None) -> LazyFrame:
+    def drop_nulls(self, subset: ColumnNameOrSelector | Collection[ColumnNameOrSelector] | None=None) -> LazyFrame:
         """
         Drop all rows that contain null values.
 
@@ -4747,7 +4747,7 @@ class LazyFrame:
         """
         ...
 
-    def unpivot(self, on: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, *, index: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None=None, variable_name: str | None=None, value_name: str | None=None, streamable: bool=True) -> LazyFrame:
+    def unpivot(self, on: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None=None, *, index: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None=None, variable_name: str | None=None, value_name: str | None=None, streamable: bool=True) -> LazyFrame:
         """
         Unpivot a DataFrame from wide to long format.
 
@@ -5042,7 +5042,7 @@ class LazyFrame:
         ...
 
     @unstable()
-    def update(self, other: LazyFrame, on: str | Sequence[str] | None, how: Literal['left', 'inner', 'full'], *, left_on: str | Sequence[str] | None=None, right_on: str | Sequence[str] | None=None, include_nulls: bool=False) -> LazyFrame:
+    def update(self, other: LazyFrame, on: str | Sequence[str] | None=None, how: Literal['left', 'inner', 'full']='left', *, left_on: str | Sequence[str] | None=None, right_on: str | Sequence[str] | None=None, include_nulls: bool=False) -> LazyFrame:
         """
         Update the values in this `LazyFrame` with the values in `other`.
 
@@ -5193,7 +5193,7 @@ class LazyFrame:
         ...
 
     @deprecate_function('Use `unpivot` instead, with `index` instead of `id_vars` and `on` instead of `value_vars`', version='1.0.0')
-    def melt(self, id_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, value_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None, variable_name: str | None, value_name: str | None, *, streamable: bool=True) -> LazyFrame:
+    def melt(self, id_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None=None, value_vars: ColumnNameOrSelector | Sequence[ColumnNameOrSelector] | None=None, variable_name: str | None=None, value_name: str | None=None, *, streamable: bool=True) -> LazyFrame:
         """
         Unpivot a DataFrame from wide to long format.
 
@@ -5225,7 +5225,7 @@ class LazyFrame:
         """
         ...
 
-    def _to_metadata(self, columns: None | str | list[str], stats: None | str | list[str]) -> DataFrame:
+    def _to_metadata(self, columns: None | str | list[str]=None, stats: None | str | list[str]=None) -> DataFrame:
         """
         Get all runtime metadata for each column.
 

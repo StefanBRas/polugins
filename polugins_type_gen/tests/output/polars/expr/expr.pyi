@@ -977,7 +977,7 @@ class Expr:
         """
         ...
 
-    def slice(self, offset: int | Expr, length: int | Expr | None) -> Expr:
+    def slice(self, offset: int | Expr, length: int | Expr | None=None) -> Expr:
         """
         Get a slice of this expression.
 
@@ -1392,7 +1392,7 @@ class Expr:
         """
         ...
 
-    def round(self, decimals: int) -> Expr:
+    def round(self, decimals: int=0) -> Expr:
         """
         Round underlying floating point data by `decimals` digits.
 
@@ -1618,7 +1618,7 @@ class Expr:
         """
         ...
 
-    def top_k(self, k: int | IntoExprColumn) -> Expr:
+    def top_k(self, k: int | IntoExprColumn=5) -> Expr:
         """
         Return the `k` largest elements.
 
@@ -1666,7 +1666,7 @@ class Expr:
         ...
 
     @deprecate_renamed_parameter('descending', 'reverse', version='1.0.0')
-    def top_k_by(self, by: IntoExpr | Iterable[IntoExpr], k: int | IntoExprColumn, *, reverse: bool | Sequence[bool]=False) -> Expr:
+    def top_k_by(self, by: IntoExpr | Iterable[IntoExpr], k: int | IntoExprColumn=5, *, reverse: bool | Sequence[bool]=False) -> Expr:
         """
         Return the elements corresponding to the `k` largest elements of the `by` column(s).
 
@@ -1779,7 +1779,7 @@ class Expr:
         """
         ...
 
-    def bottom_k(self, k: int | IntoExprColumn) -> Expr:
+    def bottom_k(self, k: int | IntoExprColumn=5) -> Expr:
         """
         Return the `k` smallest elements.
 
@@ -1829,7 +1829,7 @@ class Expr:
         ...
 
     @deprecate_renamed_parameter('descending', 'reverse', version='1.0.0')
-    def bottom_k_by(self, by: IntoExpr | Iterable[IntoExpr], k: int | IntoExprColumn, *, reverse: bool | Sequence[bool]=False) -> Expr:
+    def bottom_k_by(self, by: IntoExpr | Iterable[IntoExpr], k: int | IntoExprColumn=5, *, reverse: bool | Sequence[bool]=False) -> Expr:
         """
         Return the elements corresponding to the `k` smallest elements of the `by` column(s).
 
@@ -2045,7 +2045,7 @@ class Expr:
         """
         ...
 
-    def search_sorted(self, element: IntoExpr | np.ndarray[Any, Any], side: SearchSortedSide) -> Expr:
+    def search_sorted(self, element: IntoExpr | np.ndarray[Any, Any], side: SearchSortedSide='any') -> Expr:
         """
         Find indices where elements should be inserted to maintain order.
 
@@ -2302,7 +2302,7 @@ class Expr:
         """
         ...
 
-    def shift(self, n: int | IntoExprColumn, *, fill_value: IntoExpr | None=None) -> Expr:
+    def shift(self, n: int | IntoExprColumn=1, *, fill_value: IntoExpr | None=None) -> Expr:
         """
         Shift values by the given number of indices.
 
@@ -2374,7 +2374,7 @@ class Expr:
         """
         ...
 
-    def fill_null(self, value: Any | Expr | None, strategy: FillNullStrategy | None, limit: int | None) -> Expr:
+    def fill_null(self, value: Any | Expr | None=None, strategy: FillNullStrategy | None=None, limit: int | None=None) -> Expr:
         """
         Fill null values using the specified value or strategy.
 
@@ -2501,7 +2501,7 @@ class Expr:
         """
         ...
 
-    def forward_fill(self, limit: int | None) -> Expr:
+    def forward_fill(self, limit: int | None=None) -> Expr:
         """
         Fill missing values with the latest seen values.
 
@@ -2537,7 +2537,7 @@ class Expr:
         """
         ...
 
-    def backward_fill(self, limit: int | None) -> Expr:
+    def backward_fill(self, limit: int | None=None) -> Expr:
         """
         Fill missing values with the next to be seen values.
 
@@ -2620,7 +2620,7 @@ class Expr:
         """
         ...
 
-    def std(self, ddof: int) -> Expr:
+    def std(self, ddof: int=1) -> Expr:
         """
         Get standard deviation.
 
@@ -2646,7 +2646,7 @@ class Expr:
         """
         ...
 
-    def var(self, ddof: int) -> Expr:
+    def var(self, ddof: int=1) -> Expr:
         """
         Get variance.
 
@@ -3448,7 +3448,7 @@ class Expr:
         """
         ...
 
-    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod) -> Expr:
+    def quantile(self, quantile: float | Expr, interpolation: RollingInterpolationMethod='nearest') -> Expr:
         """
         Get quantile value.
 
@@ -3887,7 +3887,7 @@ class Expr:
         def __call__(self, *args: Any, **kwargs: Any) -> Any:
             ...
 
-    def map_batches(self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None, *, agg_list: bool=False, is_elementwise: bool=False, returns_scalar: bool=False) -> Expr:
+    def map_batches(self, function: Callable[[Series], Series | Any], return_dtype: PolarsDataType | None=None, *, agg_list: bool=False, is_elementwise: bool=False, returns_scalar: bool=False) -> Expr:
         """
         Apply a custom python function to a whole Series or sequence of Series.
 
@@ -4043,7 +4043,7 @@ class Expr:
         """
         ...
 
-    def map_elements(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None, *, skip_nulls: bool=True, pass_name: bool=False, strategy: MapElementsStrategy='thread_local', returns_scalar: bool=False) -> Expr:
+    def map_elements(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None=None, *, skip_nulls: bool=True, pass_name: bool=False, strategy: MapElementsStrategy='thread_local', returns_scalar: bool=False) -> Expr:
         """
         Map a custom/user-defined function (UDF) to each element of a column.
 
@@ -4331,7 +4331,7 @@ class Expr:
         """
         ...
 
-    def gather_every(self, n: int, offset: int) -> Expr:
+    def gather_every(self, n: int, offset: int=0) -> Expr:
         """
         Take every nth value in the Series and return as a new Series.
 
@@ -4371,7 +4371,7 @@ class Expr:
         """
         ...
 
-    def head(self, n: int | Expr) -> Expr:
+    def head(self, n: int | Expr=10) -> Expr:
         """
         Get the first `n` rows.
 
@@ -4397,7 +4397,7 @@ class Expr:
         """
         ...
 
-    def tail(self, n: int | Expr) -> Expr:
+    def tail(self, n: int | Expr=10) -> Expr:
         """
         Get the last `n` rows.
 
@@ -4423,7 +4423,7 @@ class Expr:
         """
         ...
 
-    def limit(self, n: int | Expr) -> Expr:
+    def limit(self, n: int | Expr=10) -> Expr:
         """
         Get the first `n` rows (alias for :func:`Expr.head`).
 
@@ -5293,7 +5293,7 @@ class Expr:
         """
         ...
 
-    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval) -> Expr:
+    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval='both') -> Expr:
         """
         Check if this expression is between the given lower and upper bounds.
 
@@ -5397,7 +5397,7 @@ class Expr:
         """
         ...
 
-    def hash(self, seed: int, seed_1: int | None, seed_2: int | None, seed_3: int | None) -> Expr:
+    def hash(self, seed: int=0, seed_1: int | None=None, seed_2: int | None=None, seed_3: int | None=None) -> Expr:
         """
         Hash the elements in the selection.
 
@@ -5477,7 +5477,7 @@ class Expr:
         """
         ...
 
-    def inspect(self, fmt: str) -> Expr:
+    def inspect(self, fmt: str='{}') -> Expr:
         """
         Print the value that this expression evaluates to and pass on the value.
 
@@ -5505,7 +5505,7 @@ class Expr:
         """
         ...
 
-    def interpolate(self, method: InterpolationMethod) -> Expr:
+    def interpolate(self, method: InterpolationMethod='linear') -> Expr:
         """
         Fill null values using interpolation.
 
@@ -6641,7 +6641,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_min(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_min(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Expr:
         """
         Apply a rolling min (moving min) over the values in this array.
 
@@ -6738,7 +6738,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_max(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_max(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Expr:
         """
         Apply a rolling max (moving max) over the values in this array.
 
@@ -6835,7 +6835,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_mean(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_mean(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Expr:
         """
         Apply a rolling mean (moving mean) over the values in this array.
 
@@ -6932,7 +6932,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_sum(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_sum(self, window_size: int | timedelta, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Expr:
         """
         Apply a rolling sum (moving sum) over the values in this array.
 
@@ -7029,7 +7029,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_std(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Expr:
+    def rolling_std(self, window_size: int | timedelta, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Expr:
         """
         Compute a rolling standard deviation.
 
@@ -7128,7 +7128,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_var(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Expr:
+    def rolling_var(self, window_size: int | timedelta, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Expr:
         """
         Compute a rolling variance.
 
@@ -7227,7 +7227,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_median(self, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_median(self, window_size: int | timedelta, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Expr:
         """
         Compute a rolling median.
 
@@ -7324,7 +7324,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod, window_size: int | timedelta, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod='nearest', window_size: int | timedelta=2, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Expr:
         """
         Compute a rolling quantile.
 
@@ -7495,7 +7495,7 @@ class Expr:
         ...
 
     @unstable()
-    def rolling_map(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Expr:
+    def rolling_map(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Expr:
         """
         Compute a custom rolling window function.
 
@@ -7571,7 +7571,7 @@ class Expr:
         """
         ...
 
-    def rank(self, method: RankMethod, *, descending: bool=False, seed: int | None=None) -> Expr:
+    def rank(self, method: RankMethod='average', *, descending: bool=False, seed: int | None=None) -> Expr:
         """
         Assign ranks to data, dealing with ties appropriately.
 
@@ -7655,7 +7655,7 @@ class Expr:
         """
         ...
 
-    def diff(self, n: int, null_behavior: NullBehavior) -> Expr:
+    def diff(self, n: int=1, null_behavior: NullBehavior='ignore') -> Expr:
         """
         Calculate the first discrete difference between shifted items.
 
@@ -7711,7 +7711,7 @@ class Expr:
         """
         ...
 
-    def pct_change(self, n: int | IntoExprColumn) -> Expr:
+    def pct_change(self, n: int | IntoExprColumn=1) -> Expr:
         """
         Computes percentage change between values.
 
@@ -7836,7 +7836,7 @@ class Expr:
         """
         ...
 
-    def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None, upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None) -> Expr:
+    def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None=None, upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None=None) -> Expr:
         """
         Set values outside the given boundaries to the boundary value.
 
@@ -8403,7 +8403,7 @@ class Expr:
         """
         ...
 
-    def shuffle(self, seed: int | None) -> Expr:
+    def shuffle(self, seed: int | None=None) -> Expr:
         """
         Shuffle the contents of this expression.
 
@@ -8433,7 +8433,7 @@ class Expr:
         """
         ...
 
-    def sample(self, n: int | IntoExprColumn | None, *, fraction: float | IntoExprColumn | None=None, with_replacement: bool=False, shuffle: bool=False, seed: int | None=None) -> Expr:
+    def sample(self, n: int | IntoExprColumn | None=None, *, fraction: float | IntoExprColumn | None=None, with_replacement: bool=False, shuffle: bool=False, seed: int | None=None) -> Expr:
         """
         Sample from this expression.
 
@@ -8919,7 +8919,7 @@ class Expr:
         """
         ...
 
-    def log(self, base: float) -> Expr:
+    def log(self, base: float=math.e) -> Expr:
         """
         Compute the logarithm to a given base.
 
@@ -8968,7 +8968,7 @@ class Expr:
         """
         ...
 
-    def entropy(self, base: float, *, normalize: bool=True) -> Expr:
+    def entropy(self, base: float=math.e, *, normalize: bool=True) -> Expr:
         """
         Computes the entropy.
 
@@ -9121,7 +9121,7 @@ class Expr:
         ...
 
     @unstable()
-    def hist(self, bins: IntoExpr | None, *, bin_count: int | None=None, include_category: bool=False, include_breakpoint: bool=False) -> Expr:
+    def hist(self, bins: IntoExpr | None=None, *, bin_count: int | None=None, include_category: bool=False, include_breakpoint: bool=False) -> Expr:
         """
         Bin values into buckets and count their occurrences.
 
@@ -9180,7 +9180,7 @@ class Expr:
         """
         ...
 
-    def replace(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Expr:
+    def replace(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault=no_default, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Expr:
         """
         Replace the given values by different values of the same data type.
 
@@ -9315,7 +9315,7 @@ class Expr:
         """
         ...
 
-    def replace_strict(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Expr:
+    def replace_strict(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault=no_default, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Expr:
         """
         Replace all values by different values.
 
@@ -9718,7 +9718,7 @@ class Expr:
         """
         ...
 
-def _prepare_alpha(com: float | int | None, span: float | int | None, half_life: float | int | None, alpha: float | int | None) -> float:
+def _prepare_alpha(com: float | int | None=None, span: float | int | None=None, half_life: float | int | None=None, alpha: float | int | None=None) -> float:
     """Normalise EWM decay specification in terms of smoothing factor 'alpha'."""
     ...
 
