@@ -129,7 +129,7 @@ class Series:
     _s: PySeries
     _accessors: ClassVar[set[str]]
 
-    def __init__(self, name: str | ArrayLike | None, values: ArrayLike | None, dtype: PolarsDataType | None, *, strict: bool=True, nan_to_null: bool=False) -> None:
+    def __init__(self, name: str | ArrayLike | None=None, values: ArrayLike | None=None, dtype: PolarsDataType | None=None, *, strict: bool=True, nan_to_null: bool=False) -> None:
         ...
 
     @classmethod
@@ -269,7 +269,7 @@ class Series:
         ...
 
     @classmethod
-    def _from_buffers(cls, dtype: PolarsDataType, data: Series | Sequence[Series], validity: Series | None) -> Self:
+    def _from_buffers(cls, dtype: PolarsDataType, data: Series | Sequence[Series], validity: Series | None=None) -> Self:
         """
         Construct a Series from information about its underlying buffers.
 
@@ -772,7 +772,7 @@ class Series:
     def __copy__(self) -> Self:
         ...
 
-    def __deepcopy__(self, memo: None) -> Self:
+    def __deepcopy__(self, memo: None=None) -> Self:
         ...
 
     def __contains__(self, item: Any) -> bool:
@@ -820,7 +820,7 @@ class Series:
     def __setitem__(self, key: int | Series | np.ndarray[Any, Any] | Sequence[object] | tuple[object], value: Any) -> None:
         ...
 
-    def __array__(self, dtype: npt.DTypeLike | None, copy: bool | None) -> np.ndarray[Any, Any]:
+    def __array__(self, dtype: npt.DTypeLike | None=None, copy: bool | None=None) -> np.ndarray[Any, Any]:
         """
         Return a NumPy ndarray with the given data type.
 
@@ -840,7 +840,7 @@ class Series:
         """Numpy universal functions."""
         ...
 
-    def __arrow_c_stream__(self, requested_schema: object | None) -> object:
+    def __arrow_c_stream__(self, requested_schema: object | None=None) -> object:
         """
         Export a Series via the Arrow PyCapsule Interface.
 
@@ -852,7 +852,7 @@ class Series:
         """Format output data in HTML for display in Jupyter Notebooks."""
         ...
 
-    def item(self, index: int | None) -> Any:
+    def item(self, index: int | None=None) -> Any:
         """
         Return the Series as a scalar, or return the element at the given index.
 
@@ -870,7 +870,7 @@ class Series:
         """
         ...
 
-    def estimated_size(self, unit: SizeUnit) -> int | float:
+    def estimated_size(self, unit: SizeUnit='b') -> int | float:
         """
         Return an estimation of the total (heap) allocated size of the Series.
 
@@ -1046,7 +1046,7 @@ class Series:
         """
         ...
 
-    def log(self, base: float) -> Series:
+    def log(self, base: float=math.e) -> Series:
         """
         Compute the logarithm to a given base.
 
@@ -1176,7 +1176,7 @@ class Series:
         """
         ...
 
-    def to_frame(self, name: str | None) -> DataFrame:
+    def to_frame(self, name: str | None=None) -> DataFrame:
         """
         Cast this Series to a DataFrame.
 
@@ -1214,7 +1214,7 @@ class Series:
         """
         ...
 
-    def describe(self, percentiles: Sequence[float] | float | None, interpolation: RollingInterpolationMethod) -> DataFrame:
+    def describe(self, percentiles: Sequence[float] | float | None=(0.25, 0.5, 0.75), interpolation: RollingInterpolationMethod='nearest') -> DataFrame:
         """
         Quick summary statistics of a Series.
 
@@ -1422,7 +1422,7 @@ class Series:
         """
         ...
 
-    def std(self, ddof: int) -> float | timedelta | None:
+    def std(self, ddof: int=1) -> float | timedelta | None:
         """
         Get the standard deviation of this Series.
 
@@ -1441,7 +1441,7 @@ class Series:
         """
         ...
 
-    def var(self, ddof: int) -> float | timedelta | None:
+    def var(self, ddof: int=1) -> float | timedelta | None:
         """
         Get variance of this Series.
 
@@ -1472,7 +1472,7 @@ class Series:
         """
         ...
 
-    def quantile(self, quantile: float, interpolation: RollingInterpolationMethod) -> float | None:
+    def quantile(self, quantile: float, interpolation: RollingInterpolationMethod='nearest') -> float | None:
         """
         Get the quantile value of this Series.
 
@@ -1760,7 +1760,7 @@ class Series:
         ...
 
     @unstable()
-    def hist(self, bins: list[float] | None, *, bin_count: int | None=None, include_category: bool=True, include_breakpoint: bool=True) -> DataFrame:
+    def hist(self, bins: list[float] | None=None, *, bin_count: int | None=None, include_category: bool=True, include_breakpoint: bool=True) -> DataFrame:
         """
         Bin values into buckets and count their occurrences.
 
@@ -1879,7 +1879,7 @@ class Series:
         """
         ...
 
-    def entropy(self, base: float, *, normalize: bool=True) -> float | None:
+    def entropy(self, base: float=math.e, *, normalize: bool=True) -> float | None:
         """
         Computes the entropy.
 
@@ -2162,7 +2162,7 @@ class Series:
         """
         ...
 
-    def slice(self, offset: int, length: int | None) -> Series:
+    def slice(self, offset: int, length: int | None=None) -> Series:
         """
         Get a slice of this Series.
 
@@ -2313,7 +2313,7 @@ class Series:
         """
         ...
 
-    def head(self, n: int) -> Series:
+    def head(self, n: int=10) -> Series:
         """
         Get the first `n` elements.
 
@@ -2351,7 +2351,7 @@ class Series:
         """
         ...
 
-    def tail(self, n: int) -> Series:
+    def tail(self, n: int=10) -> Series:
         """
         Get the last `n` elements.
 
@@ -2389,7 +2389,7 @@ class Series:
         """
         ...
 
-    def limit(self, n: int) -> Series:
+    def limit(self, n: int=10) -> Series:
         """
         Get the first `n` elements.
 
@@ -2429,7 +2429,7 @@ class Series:
         """
         ...
 
-    def gather_every(self, n: int, offset: int) -> Series:
+    def gather_every(self, n: int, offset: int=0) -> Series:
         """
         Take every nth value in the Series and return as new Series.
 
@@ -2499,7 +2499,7 @@ class Series:
         """
         ...
 
-    def top_k(self, k: int) -> Series:
+    def top_k(self, k: int=5) -> Series:
         """
         Return the `k` largest elements.
 
@@ -2534,7 +2534,7 @@ class Series:
         """
         ...
 
-    def bottom_k(self, k: int) -> Series:
+    def bottom_k(self, k: int=5) -> Series:
         """
         Return the `k` smallest elements.
 
@@ -2657,14 +2657,14 @@ class Series:
         ...
 
     @overload
-    def search_sorted(self, element: NonNestedLiteral | None, side: SearchSortedSide) -> int:
+    def search_sorted(self, element: NonNestedLiteral | None, side: SearchSortedSide=...) -> int:
         ...
 
     @overload
-    def search_sorted(self, element: list[NonNestedLiteral | None] | np.ndarray[Any, Any] | Expr | Series, side: SearchSortedSide) -> Series:
+    def search_sorted(self, element: list[NonNestedLiteral | None] | np.ndarray[Any, Any] | Expr | Series, side: SearchSortedSide=...) -> Series:
         ...
 
-    def search_sorted(self, element: IntoExpr | np.ndarray[Any, Any] | None, side: SearchSortedSide) -> int | Series:
+    def search_sorted(self, element: IntoExpr | np.ndarray[Any, Any] | None, side: SearchSortedSide='any') -> int | Series:
         """
         Find indices where elements should be inserted to maintain order.
 
@@ -3377,7 +3377,7 @@ class Series:
         """
         ...
 
-    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval) -> Series:
+    def is_between(self, lower_bound: IntoExpr, upper_bound: IntoExpr, closed: ClosedInterval='both') -> Series:
         """
         Get a boolean mask of the values that are between the given lower/upper bounds.
 
@@ -3523,7 +3523,7 @@ class Series:
         ...
 
     @unstable()
-    def to_jax(self, device: jax.Device | str | None) -> jax.Array:
+    def to_jax(self, device: jax.Device | str | None=None) -> jax.Array:
         """
         Convert this Series to a Jax Array.
 
@@ -3659,7 +3659,7 @@ class Series:
         """
         ...
 
-    def to_init_repr(self, n: int) -> str:
+    def to_init_repr(self, n: int=1000) -> str:
         """
         Convert Series to instantiable string representation.
 
@@ -3819,7 +3819,7 @@ class Series:
         """
         ...
 
-    def clear(self, n: int) -> Series:
+    def clear(self, n: int=0) -> Series:
         """
         Create an empty copy of the current Series, with zero to 'n' elements.
 
@@ -3911,7 +3911,7 @@ class Series:
         """
         ...
 
-    def fill_null(self, value: Any | Expr | None, strategy: FillNullStrategy | None, limit: int | None) -> Series:
+    def fill_null(self, value: Any | Expr | None=None, strategy: FillNullStrategy | None=None, limit: int | None=None) -> Series:
         """
         Fill null values using the specified value or strategy.
 
@@ -4002,7 +4002,7 @@ class Series:
         """
         ...
 
-    def round(self, decimals: int) -> Series:
+    def round(self, decimals: int=0) -> Series:
         """
         Round underlying floating point data by `decimals` digits.
 
@@ -4356,7 +4356,7 @@ class Series:
         """
         ...
 
-    def map_elements(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None, *, skip_nulls: bool=True) -> Self:
+    def map_elements(self, function: Callable[[Any], Any], return_dtype: PolarsDataType | None=None, *, skip_nulls: bool=True) -> Self:
         """
         Map a custom/user-defined function (UDF) over elements in this Series.
 
@@ -4429,7 +4429,7 @@ class Series:
         """
         ...
 
-    def shift(self, n: int, *, fill_value: IntoExpr | None=None) -> Series:
+    def shift(self, n: int=1, *, fill_value: IntoExpr | None=None) -> Series:
         """
         Shift values by the given number of indices.
 
@@ -4535,7 +4535,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_min(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_min(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Series:
         """
         Apply a rolling min (moving min) over the values in this array.
 
@@ -4580,7 +4580,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_max(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_max(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Series:
         """
         Apply a rolling max (moving max) over the values in this array.
 
@@ -4625,7 +4625,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_mean(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_mean(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Series:
         """
         Apply a rolling mean (moving mean) over the values in this array.
 
@@ -4670,7 +4670,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_sum(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_sum(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Series:
         """
         Apply a rolling sum (moving sum) over the values in this array.
 
@@ -4715,7 +4715,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_std(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Series:
+    def rolling_std(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Series:
         """
         Compute a rolling std dev.
 
@@ -4763,7 +4763,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_var(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Series:
+    def rolling_var(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False, ddof: int=1) -> Series:
         """
         Compute a rolling variance.
 
@@ -4811,7 +4811,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_map(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_map(self, function: Callable[[Series], Any], window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Series:
         """
         Compute a custom rolling window function.
 
@@ -4857,7 +4857,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_median(self, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_median(self, window_size: int, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Series:
         """
         Compute a rolling median.
 
@@ -4899,7 +4899,7 @@ class Series:
         ...
 
     @unstable()
-    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod, window_size: int, weights: list[float] | None, *, min_periods: int | None=None, center: bool=False) -> Series:
+    def rolling_quantile(self, quantile: float, interpolation: RollingInterpolationMethod='nearest', window_size: int=2, weights: list[float] | None=None, *, min_periods: int | None=None, center: bool=False) -> Series:
         """
         Compute a rolling quantile.
 
@@ -4993,7 +4993,7 @@ class Series:
         """
         ...
 
-    def sample(self, n: int | None, *, fraction: float | None=None, with_replacement: bool=False, shuffle: bool=False, seed: int | None=None) -> Series:
+    def sample(self, n: int | None=None, *, fraction: float | None=None, with_replacement: bool=False, shuffle: bool=False, seed: int | None=None) -> Series:
         """
         Sample from this Series.
 
@@ -5086,7 +5086,7 @@ class Series:
         """
         ...
 
-    def hash(self, seed: int, seed_1: int | None, seed_2: int | None, seed_3: int | None) -> Series:
+    def hash(self, seed: int=0, seed_1: int | None=None, seed_2: int | None=None, seed_3: int | None=None) -> Series:
         """
         Hash the Series.
 
@@ -5157,7 +5157,7 @@ class Series:
         """
         ...
 
-    def interpolate(self, method: InterpolationMethod) -> Series:
+    def interpolate(self, method: InterpolationMethod='linear') -> Series:
         """
         Fill null values using interpolation.
 
@@ -5229,7 +5229,7 @@ class Series:
         """
         ...
 
-    def rank(self, method: RankMethod, *, descending: bool=False, seed: int | None=None) -> Series:
+    def rank(self, method: RankMethod='average', *, descending: bool=False, seed: int | None=None) -> Series:
         """
         Assign ranks to data, dealing with ties appropriately.
 
@@ -5290,7 +5290,7 @@ class Series:
         """
         ...
 
-    def diff(self, n: int, null_behavior: NullBehavior) -> Series:
+    def diff(self, n: int=1, null_behavior: NullBehavior='ignore') -> Series:
         """
         Calculate the first discrete difference between shifted items.
 
@@ -5337,7 +5337,7 @@ class Series:
         """
         ...
 
-    def pct_change(self, n: int | IntoExprColumn) -> Series:
+    def pct_change(self, n: int | IntoExprColumn=1) -> Series:
         """
         Computes percentage change between values.
 
@@ -5465,7 +5465,7 @@ class Series:
         """
         ...
 
-    def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None, upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None) -> Series:
+    def clip(self, lower_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None=None, upper_bound: NumericLiteral | TemporalLiteral | IntoExprColumn | None=None) -> Series:
         """
         Set values outside the given boundaries to the boundary value.
 
@@ -5574,7 +5574,7 @@ class Series:
         """
         ...
 
-    def replace(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Self:
+    def replace(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault=no_default, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Self:
         """
         Replace values by different values of the same data type.
 
@@ -5672,7 +5672,7 @@ class Series:
         """
         ...
 
-    def replace_strict(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Self:
+    def replace_strict(self, old: IntoExpr | Sequence[Any] | Mapping[Any, Any], new: IntoExpr | Sequence[Any] | NoDefault=no_default, *, default: IntoExpr | NoDefault=no_default, return_dtype: PolarsDataType | None=None) -> Self:
         """
         Replace all values by different values.
 
@@ -5853,7 +5853,7 @@ class Series:
         """
         ...
 
-    def shuffle(self, seed: int | None) -> Series:
+    def shuffle(self, seed: int | None=None) -> Series:
         """
         Shuffle the contents of this Series.
 

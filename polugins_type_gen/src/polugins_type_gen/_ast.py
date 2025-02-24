@@ -22,7 +22,6 @@ class RemoveBodies(ast.NodeTransformer):
             node.body = [node.body[0], ast.Expr(value=ast.Constant(value=...))]
         else:
             node.body = [ast.Expr(value=ast.Constant(value=...))]
-        node.args.defaults = []
         return node
 
     def visit_AnnAssign(self, node):

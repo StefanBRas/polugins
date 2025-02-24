@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-## 6.0.0
+## 0.6.1
+
+- Fix issue where defaults where omitted for positional args, making them seem required.
+
+## 0.6.0
 
 - Generate stubs from ast and not with mypy.
 - Allow setting output path
