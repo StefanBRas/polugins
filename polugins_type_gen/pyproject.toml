@@ -1,6 +1,6 @@
 [project]
 name = "polugins_type_gen"
-version = "0.5.1"
+version = "0.6.2"
 description = "Type stub generator Polugins."
 authors = [{ name = "StefanBRas", email = "opensource@bruhn.io" }]
 readme = "README.md"
