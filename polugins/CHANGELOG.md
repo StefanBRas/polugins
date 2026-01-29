@@ -1,5 +1,8 @@
 # Unreleased
 
+# 0.5.2
+
+- `casefold` extensionclass part of env var names to support Windows that uppercases them.
 - Use importlib.metadata to get version.
 
 # 0.5.1

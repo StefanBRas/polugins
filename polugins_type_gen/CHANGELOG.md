@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.6.2
+
+- `casefold` extensionclass part of env var names to support Windows that uppercases them.
+
 ## 0.6.1
 
 - Fix issue where defaults where omitted for positional args, making them seem required.

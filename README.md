@@ -130,6 +130,8 @@ polugins_lazyframe_my_namespace=my_package.namespaces:MyNamespace
 
 Which will register a  `LazyFrame` namespace located at `my_package.namespaces` called `MyNamespace` as `my_namespace`.
 
+Note that Windows uppercases environment variable names, so it's only possible to use uppercase letters as names.
+
 ## Generate types
 
 To generate types install the python package `polugins_type_gen` and then run `polugins stubs` to create type stubs at "./typings".

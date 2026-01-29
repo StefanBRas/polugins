@@ -60,9 +60,9 @@ def _get_env_namespaces():
         ExtensionClass.DATAFRAME: {},
     }
     for env_var_name, env_var_value in os.environ.items():
-        if env_var_name.casefold().startswith("polugins".casefold()):
+        if env_var_name.casefold().startswith("polugins_".casefold()):
             _, extension_class, *name = env_var_name.split("_")
-            extension_class = ExtensionClass(extension_class)
+            extension_class = ExtensionClass(extension_class.casefold())
             all_namespaces[extension_class]["_".join(name)] = env_var_value
     return all_namespaces
 
