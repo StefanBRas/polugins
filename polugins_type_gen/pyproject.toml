@@ -1,44 +1,58 @@
 [project]
 name = "polugins_type_gen"
-version = "0.6.1"
+version = "0.5.1"
 description = "Type stub generator Polugins."
 authors = [{ name = "StefanBRas", email = "opensource@bruhn.io" }]
 readme = "README.md"
-requires-python = ">=3.9.0,<4.0.0"
+requires-python = ">=3.9"
 dependencies = ["polugins>=0.2"]
+
+[dependency-groups]
+dev = [
+  "pytest~=7.3.1",
+  "ruff==0.1.11",
+  "coverage~=7.2.7",
+  "pytest-env~=0.8.2",
+  "pytest-cov~=4.1.0",
+  "example-package",
+  "pytest-mock~=3.12.0",
+  "packaging~=23.2",
+]
+
+[tool.uv.sources]
+polugins = { path = "../polugins/", editable = true }
+example-package = { path = "tests/pkgs/example_package", editable = true }
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.polugins.lazyframe]
+"pyproject" = "polugins._testing.namespaces:PyProjectNameSpace"
 
 [project.scripts]
 polugins = 'polugins_type_gen.cli:cli'
-
 
 [tool.pytest.ini_options]
 env = ["polugins_lazyframe_env=polugins._testing.namespaces:EnvNameSpace"]
 pythonpath = ["src"]
 
-[tool.polugins.lazyframe]
-"pyproject" = "polugins._testing.namespaces:PyProjectNameSpace"
-
-
 [tool.ruff]
-extend = "../pyproject.toml"
-src = ["src"]
+extend = "../ruff.toml"
 
-[tool.uv]
-dev-dependencies = [
-  "pytest>=8.0.0,<9.0.0",
-  "coverage>=7.2.7,<8.0.0",
-  "pytest-env>=0.8.2,<0.9",
-  "pytest-cov>=4.1.0,<5.0.0",
-  "example-package",
-  "pytest-mock>=3.12.0,<4.0.0",
-  "packaging>=23.2.0,<24.0.0",
-  "ruff==0.7.2",
-  "polars==1.9.0",
+lint.select = [
+  "E",
+  "F",
+  "I",
+  "PTH", # use pathlib
+  "RUF",
+  "SIM", # simplify
+  "A",   # name shadowing builtin
+  "C4",  # comprehensions
+  "EM",  # Err msg, asign to var first.
 ]
-
-[tool.uv.sources]
-example-package = { path = "tests/pkgs/example_package" }
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+lint.ignore = []
+src = ["src"]
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+lint.fixable = ["ALL"]
+lint.unfixable = []
