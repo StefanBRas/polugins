@@ -41,5 +41,5 @@ dev = [
 example-package = { path = "tests/pkgs/example_package" }
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
