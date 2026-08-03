@@ -7,9 +7,6 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies = ["polars>0.16.13", "typing-extensions>=4.4.0", "tomli>=0.2.0"]
 
-[project.scripts]
-polugins = 'polugins.cli:cli'
-
 
 [tool.pytest.ini_options]
 env = ["polugins_lazyframe_env=polugins._testing.namespaces:EnvNameSpace"]
